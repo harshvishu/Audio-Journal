@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="WaveformView">
+        <attr name="mode" format="enum">
+            <enum name="RECORDING" value="1" />
+            <enum name="PLAYBACK" value="2" />
+        </attr>
+        <attr name="strokeWidth" format="float"/>
+        <attr name="waveStrokeColor" format="color"/>
+        <attr name="waveFillColor" format="color"/>
+        <attr name="markerColor" format="color"/>
+        <attr name="pointerColor" format="color"/>
+        <attr name="timeCodeColor" format="color"/>
+    </declare-styleable>
+</resources>

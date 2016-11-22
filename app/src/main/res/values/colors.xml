@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#4CAF50</color>
+    <color name="colorPrimaryDark">#388E3C</color>
+    <color name="colorAccent">#8BC34A</color>
+    <color name="colorLightPrimary">#C8E6C9</color>
+
+    <!--<color name="hashGreen">#8BC34A</color>-->
+    <!--<color name="limeGreen">#CDDC39</color>-->
+    <color name="selection_gray">#F2F2F1</color>
+    <color name="edit_buttons">#BDBDBD</color>
+    <color name="card_color_alpha">#efff</color>
+</resources>

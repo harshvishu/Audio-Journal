@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <external-path
+        name="images"
+        path="Android/data/com.brotherpowers.audiojournal/files/image"/>
+    <external-path
+        name="audios"
+        path="Android/data/com.brotherpowers.audiojournal/files/audio"/>
+    <external-path
+        name="root"
+        path="Android/data/com.brotherpowers.audiojournal/files"/>
+</PreferenceScreen>

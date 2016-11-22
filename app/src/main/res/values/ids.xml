@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="action.play" type="id"/>
+    <item name="action.delete" type="id"/>
+    <item name="label.text" type="id"/>
+    <item name="action.capture" type="id"/>
+    <item name="label.message" type="id"/>
+    <item name="wave_view" type="id"/>
+</resources>

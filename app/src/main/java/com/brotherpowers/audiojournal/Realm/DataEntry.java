@@ -1,0 +1,72 @@
+package com.brotherpowers.audiojournal.Realm;
+
+import java.util.Date;
+
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
+/**
+ * Created by harsh_v on 11/4/16.
+ */
+
+public class DataEntry extends RealmObject {
+
+    @PrimaryKey
+    private long id;
+
+    private RFile audioFile;
+
+    private RealmList<RFile> attachments;
+
+    private String title;
+
+    // No Setter
+    private Date created_at;
+
+    public DataEntry() {
+        super();
+        created_at = new Date();
+    }
+
+
+    public long getId() {
+        return id;
+    }
+
+    public DataEntry setId(long id) {
+        this.id = id;
+        return this;
+    }
+
+    public RFile audioFile() {
+        return audioFile;
+    }
+
+    public DataEntry setAudioFile(RFile audioFile) {
+        this.audioFile = audioFile;
+        return this;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public DataEntry setTitle(String title) {
+        this.title = title;
+        return this;
+    }
+
+    public Date getCreated_at() {
+        return created_at;
+    }
+
+    public RealmList<RFile> getAttachments() {
+        return attachments;
+    }
+
+    public DataEntry setAttachments(RealmList<RFile> attachments) {
+        this.attachments = attachments;
+        return this;
+    }
+}

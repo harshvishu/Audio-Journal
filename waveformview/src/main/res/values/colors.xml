@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="waveFill">#D6D7D6</color>
+    <color name="waveStroke">#FFF</color>
+    <color name="marker">#3B3C3C</color>
+    <color name="pointer">#DF703F</color>
+    <color name="text">#3B3C3C</color>
+</resources>
