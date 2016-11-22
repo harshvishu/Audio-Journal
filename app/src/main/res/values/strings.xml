@@ -6,4 +6,6 @@
     <string name="share">Share</string>
     <string name="photos">Photos</string>
     <string name="notes">Notes</string>
+    <string name="Min">%1d Min</string>
+    <string name="Sec">%2.2f Sec</string>
 </resources>

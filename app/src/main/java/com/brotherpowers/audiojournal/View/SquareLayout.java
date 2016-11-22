@@ -24,6 +24,7 @@ public class SquareLayout extends FrameLayout {
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         //noinspection SuspiciousNameCombination
-        super.onMeasure(widthMeasureSpec, widthMeasureSpec);
+        final int min = Math.min(widthMeasureSpec, heightMeasureSpec);
+        super.onMeasure(min, min);
     }
 }

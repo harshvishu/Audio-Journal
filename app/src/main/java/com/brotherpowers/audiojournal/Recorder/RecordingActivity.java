@@ -28,7 +28,6 @@ import com.brotherpowers.waveformview.WaveformView;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,7 +40,6 @@ public class RecordingActivity extends AppCompatActivity {
     private static final String ARG_DATA_ENTRY_ID = "ARG_DATA_ENTRY_ID";
     private static final String ARG_FILE_ID = "ARG_FILE_ID";
 
-    private boolean isNewRecording;
 
     @BindView(R.id.progress_view)
     ProgressView progressView;
@@ -111,7 +109,7 @@ public class RecordingActivity extends AppCompatActivity {
     private STATE recordingState = STATE.PENDING;
 
     enum STATE {
-        PENDING, RECORDING, PLAYING, COMPLETED
+        PENDING, RECORDING, FINISHED;
     }
 
     private DataEntry dataEntry;
@@ -124,8 +122,6 @@ public class RecordingActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        waveformView.enableClipping(true);
 
 
         realm = Realm.getDefaultInstance();
@@ -145,57 +141,30 @@ public class RecordingActivity extends AppCompatActivity {
         }
 
 
-        long file_id = getIntent().getLongExtra(ARG_FILE_ID, -1L);
+//        long file_id = getIntent().getLongExtra(ARG_FILE_ID, -1L);
+        long file_primary_key = System.currentTimeMillis();
 
-        if (file_id == -1L) {
+        file = FileUtils.sharedInstance.getFile(FileUtils.Type.AUDIO, String.valueOf(file_primary_key), this);
 
-            long file_primary_key = System.currentTimeMillis();
-
-            file = FileUtils.sharedInstance.getFile(FileUtils.Type.AUDIO, String.valueOf(file_primary_key), this);
-
-            rFile = new RFile();
-            rFile.setFileType(FileUtils.Type.AUDIO)
-                    .setId(file_primary_key)
-                    .setFileName(file.getName());
-
-            isNewRecording = true;
-        } else {
-
-            RFile managedObject = realm.where(RFile.class)
-                    .equalTo("id", file_id)
-                    .findFirst();
-
-            file = FileUtils.sharedInstance.getFile(FileUtils.Type.AUDIO, rFile.getFile_name(), this);
-
-            rFile = realm.copyFromRealm(managedObject);
-
-            isNewRecording = false;
-        }
+        rFile = new RFile();
+        rFile.setFileType(FileUtils.Type.AUDIO)
+                .setId(file_primary_key)
+                .setFileName(file.getName());
 
 
         buttonCapture.setOnClickListener(view -> {
-            switch (recordingState) {
-                case PENDING:
-                    startRecording();
-                    break;
-                case RECORDING:
-                    stopRecording();
-                    break;
+            if (recordingState == STATE.PENDING) {
+                startRecording();
 
-                case COMPLETED:
-                    play();
-                    break;
-                case PLAYING:
+            } else if (recordingState == STATE.RECORDING) {
+                stopRecording();
 
-                    stopPlaying();
-                    break;
             }
-
         });
 
     }
 
-    private void stopPlaying() {
+   /* private void stopPlaying() {
         try {
             recordingState = STATE.COMPLETED;
 
@@ -208,9 +177,9 @@ public class RecordingActivity extends AppCompatActivity {
         buttonCapture.setImageResource(R.drawable.ic_play);
         labelMessage.setText("Play");
 
-    }
+    }*/
 
-    private void play() {
+    /*private void play() {
         mediaPlayer = new MediaPlayer();
         try {
             recordingState = STATE.PLAYING;
@@ -236,34 +205,35 @@ public class RecordingActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-    }
+    }*/
 
 
     private void stopRecording() {
-        recordingState = STATE.COMPLETED;
 
+        recordingState = STATE.FINISHED;
         mediaRecorder.stop();
+        onRecordingStop();
+    }
+
+    private void onRecordingStop() {
         mediaRecorder.release();
         mediaRecorder = null;
 
         buttonCapture.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scale_in_out));
         buttonCapture.setImageResource(R.drawable.ic_play);
-        labelMessage.setText("Play");
 
-        if (isNewRecording) {
-            dataEntry.setAudioFile(rFile);
-        }
-
+        dataEntry.setAudioFile(rFile);
         realm.executeTransaction(realm -> {
             realm.copyToRealmOrUpdate(dataEntry);
             realm.copyToRealmOrUpdate(rFile);
         });
-
     }
 
     private void startRecording() {
 
+        recordingState = STATE.RECORDING;
         mediaRecorder = new MediaRecorder();
+        mediaRecorder.setAudioSamplingRate(getMaxSampleRate());
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         mediaRecorder.setOutputFile(file.getPath());
@@ -272,76 +242,42 @@ public class RecordingActivity extends AppCompatActivity {
 
 
         try {
-            recordingState = STATE.RECORDING;
 
             mediaRecorder.prepare();
 
             buttonCapture.startAnimation(AnimationUtils.loadAnimation(this, R.anim.scale_in_out));
             buttonCapture.setImageResource(R.drawable.ic_stop);
-            labelMessage.setText("Recording ...");
 
 
         } catch (IOException e) {
             Log.e("AudioRecorder", "prepare() failed");
         }
 
-        mediaRecorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {
-            @Override
-            public void onInfo(MediaRecorder mediaRecorder, int what, int extra) {
+        mediaRecorder.setOnInfoListener((mediaRecorder1, what, extra) -> {
 
-                if (what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
-                    if (isNewRecording) {
-                        dataEntry.setAudioFile(rFile);
-                    }
-
-                    realm.executeTransaction(realm -> {
-                        realm.copyToRealmOrUpdate(dataEntry);
-                        realm.copyToRealmOrUpdate(rFile);
-                    });
-
-                    recordingState = STATE.COMPLETED;
-                    try {
-                        timerThread.join();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    finish();
-                }
+            if (what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
+                recordingState = STATE.FINISHED;
+                onRecordingStop();
             }
+
         });
-
         mediaRecorder.start();
-
-        long startTime = System.currentTimeMillis();
 
         timerThread = new Thread() {
             @Override
             public void run() {
                 super.run();
+                final long startTime = System.currentTimeMillis();
 
                 while (recordingState == STATE.RECORDING) {
 
-                    try {
-                        samples = Utils.getAudioSamples(file);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    float elapsedTime = (float) (System.currentTimeMillis() - startTime) / 1000f;
+                    String text = getString(R.string.Sec, elapsedTime);
+                    if (elapsedTime > 60f) {
+                        text = getString(R.string.Min, 1);
                     }
-
-                    runOnUiThread(() -> {
-                        float elapsedTime = (float) (System.currentTimeMillis() - startTime) / 1000f;
-
-                        String text = String.format(Locale.ENGLISH, "%2.2f%s", elapsedTime, "sec");
-
-                        float progress = 100 * elapsedTime / 60;
-
-                        progressView.setProgress(progress, text);
-
-                        System.out.println("... thread running: ");
-
-                        waveformView.setSamples(samples, (int) file.length() / 44100);
-
-                    });
-
+                    float progress = 100 * elapsedTime / 60;
+                    progressView.setProgress(progress, text);
 
                     try {
                         Thread.sleep(1000 / 30); //30 fps refresh rate
@@ -354,10 +290,37 @@ public class RecordingActivity extends AppCompatActivity {
         };
 
         timerThread.start();
+
+        samplingThread = new Thread() {
+            @Override
+            public void run() {
+                super.run();
+
+                while (recordingState == STATE.RECORDING) {
+
+                    try {
+                        samples = Utils.getAudioSamples(file);
+                        waveformView.setSamples(samples, (int) file.length() / getMaxSampleRate());
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        Thread.sleep(1000 / 12); //12 fps refresh rate
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        };
+        samplingThread.start();
     }
 
     short[] samples = new short[1024];
     private Thread timerThread;
+    private Thread samplingThread;
 
     private int getMaxSampleRate() {
         android.media.AudioManager am = (android.media.AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -371,5 +334,6 @@ public class RecordingActivity extends AppCompatActivity {
         }
         return 44100;
     }
+
 
 }

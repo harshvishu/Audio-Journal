@@ -187,27 +187,27 @@ public class WaveformView extends View {
             createPlaybackWaveForm();
         } else {
 //            createRecordingWaveForm();
-            createClipPath();
+//            createClipPath();
             createPlaybackWaveForm();
         }
 
         postInvalidate();
 
+
     }
 
+
+    private float dampningMultiplier;
+
     private void createRecordingWaveForm() {
+        final float max = Short.MAX_VALUE;
+        final long fps = 1000 / 30;
+
 
         float lastX = -1;
         float lastY = -1;
 
-        float max = Short.MAX_VALUE;
-
-        if (path == null) {
-            path = new Path();
-        } else {
-            path.reset();
-        }
-
+        path.reset();
         path.moveTo(0, height);
         path.lineTo(0, centerY);
 
@@ -217,7 +217,7 @@ public class WaveformView extends View {
             for (float x = 0; x < width - 3; x += 3.0f) {
                 int index = (int) ((x / width) * samples.length);
                 short sample = samples[index];
-                float y = centerY - ((sample / max) * (centerY - LAYOUT_MARGIN_VERTICAL));
+                float y = centerY - ((sample / max) * centerY * (1 / dampningMultiplier) - LAYOUT_MARGIN_VERTICAL);
 
                 // Add the initial points
                 if (lastX == -1) {
@@ -235,6 +235,10 @@ public class WaveformView extends View {
         path.lineTo(lastX, height);
         path.close();
 
+        dampningMultiplier += fps;
+        if (dampningMultiplier > 1f) {
+            dampningMultiplier = 1f;
+        }
     }
 
     private void createPlaybackWaveForm() {
@@ -249,13 +253,19 @@ public class WaveformView extends View {
         // that align with pixel boundaries.
         if (width > 10) {
             for (int x = origin.x; x < width; x += 10) {
-                short sample = extremes[x][0];
-                float y = centerY - ((sample / max) * (centerY - LAYOUT_MARGIN_VERTICAL));
+//                short sample = extremes[x][0];
+//                float y = centerY - ((sample / max) * (centerY - LAYOUT_MARGIN_VERTICAL));
 
+                float avgY = 0;
+                for (int j = x; j < x + 10; j++) {
+                    short sample = extremes[x][0];
+                    avgY += centerY - ((sample / max) * (centerY - LAYOUT_MARGIN_VERTICAL));
+                }
+                avgY /= 10;
 
                 // Add the initial points
-                path.lineTo(x, y);
-                path.lineTo(x + 8, y);
+                path.lineTo(x, avgY);
+                path.lineTo(x + 8, avgY);
                 path.lineTo(x + 8, centerY);
                 path.moveTo(x + 10, centerY);
 
@@ -265,11 +275,16 @@ public class WaveformView extends View {
 
             // draw minimums
             for (int x = width - 1; x >= origin.x; x -= 10) {
-                short sample = extremes[x][1];
-                float y = centerY - ((sample / max) * (centerY - LAYOUT_MARGIN_VERTICAL));
 
-                path.lineTo(x, y);
-                path.lineTo(x - 8, y);
+                float avgY = 0;
+                for (int j = x; j < x + 10; j++) {
+                    short sample = extremes[x][0];
+                    avgY += centerY + ((sample / max) * (centerY - LAYOUT_MARGIN_VERTICAL));
+                }
+                avgY /= 10;
+
+                path.lineTo(x, avgY);
+                path.lineTo(x - 8, avgY);
                 path.lineTo(x - 8, centerY);
                 path.moveTo(x - 10, centerY);
             }
@@ -300,8 +315,12 @@ public class WaveformView extends View {
     }
 
     public void setSamples(short[] samples, int duration) {
-        setAudioLength(duration);
-        setSamples(samples);
+//        setAudioLength(duration);
+//        setSamples(samples);
+
+        this.mAudioLength = duration;
+        this.samples = samples;
+        onSamplesChanged();
     }
 
     private boolean clipView;
@@ -311,7 +330,8 @@ public class WaveformView extends View {
     }
 
     private Path clipPath;
-    private void createClipPath(){
+
+    private void createClipPath() {
         clipPath = new Path();
         clipPath.moveTo(origin.x, centerY);
         clipPath.lineTo(origin.x, origin.y);
