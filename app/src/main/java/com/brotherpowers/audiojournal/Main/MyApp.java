@@ -2,6 +2,8 @@ package com.brotherpowers.audiojournal.Main;
 
 import android.app.Application;
 
+import com.bugsnag.android.Bugsnag;
+
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -20,5 +22,7 @@ public class MyApp extends Application {
                 .build();
 
         Realm.setDefaultConfiguration(config);
+
+        Bugsnag.init(this);
     }
 }

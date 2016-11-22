@@ -11,6 +11,7 @@
     <uses-feature android:name="android.hardware.camera.autofocus"/>
 
     <application
+        android:hardwareAccelerated="true"
         android:name=".Main.MyApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -44,6 +45,9 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"/>
         </provider>
+        <meta-data
+            android:name="com.bugsnag.android.API_KEY"
+            android:value="53f5b6d3116c7983c7a2872e14765ee7"/>
     </application>
 
 </manifest>

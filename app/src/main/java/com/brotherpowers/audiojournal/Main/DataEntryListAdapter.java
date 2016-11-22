@@ -24,7 +24,6 @@ import com.brotherpowers.waveformview.WaveformView;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.io.IOException;
 
 import butterknife.BindView;
 import io.realm.OrderedRealmCollection;
@@ -106,17 +105,16 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
                     short[] samples = Utils.getAudioSamples(audioFile);
                     MediaMetadataRetriever mmr = new MediaMetadataRetriever();
                     Uri uri = FileProvider.getUriForFile(context, context.getString(R.string.file_provider_authority), audioFile);
+
                     mmr.setDataSource(context, uri);
                     int duration = Integer.valueOf(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-
-                    System.out.println(">>>> duration"+ duration);
-
                     viewHolderItem.waveformView.setSamples(samples, duration);
 
-
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+
             } else {
                 System.out.println(">>>> null file");
             }

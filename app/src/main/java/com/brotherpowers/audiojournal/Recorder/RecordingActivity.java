@@ -2,10 +2,12 @@ package com.brotherpowers.audiojournal.Recorder;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -20,9 +22,13 @@ import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Realm.DataEntry;
 import com.brotherpowers.audiojournal.Realm.RFile;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
+import com.brotherpowers.hvprogressview.ProgressView;
+import com.brotherpowers.waveformview.Utils;
+import com.brotherpowers.waveformview.WaveformView;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,6 +42,12 @@ public class RecordingActivity extends AppCompatActivity {
     private static final String ARG_FILE_ID = "ARG_FILE_ID";
 
     private boolean isNewRecording;
+
+    @BindView(R.id.progress_view)
+    ProgressView progressView;
+
+    @BindView(R.id.wave_view)
+    WaveformView waveformView;
 
 
     /**
@@ -112,6 +124,8 @@ public class RecordingActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        waveformView.enableClipping(true);
 
 
         realm = Realm.getDefaultInstance();
@@ -254,6 +268,8 @@ public class RecordingActivity extends AppCompatActivity {
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         mediaRecorder.setOutputFile(file.getPath());
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        mediaRecorder.setMaxDuration(60_000); // ONE MINUTE
+
 
         try {
             recordingState = STATE.RECORDING;
@@ -264,12 +280,96 @@ public class RecordingActivity extends AppCompatActivity {
             buttonCapture.setImageResource(R.drawable.ic_stop);
             labelMessage.setText("Recording ...");
 
+
         } catch (IOException e) {
             Log.e("AudioRecorder", "prepare() failed");
         }
 
+        mediaRecorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {
+            @Override
+            public void onInfo(MediaRecorder mediaRecorder, int what, int extra) {
+
+                if (what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
+                    if (isNewRecording) {
+                        dataEntry.setAudioFile(rFile);
+                    }
+
+                    realm.executeTransaction(realm -> {
+                        realm.copyToRealmOrUpdate(dataEntry);
+                        realm.copyToRealmOrUpdate(rFile);
+                    });
+
+                    recordingState = STATE.COMPLETED;
+                    try {
+                        timerThread.join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    finish();
+                }
+            }
+        });
+
         mediaRecorder.start();
+
+        long startTime = System.currentTimeMillis();
+
+        timerThread = new Thread() {
+            @Override
+            public void run() {
+                super.run();
+
+                while (recordingState == STATE.RECORDING) {
+
+                    try {
+                        samples = Utils.getAudioSamples(file);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    runOnUiThread(() -> {
+                        float elapsedTime = (float) (System.currentTimeMillis() - startTime) / 1000f;
+
+                        String text = String.format(Locale.ENGLISH, "%2.2f%s", elapsedTime, "sec");
+
+                        float progress = 100 * elapsedTime / 60;
+
+                        progressView.setProgress(progress, text);
+
+                        System.out.println("... thread running: ");
+
+                        waveformView.setSamples(samples, (int) file.length() / 44100);
+
+                    });
+
+
+                    try {
+                        Thread.sleep(1000 / 30); //30 fps refresh rate
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        };
+
+        timerThread.start();
     }
 
+    short[] samples = new short[1024];
+    private Thread timerThread;
+
+    private int getMaxSampleRate() {
+        android.media.AudioManager am = (android.media.AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            String value = am.getProperty(android.media.AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
+            try {
+                return Integer.valueOf(value);
+            } catch (NumberFormatException e) {
+                return 44100;
+            }
+        }
+        return 44100;
+    }
 
 }

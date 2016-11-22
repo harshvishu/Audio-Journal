@@ -9,6 +9,7 @@ import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
@@ -21,6 +22,7 @@ import java.util.LinkedList;
  */
 
 public class WaveformView extends View {
+    private static final int HISTORY_SIZE = 2;
     public static final int MODE_RECORDING = 1;
     public static final int MODE_PLAYBACK = 2;
     private static final int MAX_TRACK_DURATION = 60_000;
@@ -132,7 +134,6 @@ public class WaveformView extends View {
 
         centerY = rect.centerY(); // vertical mid
 
-
         historicalData.clear();
 
         onSamplesChanged();
@@ -140,18 +141,26 @@ public class WaveformView extends View {
 
     final int pointerRadius = 10;
 
+    @SuppressLint("DrawAllocation")
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        canvas.drawPath(path, mWaveFillPaint);
-
         canvas.drawLine(0, centerY, getWidth(), centerY, mMarkerPaint);
 
+        if (clipPath != null && clipView) {
+            canvas.clipPath(clipPath, Region.Op.INTERSECT);
+        }
+
+        canvas.drawPath(path, mWaveFillPaint);
+
         canvas.drawCircle(pointerRadius, centerY, pointerRadius, mPointerPaint);
+
         canvas.drawCircle(getWidth() - pointerRadius, centerY, pointerRadius, mPointerPaint);
 
-        drawAxis(canvas, width);
+        if (mMode == MODE_PLAYBACK) {
+            drawAxis(canvas, width);
+        }
     }
 
     public WaveformView setSamples(short[] samples) {
@@ -177,7 +186,9 @@ public class WaveformView extends View {
         if (mMode == MODE_PLAYBACK) {
             createPlaybackWaveForm();
         } else {
-            createRecordingWaveForm();
+//            createRecordingWaveForm();
+            createClipPath();
+            createPlaybackWaveForm();
         }
 
         postInvalidate();
@@ -185,7 +196,45 @@ public class WaveformView extends View {
     }
 
     private void createRecordingWaveForm() {
-        // TODO: 11/22/16 implementation pending
+
+        float lastX = -1;
+        float lastY = -1;
+
+        float max = Short.MAX_VALUE;
+
+        if (path == null) {
+            path = new Path();
+        } else {
+            path.reset();
+        }
+
+        path.moveTo(0, height);
+        path.lineTo(0, centerY);
+
+        // For efficiency, we don't draw all of the samples in the buffer, but only the ones
+        // that align with pixel boundaries.
+        if (width > 3) {
+            for (float x = 0; x < width - 3; x += 3.0f) {
+                int index = (int) ((x / width) * samples.length);
+                short sample = samples[index];
+                float y = centerY - ((sample / max) * (centerY - LAYOUT_MARGIN_VERTICAL));
+
+                // Add the initial points
+                if (lastX == -1) {
+                    path.lineTo(x, y);
+                } else {
+                    path.quadTo(lastX, lastY, x, y);
+                }
+
+                lastX = x;
+                lastY = y;
+            }
+        }
+
+        path.lineTo(width, centerY);
+        path.lineTo(lastX, height);
+        path.close();
+
     }
 
     private void createPlaybackWaveForm() {
@@ -198,7 +247,7 @@ public class WaveformView extends View {
 
         // For efficiency, we don't draw all of the samples in the buffer, but only the ones
         // that align with pixel boundaries.
-        if (width > 3) {
+        if (width > 10) {
             for (int x = origin.x; x < width; x += 10) {
                 short sample = extremes[x][0];
                 float y = centerY - ((sample / max) * (centerY - LAYOUT_MARGIN_VERTICAL));
@@ -236,7 +285,6 @@ public class WaveformView extends View {
     @SuppressLint("DefaultLocale")
     private void drawAxis(Canvas canvas, int width) {
         int seconds = mAudioLength / 1000;
-//        float xStep = width / (mAudioLength / 1000f);
         float textHeight = mTextPaint.getTextSize();
         float textWidth = mTextPaint.measureText("10.00");
         int secondStep = (int) (textWidth * seconds * 2) / width;
@@ -255,4 +303,22 @@ public class WaveformView extends View {
         setAudioLength(duration);
         setSamples(samples);
     }
+
+    private boolean clipView;
+
+    public void enableClipping(boolean clip) {
+        this.clipView = clip;
+    }
+
+    private Path clipPath;
+    private void createClipPath(){
+        clipPath = new Path();
+        clipPath.moveTo(origin.x, centerY);
+        clipPath.lineTo(origin.x, origin.y);
+        clipPath.lineTo(width, origin.y);
+        clipPath.lineTo(width, centerY);
+        clipPath.cubicTo(width, centerY, width / 2, height, origin.x, centerY);
+        clipPath.close();
+    }
+
 }
