@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
+import android.os.Build;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,7 +14,7 @@ import java.util.Locale;
  * Created by harsh_v on 10/27/16.
  */
 
-public class Extensions {
+public final class Extensions {
 
     public static boolean checkCameraHardware(Context context) {
         return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
@@ -55,4 +56,17 @@ public class Extensions {
     }
 
     public static final SimpleDateFormat formatHumanReadable = new SimpleDateFormat("EEE, d MMM yyyy hh:mm aaa", Locale.ENGLISH);
+
+    public static int getMaxSampleRate(Context context) {
+        android.media.AudioManager am = (android.media.AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            String value = am.getProperty(android.media.AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
+            try {
+                return Integer.valueOf(value);
+            } catch (NumberFormatException e) {
+                return 44100;
+            }
+        }
+        return 44100;
+    }
 }

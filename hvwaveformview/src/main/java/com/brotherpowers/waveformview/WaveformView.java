@@ -186,9 +186,9 @@ public class WaveformView extends View {
         if (mMode == MODE_PLAYBACK) {
             createPlaybackWaveForm();
         } else {
-//            createRecordingWaveForm();
+            createRecordingWaveForm();
 //            createClipPath();
-            createPlaybackWaveForm();
+//            createPlaybackWaveForm();
         }
 
         postInvalidate();
@@ -197,7 +197,7 @@ public class WaveformView extends View {
     }
 
 
-    private float dampningMultiplier;
+    private float dampningMultiplier = 1f;
 
     private void createRecordingWaveForm() {
         final float max = Short.MAX_VALUE;
@@ -235,10 +235,6 @@ public class WaveformView extends View {
         path.lineTo(lastX, height);
         path.close();
 
-        dampningMultiplier += fps;
-        if (dampningMultiplier > 1f) {
-            dampningMultiplier = 1f;
-        }
     }
 
     private void createPlaybackWaveForm() {
@@ -252,13 +248,13 @@ public class WaveformView extends View {
         // For efficiency, we don't draw all of the samples in the buffer, but only the ones
         // that align with pixel boundaries.
         if (width > 10) {
-            for (int x = origin.x; x < width; x += 10) {
+            for (int x = origin.x; x < width - 10; x += 10) {
 //                short sample = extremes[x][0];
 //                float y = centerY - ((sample / max) * (centerY - LAYOUT_MARGIN_VERTICAL));
 
                 float avgY = 0;
                 for (int j = x; j < x + 10; j++) {
-                    short sample = extremes[x][0];
+                    short sample = extremes[j][0];
                     avgY += centerY - ((sample / max) * (centerY - LAYOUT_MARGIN_VERTICAL));
                 }
                 avgY /= 10;
@@ -274,11 +270,11 @@ public class WaveformView extends View {
             path.moveTo(width, centerY);
 
             // draw minimums
-            for (int x = width - 1; x >= origin.x; x -= 10) {
+            for (int x = width - 1; x >= origin.x + 10; x -= 10) {
 
                 float avgY = 0;
-                for (int j = x; j < x + 10; j++) {
-                    short sample = extremes[x][0];
+                for (int j = x; j >= x - 10; j--) {
+                    short sample = extremes[j][0];
                     avgY += centerY + ((sample / max) * (centerY - LAYOUT_MARGIN_VERTICAL));
                 }
                 avgY /= 10;
