@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
@@ -37,11 +38,11 @@ import io.realm.RealmRecyclerViewAdapter;
 class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, ClickableViewHolder> {
     private final int VIEW_PLACEHOLDER = 0;
     private final int VIEW_ITEM = 1;
-    private Realm realm;
+    private Callback callback;
 
     public DataEntryListAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<DataEntry> data) {
         super(context, data, true);
-        realm = Realm.getDefaultInstance();
+        callback = (Callback) context;
     }
 
     @Override
@@ -58,12 +59,14 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
 
                 switch (holder_view.getId()) {
                     case R.id.action_delete:
-                        realm.executeTransaction(r -> {
+//                        callback.actionDelete(getItem(position).getId());
+                        /*realm.executeTransaction(r -> {
                             DataEntry managedObject = getItem(position);
                             if (managedObject != null) {
                                 managedObject.deleteFromRealm();
                             }
-                        });
+                        });*/
+                        // TODO: 11/23/16 replaced by swipe  listener
 
                         break;
                     case R.id.action_play:
@@ -160,8 +163,7 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
         AppCompatTextView labelTitle;
         @BindView(R.id.action_play)
         AppCompatImageButton buttonPlay;
-        @BindView(R.id.action_delete)
-        AppCompatImageButton buttonDelete;
+
 
         @BindView(R.id.wave_view)
         WaveformView waveformView;
@@ -173,7 +175,6 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
             super(itemView, vhClick);
 
             buttonPlay.setOnClickListener(this);
-            buttonDelete.setOnClickListener(this);
 
         }
 
@@ -204,10 +205,10 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
 
         @Override
         public void onBindViewHolder(ViewHolderImage holder, int position) {
-            Picasso.with(context)
-                    .load(R.drawable.harsh)
-                    .fit()
-                    .into(holder.imageView);
+//            Picasso.with(context)
+//                    .load(R.drawable.harsh)
+//                    .fit()
+//                    .into(holder.imageView);
         }
 
         @Override
@@ -226,4 +227,7 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
         }
     }
 
+    interface Callback{
+        void actionDelete(long id);
+    }
 }

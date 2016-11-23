@@ -1,15 +1,23 @@
 package com.brotherpowers.audiojournal.Main;
 
 import android.content.pm.PackageManager;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,11 +32,12 @@ import com.squareup.picasso.Picasso;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
+import io.realm.RealmResults;
 import io.realm.Sort;
 
 import static com.brotherpowers.audiojournal.Utils.Constants.REQ_REC_PERMISSION;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DataEntryListAdapter.Callback {
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
@@ -44,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+        ButterKnife.bind(getContext());
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -56,27 +65,112 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                RecordingActivity.start(MainActivity.this);
+                RecordingActivity.start(getContext());
             }
         });
 
 
-        LinearLayoutManager llm = new LinearLayoutManager(this);
+        LinearLayoutManager llm = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(llm);
         recyclerView.addItemDecoration(new RecyclerviewDecor());
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        dataEntryListAdapter = new DataEntryListAdapter(this, realm.where(DataEntry.class)
+        dataEntryListAdapter = new DataEntryListAdapter(getContext(), realm.where(DataEntry.class)
                 .findAllAsync()
                 .sort("created_at", Sort.DESCENDING)
         );
         recyclerView.setAdapter(dataEntryListAdapter);
 
-        Picasso.with(this)
+        Paint p = new Paint();
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                System.out.println("..... swiped ");
+                int position = viewHolder.getAdapterPosition();
+                DataEntry item = dataEntryListAdapter.getItem(position);
+                if (item != null) {
+                    actionDelete(item.getId());
+                }
+            }
+
+            @Override
+            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+
+                    View itemView = viewHolder.itemView;
+                    float height = (float) itemView.getBottom() - (float) itemView.getTop();
+                    float width = height / 3;
+                    Drawable icon;
+
+                    if (dX > 0) {
+                        p.setColor(Color.parseColor("#388E3C"));
+                        RectF background = new RectF((float) itemView.getLeft(), (float) itemView.getTop(), dX, (float) itemView.getBottom());
+                        c.drawRect(background, p);
+
+                        icon = ContextCompat.getDrawable(getContext(), R.drawable.ic_mode_edit);
+                        icon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC);
+
+
+                        int size = Math.max(icon.getIntrinsicWidth(), icon.getIntrinsicHeight());
+                        int right = (int) background.right - size;
+                        int left = right - size;
+                        int top = (int) background.centerY() - size / 2;
+                        int bottom = top + size;
+
+                        icon.setBounds(left, top, right, bottom);
+                        icon.draw(c);
+
+                    } else {
+
+                        /*// Stop at 1/4
+                        if (Math.abs(dX) > c.getWidth() / 4) {
+                            dX = -c.getWidth() / 4;
+                        }*/
+
+                        p.setColor(Color.parseColor("#D32F2F"));
+                        RectF background = new RectF((float) itemView.getRight() + dX, (float) itemView.getTop(), (float) itemView.getRight(), (float) itemView.getBottom());
+                        c.drawRect(background, p);
+
+                        icon = ContextCompat.getDrawable(getContext(), R.drawable.ic_delete);
+                        icon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+
+                        int size = Math.max(icon.getIntrinsicWidth(), icon.getIntrinsicHeight());
+                        int left = (int) background.left + size;
+                        int top = (int) background.centerY() - size / 2;
+                        int right = left + size;
+                        int bottom = top + size;
+
+                        icon.setBounds(left, top, right, bottom);
+                        icon.draw(c);
+
+
+                    }
+                }
+
+
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
+        });
+
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+
+        Picasso.with(getContext())
                 .load(R.drawable.b_2)
                 .fit()
                 .into(backImageView);
 
+    }
+
+    @NonNull
+    private MainActivity getContext() {
+        return MainActivity.this;
     }
 
     @Override
@@ -122,9 +216,9 @@ public class MainActivity extends AppCompatActivity {
                      * If we have all the permissions
                      */
                     if (global_result) {
-                        Toast.makeText(this, "You can record audio", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "You can record audio", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(this, "App doesn't have all the required permissions", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "App doesn't have all the required permissions", Toast.LENGTH_SHORT).show();
                     }
 
                 }
@@ -136,4 +230,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void actionDelete(long id) {
+        System.out.println(".....");
+        realm.executeTransaction(r -> {
+            RealmResults<DataEntry> dataEntries = r.where(DataEntry.class).equalTo("id", id).findAll();
+            if (!dataEntries.isEmpty()) {
+                for (DataEntry dataEntry : dataEntries) {
+                    dataEntry.deleteFromRealm();
+                    System.out.println("item removed");
+                }
+            }
+        });
+    }
 }
