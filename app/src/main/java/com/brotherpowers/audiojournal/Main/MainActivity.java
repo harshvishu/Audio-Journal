@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Realm.DataEntry;
+import com.brotherpowers.audiojournal.Recorder.AudioPlayer;
 import com.brotherpowers.audiojournal.Recorder.RecordingActivity;
 import com.brotherpowers.audiojournal.View.RecyclerviewDecor;
 import com.squareup.picasso.Picasso;
@@ -242,5 +243,14 @@ public class MainActivity extends AppCompatActivity implements DataEntryListAdap
                 }
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (AudioPlayer.sharedInstance.isPlaying()) {
+            AudioPlayer.sharedInstance.cancel();
+        } else {
+            super.onBackPressed();
+        }
     }
 }

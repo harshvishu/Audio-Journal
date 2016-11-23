@@ -31,9 +31,6 @@ public class RecordingActivity extends AppCompatActivity implements AudioRecorde
     @BindView(R.id.progress_view)
     ProgressView progressView;
 
-    @BindView(R.id.wave_view)
-    WaveformView waveformView;
-
 
     /**
      * static function to recordingState this activity
@@ -145,6 +142,6 @@ public class RecordingActivity extends AppCompatActivity implements AudioRecorde
 
     @Override
     public void onSamples(short[] samples, int length) {
-        waveformView.setSamples(samples, length);
+//        waveformView.setSamples(samples, length);
     }
 }

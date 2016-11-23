@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
-import android.support.v7.view.ActionMode;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
@@ -18,27 +17,27 @@ import android.widget.Toast;
 
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Realm.DataEntry;
+import com.brotherpowers.audiojournal.Recorder.AudioPlayer;
 import com.brotherpowers.audiojournal.Utils.Extensions;
 import com.brotherpowers.audiojournal.View.ClickableViewHolder;
 import com.brotherpowers.waveformview.Utils;
 import com.brotherpowers.waveformview.WaveformView;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
 import butterknife.BindView;
 import io.realm.OrderedRealmCollection;
-import io.realm.Realm;
 import io.realm.RealmRecyclerViewAdapter;
 
 /**
  * Created by harsh_v on 11/4/16.
  */
 
-class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, ClickableViewHolder> {
+class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, ClickableViewHolder> implements AudioPlayer.Listener {
     private final int VIEW_PLACEHOLDER = 0;
     private final int VIEW_ITEM = 1;
     private Callback callback;
+
 
     public DataEntryListAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<DataEntry> data) {
         super(context, data, true);
@@ -70,6 +69,22 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
 
                         break;
                     case R.id.action_play:
+                        DataEntry dataEntry = getItem(position);
+                        if (dataEntry != null) {
+                            try {
+
+                                File file = dataEntry.audioFile().file(context);
+                                if (file != null && file.exists()) {
+
+                                    AudioPlayer.sharedInstance.play(file, dataEntry.getId(), position, this);
+
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+
                         break;
                 }
             });
@@ -97,6 +112,8 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
 
             if (entry.audioFile() == null) {
                 viewHolderItem.buttonPlay.setImageResource(R.drawable.ic_mic);
+            } else if (AudioPlayer.sharedInstance.getId() == entry.getId()) {
+                viewHolderItem.buttonPlay.setImageResource(R.drawable.ic_stop);
             } else {
                 viewHolderItem.buttonPlay.setImageResource(R.drawable.ic_play);
             }
@@ -156,6 +173,21 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
      */
     private int getActualSizeOfData() {
         return super.getItemCount();
+    }
+
+    @Override
+    public void onStart(long id, int position) {
+        notifyItemChanged(position);
+    }
+
+    @Override
+    public void onStop(long id, int position) {
+        notifyItemChanged(position);
+    }
+
+    @Override
+    public void progress(float progress, long id, int position) {
+
     }
 
     static class ClickableViewHolderItem extends ClickableViewHolder implements View.OnClickListener {
@@ -227,7 +259,7 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
         }
     }
 
-    interface Callback{
+    interface Callback {
         void actionDelete(long id);
     }
 }

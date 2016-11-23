@@ -21,14 +21,6 @@
         android:layout_centerInParent="true"
         android:layout_margin="@dimen/spacing.16">
 
-        <com.brotherpowers.waveformview.WaveformView
-            android:layout_gravity="bottom"
-            android:visibility="gone"
-            android:id="@id/wave_view"
-            android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:layout_margin="@dimen/spacing.20"
-            app:mode="RECORDING"/>
 
         <com.brotherpowers.hvprogressview.ProgressView
             android:id="@+id/progress_view"

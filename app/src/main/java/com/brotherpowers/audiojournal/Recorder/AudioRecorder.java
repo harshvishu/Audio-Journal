@@ -111,8 +111,8 @@ class AudioRecorder {
         timerThread = createTimerThread(context);
         timerThread.start();
 
-        samplingThread = createSamplingThread();
-        samplingThread.start();
+//        samplingThread = createSamplingThread();
+//        samplingThread.start();
     }
 
 
