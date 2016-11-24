@@ -171,7 +171,7 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
      *
      * @return size of the actual data we are using for this adapter
      */
-    private int getActualSizeOfData() {
+    int getActualSizeOfData() {
         return super.getItemCount();
     }
 

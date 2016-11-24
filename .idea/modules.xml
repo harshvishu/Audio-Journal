@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/audio-journal-android.iml" filepath="$PROJECT_DIR$/audio-journal-android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/hvprogressview/hvprogressview.iml" filepath="$PROJECT_DIR$/hvprogressview/hvprogressview.iml" />
+      <module fileurl="file://$PROJECT_DIR$/hvwaveformview/hvwaveformview.iml" filepath="$PROJECT_DIR$/hvwaveformview/hvwaveformview.iml" />
+    </modules>
+  </component>
+</project>

@@ -10,4 +10,6 @@
     <color name="selection_gray">#F2F2F1</color>
     <color name="edit_buttons">#BDBDBD</color>
     <color name="card_color_alpha">#efff</color>
+
+    <color name="colorPrimary40">#404CAF50</color>
 </resources>

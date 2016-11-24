@@ -10,8 +10,7 @@
     android:layout_marginLeft="@dimen/spacing.8"
     android:layout_marginRight="@dimen/spacing.8"
     android:layout_marginTop="@dimen/spacing.8"
-    android:background="@color/colorPrimary"
-    android:minHeight="300dp"
+    android:minHeight="240dp"
     android:orientation="vertical">
 
     <com.brotherpowers.hvprogressview.ProgressView

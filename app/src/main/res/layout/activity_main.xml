@@ -27,6 +27,11 @@
             app:layout_scrollFlags="scroll|snap|exitUntilCollapsed">
 
             <!--<include layout="@layout/data_counters"/>-->
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/header_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"/>
 
             <include
                 layout="@layout/content_main_recorder"
@@ -38,7 +43,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
+                android:background="@null"
                 android:minHeight="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
