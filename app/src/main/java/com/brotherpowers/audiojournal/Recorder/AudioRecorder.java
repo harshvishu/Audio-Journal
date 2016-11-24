@@ -7,16 +7,11 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.brotherpowers.audiojournal.R;
-import com.brotherpowers.audiojournal.Realm.DataEntry;
-import com.brotherpowers.audiojournal.Realm.RFile;
 import com.brotherpowers.audiojournal.Utils.Extensions;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
-import com.brotherpowers.waveformview.Utils;
 
 import java.io.File;
 import java.io.IOException;
-
-import io.realm.Realm;
 
 /**
  * Created by harsh_v on 11/23/16.
@@ -25,9 +20,7 @@ import io.realm.Realm;
 class AudioRecorder {
     static final int MAX_AUDIO_LENGTH = 60_000; // 1 Minute
 
-    private final DataEntry dataEntry;
     private final File file;
-    private final RFile rFile;
     private STATE recordingState;
     private MediaRecorder mediaRecorder;
     private final int sampleRate;
@@ -38,26 +31,17 @@ class AudioRecorder {
 
     @SuppressWarnings("FieldCanBeLocal")
     private Thread timerThread;
-    @SuppressWarnings("FieldCanBeLocal")
-    private Thread samplingThread;
-    @SuppressWarnings("WeakerAccess")
-    short[] samples = new short[1024];
+//    private Thread samplingThread;
+//    short[] samples = new short[1024];
 
     /**
      * @param context  {@link Context}
      * @param duration Maximum duration for recording
      */
     AudioRecorder(Context context, int duration) {
-        this.dataEntry = new DataEntry();
-        dataEntry.setId(System.currentTimeMillis());
-        file = FileUtils.sharedInstance.getFile(FileUtils.Type.AUDIO, String.valueOf(dataEntry.getId()), context);
+        file = FileUtils.sharedInstance.getFile(FileUtils.Type.AUDIO, String.valueOf(System.currentTimeMillis()), context);
         sampleRate = Extensions.getMaxSampleRate(context);
         maxDuration = duration;
-
-        rFile = new RFile();
-        rFile.setFileType(FileUtils.Type.AUDIO)
-                .setId(dataEntry.getId())
-                .setFileName(file.getName());
 
         recordingState = STATE.PENDING;
     }
@@ -148,7 +132,7 @@ class AudioRecorder {
         };
     }
 
-    @NonNull
+    /*@NonNull
     private Thread createSamplingThread() {
         return new Thread() {
             @Override
@@ -177,7 +161,7 @@ class AudioRecorder {
 
             }
         };
-    }
+    }*/
 
 
     /**
@@ -200,15 +184,8 @@ class AudioRecorder {
             e.printStackTrace();
         }
 
-        Realm realm = Realm.getDefaultInstance();
-        dataEntry.setAudioFile(rFile);
-        realm.executeTransaction(r -> {
-            r.copyToRealmOrUpdate(dataEntry);
-            r.copyToRealmOrUpdate(rFile);
-        });
-
         if (listener != null) {
-            listener.onRecordingStop(recordingState);
+            listener.onRecordingStop(recordingState, file);
         }
     }
 
@@ -244,7 +221,7 @@ class AudioRecorder {
     interface Listener {
         void onRecordingStart(STATE recordingState);
 
-        void onRecordingStop(STATE recordingState);
+        void onRecordingStop(STATE recordingState, File file);
 
         void onProgress(float progress, String text);
 

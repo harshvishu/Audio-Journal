@@ -13,11 +13,16 @@ import android.support.v7.widget.AppCompatTextView;
 import android.view.animation.AnimationUtils;
 
 import com.brotherpowers.audiojournal.R;
+import com.brotherpowers.audiojournal.Realm.DataEntry;
+import com.brotherpowers.audiojournal.Realm.RFile;
+import com.brotherpowers.audiojournal.Utils.FileUtils;
 import com.brotherpowers.hvprogressview.ProgressView;
-import com.brotherpowers.waveformview.WaveformView;
+
+import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 
 import static com.brotherpowers.audiojournal.Recorder.AudioRecorder.MAX_AUDIO_LENGTH;
 import static com.brotherpowers.audiojournal.Utils.Constants.REQ_REC_PERMISSION;
@@ -85,8 +90,6 @@ public class RecordingActivity extends AppCompatActivity implements AudioRecorde
 
         if (savedInstanceState == null) {
             audioRecorder = new AudioRecorder(this, MAX_AUDIO_LENGTH);
-
-            System.out.println(">>>> new recorder");
         }
 
         audioRecorder.setListener(this);
@@ -112,11 +115,10 @@ public class RecordingActivity extends AppCompatActivity implements AudioRecorde
 
     @Override
     public void onBackPressed() {
-        if (audioRecorder.getRecordingState() == AudioRecorder.STATE.RECORDING){
+        if (audioRecorder.getRecordingState() == AudioRecorder.STATE.RECORDING) {
             audioRecorder.reset();
         }
         super.onBackPressed();
-
     }
 
     @Override
@@ -129,8 +131,27 @@ public class RecordingActivity extends AppCompatActivity implements AudioRecorde
     }
 
     @Override
-    public void onRecordingStop(AudioRecorder.STATE recordingState) {
+    public void onRecordingStop(AudioRecorder.STATE recordingState, File file) {
         this.recordingState = recordingState;
+
+        Realm realm = Realm.getDefaultInstance();
+
+        Number maxID = realm.where(DataEntry.class).sum("id");
+
+        DataEntry dataEntry = new DataEntry();
+        dataEntry.setId(maxID.longValue());
+
+        RFile rFile = new RFile();
+        rFile.setFileType(FileUtils.Type.AUDIO)
+                .setId(dataEntry.getId())
+                .setFileName(file.getName());
+
+        dataEntry.setAudioFile(rFile);
+        realm.executeTransaction(r -> {
+            r.copyToRealmOrUpdate(dataEntry);
+            r.copyToRealmOrUpdate(rFile);
+        });
+
 
         finish();
     }
