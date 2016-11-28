@@ -29,6 +29,7 @@ import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Realm.DataEntry;
 import com.brotherpowers.audiojournal.Recorder.AudioPlayer;
 import com.brotherpowers.audiojournal.Recorder.RecordingActivity;
+import com.brotherpowers.audiojournal.Utils.Extensions;
 import com.brotherpowers.audiojournal.View.RecyclerviewDecor;
 import com.squareup.picasso.Picasso;
 
@@ -84,7 +85,10 @@ public class MainActivity extends AppCompatActivity implements DataEntryListAdap
         );
         recyclerView.setAdapter(dataEntryListAdapter);
 
-        Paint p = new Paint();
+        Paint paintForSwipeView = new Paint();
+        paintForSwipeView.setStyle(Paint.Style.FILL_AND_STROKE);
+        paintForSwipeView.setStrokeCap(Paint.Cap.ROUND);
+
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
             @Override
@@ -94,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements DataEntryListAdap
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                System.out.println("..... swiped ");
+
                 int position = viewHolder.getAdapterPosition();
                 DataEntry item = dataEntryListAdapter.getItem(position);
                 if (item != null) {
@@ -110,14 +114,13 @@ public class MainActivity extends AppCompatActivity implements DataEntryListAdap
                     if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
 
                         View itemView = viewHolder.itemView;
-                        float height = (float) itemView.getBottom() - (float) itemView.getTop();
-                        float width = height / 3;
                         Drawable icon;
 
                         if (dX > 0) {
-                            p.setColor(Color.parseColor("#388E3C"));
+                            /*paintForSwipeView.setColor(ContextCompat.getColor(getContext(), R.color.colorSwipeRight));
                             RectF background = new RectF((float) itemView.getLeft(), (float) itemView.getTop(), dX, (float) itemView.getBottom());
-                            c.drawRect(background, p);
+
+                            c.drawRect(background, paintForSwipeView);
 
                             icon = ContextCompat.getDrawable(getContext(), R.drawable.ic_mode_edit);
                             icon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC);
@@ -130,31 +133,41 @@ public class MainActivity extends AppCompatActivity implements DataEntryListAdap
                             int bottom = top + size;
 
                             icon.setBounds(left, top, right, bottom);
-                            icon.draw(c);
+                            icon.draw(c);*/
 
                         } else {
 
-                        /*// Stop at 1/4
-                        if (Math.abs(dX) > c.getWidth() / 4) {
-                            dX = -c.getWidth() / 4;
-                        }*/
+                            int backgroundColor = ContextCompat.getColor(getContext(), R.color.colorSwipeLeft);
+                            int marginTop = getResources().getDimensionPixelSize(R.dimen.spacing_8);
+                            int marginBottom = getResources().getDimensionPixelSize(R.dimen.spacing_8);
 
-                            p.setColor(Color.parseColor("#D32F2F"));
-                            RectF background = new RectF((float) itemView.getRight() + dX, (float) itemView.getTop(), (float) itemView.getRight(), (float) itemView.getBottom());
-                            c.drawRect(background, p);
+                            paintForSwipeView.setColor(backgroundColor);
+                            RectF background = new RectF((float) itemView.getRight() + dX,
+                                    (float) itemView.getTop() + marginTop,
+                                    (float) itemView.getRight(),
+                                    (float) itemView.getBottom() - marginBottom);
 
-                            icon = ContextCompat.getDrawable(getContext(), R.drawable.ic_delete);
-                            icon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+                            c.drawRect(background, paintForSwipeView);
 
-                            int size = Math.max(icon.getIntrinsicWidth(), icon.getIntrinsicHeight());
-                            int left = (int) background.left + size;
-                            int top = (int) background.centerY() - size / 2;
-                            int right = left + size;
-                            int bottom = top + size;
+                            if (Math.abs(dX) > 10) {
+                                icon = ContextCompat.getDrawable(getContext(), R.drawable.ic_delete);
 
-                            icon.setBounds(left, top, right, bottom);
-                            icon.draw(c);
+                                float alphaFactor = Math.abs(dX) / 100;
+                                int iconColor = Extensions.adjustAlpha(Color.WHITE, alphaFactor, 0.1f, 1f);
+                                icon.setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
 
+                                int size = getResources().getDimensionPixelSize(R.dimen.button_32);
+                                int left = itemView.getWidth() - 2 * size;
+                                int top = (int) (background.centerY() - size / 2);
+                                int right = left + size;
+                                int bottom = top + size;
+
+                                icon.setBounds(left, top, right, bottom);
+
+                                if (right >= background.left) {
+                                    icon.draw(c);
+                                }
+                            }
 
                         }
                     }
@@ -170,15 +183,6 @@ public class MainActivity extends AppCompatActivity implements DataEntryListAdap
                 .fit()
                 .into(backImageView);
 
-//        Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.kqoeer);
-       /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            drawable.setColorFilter(Color.parseColor("#404CAF50"), PorterDuff.Mode.OVERLAY);
-        }*/
-//        headerImageView.setImageDrawable(drawable);
-
-      /*  Picasso.with(getContext())
-                .load(R.drawable.ic_niumpa)
-                .into(headerImageView);*/
 
     }
 

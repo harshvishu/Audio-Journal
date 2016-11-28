@@ -12,4 +12,7 @@
     <color name="card_color_alpha">#efff</color>
 
     <color name="colorPrimary40">#404CAF50</color>
+
+    <color name="colorSwipeLeft">#D32F2F</color>
+    <color name="colorSwipeRight">#388E3C</color>
 </resources>

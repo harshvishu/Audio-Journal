@@ -11,7 +11,6 @@ import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -25,11 +24,9 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.brotherpowers.audiojournal.R;
 import com.ragnarok.rxcamera.RxCamera;
-import com.ragnarok.rxcamera.RxCameraData;
 import com.ragnarok.rxcamera.config.CameraUtil;
 import com.ragnarok.rxcamera.config.RxCameraConfig;
 import com.ragnarok.rxcamera.request.Func;
@@ -41,7 +38,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
-import rx.Observer;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
@@ -122,6 +118,7 @@ public class CameraFragment extends Fragment implements AutoFitTextureView.Touch
 
         mTextureView.setTouchHandler(this);
 
+
     }
 
     @BindView(R.id.texture)
@@ -130,8 +127,12 @@ public class CameraFragment extends Fragment implements AutoFitTextureView.Touch
     @Override
     public void onResume() {
         super.onResume();
+
+
         if (mTextureView.isAvailable()) {
             openCamera(mTextureView.getWidth(), mTextureView.getHeight());
+
+
         } else {
             mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
         }
@@ -146,7 +147,6 @@ public class CameraFragment extends Fragment implements AutoFitTextureView.Touch
             return;
         }
 
-        System.out.println(">>>>>> PERMISSION GRANTED ");
 
         Point displaySize = new Point();
         getActivity().getWindowManager().getDefaultDisplay().getSize(displaySize);
@@ -197,7 +197,8 @@ public class CameraFragment extends Fragment implements AutoFitTextureView.Touch
             @Override
             public void onNext(final RxCamera rxCamera) {
                 camera = rxCamera;
-                Toast.makeText(getActivity(), "Now you can tap to focus", Toast.LENGTH_LONG).show();
+
+                actionOpenFlash();
             }
         });
     }
@@ -382,7 +383,7 @@ public class CameraFragment extends Fragment implements AutoFitTextureView.Touch
     }
 
     @Override
-    public boolean onTouch(MotionEvent event) {
+    public boolean onTextureViewTouch(MotionEvent event) {
         if (!checkCamera()) {
             return false;
         }
@@ -421,6 +422,14 @@ public class CameraFragment extends Fragment implements AutoFitTextureView.Touch
 
     interface CameraInterface {
         void onCapturePicture(Bitmap bitmap);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (checkCamera()) {
+            camera.closeCamera();
+        }
     }
 
 }

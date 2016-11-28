@@ -3,6 +3,7 @@ package com.brotherpowers.audiojournal.Utils;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.hardware.Camera;
 import android.os.Build;
 
@@ -68,5 +69,20 @@ public final class Extensions {
             }
         }
         return 44100;
+    }
+
+    public static int adjustAlpha(int color, float factor, float min, float max) {
+        if (factor < min) {
+            factor = min;
+        } else if (factor > max) {
+            factor = max;
+        }
+
+        int red = Color.red(color);
+        int green = Color.green(color);
+        int blue = Color.blue(color);
+        int alpha = Math.round(Color.alpha(color) * factor);
+
+        return Color.argb(alpha, red, green, blue);
     }
 }

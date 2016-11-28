@@ -79,13 +79,13 @@ public class AutoFitTextureView extends TextureView {
     }
 
     interface TouchHandler {
-        boolean onTouch(MotionEvent event);
+        boolean onTextureViewTouch(MotionEvent event);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (touchHandler != null) {
-            touchHandler.onTouch(event);
+            touchHandler.onTextureViewTouch(event);
         }
         return super.onTouchEvent(event);
     }
