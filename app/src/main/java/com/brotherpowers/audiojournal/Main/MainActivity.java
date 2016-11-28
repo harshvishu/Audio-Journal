@@ -1,6 +1,5 @@
 package com.brotherpowers.audiojournal.Main;
 
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -19,6 +18,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -66,12 +66,9 @@ public class MainActivity extends AppCompatActivity implements DataEntryListAdap
 //        getSupportActionBar().setIcon(R.mipmap.ic_launcher);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                RecordingActivity.start(getContext());
-            }
-        });
+        fab.setOnClickListener(view -> RecordingActivity.start(getContext()));
+
+        Log.v("MAIN", getString(R.string.file_provider_authority));
 
 
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
@@ -273,6 +270,6 @@ public class MainActivity extends AppCompatActivity implements DataEntryListAdap
 
     @Override
     public void actionCamera(long id, int position) {
-        startActivity(new Intent(this, CameraActivity.class));
+        CameraActivity.start(this, id);
     }
 }

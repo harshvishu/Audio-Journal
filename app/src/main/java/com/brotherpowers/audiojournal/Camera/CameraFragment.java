@@ -37,6 +37,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -136,6 +137,14 @@ public class CameraFragment extends Fragment implements AutoFitTextureView.Touch
         } else {
             mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
         }
+    }
+
+    /**
+     * Take picture
+     */
+    @OnClick(R.id.picture)
+    void capturePicture() {
+        requestTakePicture();
     }
 
     private void openCamera(int width, int height) {

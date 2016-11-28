@@ -136,10 +136,18 @@ public class RecordingActivity extends AppCompatActivity implements AudioRecorde
 
         Realm realm = Realm.getDefaultInstance();
 
-        Number maxID = realm.where(DataEntry.class).sum("id");
+
+        long newID = 0;
+        try {
+            Number maxID = realm.where(DataEntry.class).max("id");
+            newID = maxID.longValue();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+        newID += 1L;
 
         DataEntry dataEntry = new DataEntry();
-        dataEntry.setId(maxID.longValue() + 1L);
+        dataEntry.setId(newID);
 
         RFile rFile = new RFile();
         rFile.setFileType(FileUtils.Type.AUDIO)
