@@ -1,0 +1,47 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context="com.brotherpowers.audiojournal.Camera.CameraFragment">
+
+    <com.brotherpowers.audiojournal.Camera.AutoFitTextureView
+        android:id="@+id/texture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"/>
+
+    <FrameLayout
+        android:id="@+id/control"
+        android:layout_width="112dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:background="@color/colorPrimary">
+
+        <android.support.v7.widget.AppCompatImageButton
+            android:id="@+id/picture"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/picture"
+            app:srcCompat="@drawable/ic_photo_camera"/>
+
+        <android.support.v7.widget.AppCompatImageButton
+            android:id="@+id/flash"
+            style="@style/Base.Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center_horizontal"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="20dp"
+            android:text="@string/picture"
+            app:srcCompat="@drawable/ic_flash_on"/>
+
+    </FrameLayout>
+
+</RelativeLayout>

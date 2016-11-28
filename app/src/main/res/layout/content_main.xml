@@ -10,8 +10,41 @@
     tools:context="com.brotherpowers.audiojournal.Main.MainActivity"
     tools:showIn="@layout/activity_main">
 
+  <!--  <include
+        android:id="@+id/data_counter"
+        layout="@layout/data_counters"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"/>
+
+    <com.brotherpowers.hvprogressview.ProgressView
+        android:id="@+id/progress_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/data_counter"
+        app:endAngle="270"
+        app:progressColor="#ee3B3C3C"
+        app:progressWidth="2dp"
+        app:startAngle="-225"
+        app:sweepAngle="20"
+        app:textColor="#FFF"
+        app:textSize="36sp"/>
+
+    <Button
+        style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:layout_above="@id/data_counter"
+        android:layout_marginBottom="100dp"
+        android:text="Record"
+        android:textColor="#FFF"/>-->
+
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+  />
 </RelativeLayout>

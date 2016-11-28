@@ -1,14 +1,13 @@
 package com.brotherpowers.audiojournal.Main;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -25,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.brotherpowers.audiojournal.Camera.CameraActivity;
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Realm.DataEntry;
 import com.brotherpowers.audiojournal.Recorder.AudioPlayer;
@@ -50,9 +50,6 @@ public class MainActivity extends AppCompatActivity implements DataEntryListAdap
     @BindView(R.id.image)
     AppCompatImageView backImageView;
 
-    @BindView(R.id.header_image)
-    AppCompatImageView headerImageView;
-
     private final Realm realm = Realm.getDefaultInstance();
 
     @Override
@@ -65,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements DataEntryListAdap
         setSupportActionBar(toolbar);
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        getSupportActionBar().setIcon(R.mipmap.ic_launcher);
+//        getSupportActionBar().setIcon(R.mipmap.ic_launcher);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -101,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements DataEntryListAdap
                 int position = viewHolder.getAdapterPosition();
                 DataEntry item = dataEntryListAdapter.getItem(position);
                 if (item != null) {
-                    actionDelete(item.getId());
+                    actionDelete(item.getId(), position);
                 }
             }
 
@@ -173,11 +170,11 @@ public class MainActivity extends AppCompatActivity implements DataEntryListAdap
                 .fit()
                 .into(backImageView);
 
-        Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_niumpa);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+//        Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.kqoeer);
+       /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             drawable.setColorFilter(Color.parseColor("#404CAF50"), PorterDuff.Mode.OVERLAY);
-        }
-        headerImageView.setImageDrawable(drawable);
+        }*/
+//        headerImageView.setImageDrawable(drawable);
 
       /*  Picasso.with(getContext())
                 .load(R.drawable.ic_niumpa)
@@ -247,9 +244,18 @@ public class MainActivity extends AppCompatActivity implements DataEntryListAdap
         }
     }
 
+
     @Override
-    public void actionDelete(long id) {
-        System.out.println(".....");
+    public void onBackPressed() {
+        if (AudioPlayer.sharedInstance.isPlaying()) {
+            AudioPlayer.sharedInstance.cancel();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public void actionDelete(long id, int position) {
         realm.executeTransaction(r -> {
             RealmResults<DataEntry> dataEntries = r.where(DataEntry.class).equalTo("id", id).findAll();
             if (!dataEntries.isEmpty()) {
@@ -262,11 +268,7 @@ public class MainActivity extends AppCompatActivity implements DataEntryListAdap
     }
 
     @Override
-    public void onBackPressed() {
-        if (AudioPlayer.sharedInstance.isPlaying()) {
-            AudioPlayer.sharedInstance.cancel();
-        } else {
-            super.onBackPressed();
-        }
+    public void actionCamera(long id, int position) {
+        startActivity(new Intent(this, CameraActivity.class));
     }
 }

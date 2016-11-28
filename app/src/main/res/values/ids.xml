@@ -6,4 +6,5 @@
     <item name="action.capture" type="id"/>
     <item name="label.message" type="id"/>
     <item name="wave_view" type="id"/>
+    <item name="action.camera" type="id"/>
 </resources>

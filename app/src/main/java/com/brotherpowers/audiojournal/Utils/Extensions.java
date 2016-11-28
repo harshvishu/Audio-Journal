@@ -21,14 +21,14 @@ public final class Extensions {
     }
 
     /**
-     * A safe way to get an instance of the Camera object.
+     * A safe way to get an instance of the CameraFragment object.
      */
     public static Camera getCameraInstance() {
         Camera c = null;
         try {
-            c = Camera.open(); // attempt to get a Camera instance
+            c = Camera.open(); // attempt to get a CameraFragment instance
         } catch (Exception e) {
-            // Camera is not available (in use or does not exist)
+            // CameraFragment is not available (in use or does not exist)
         }
         return c; // returns null if camera is unavailable
     }

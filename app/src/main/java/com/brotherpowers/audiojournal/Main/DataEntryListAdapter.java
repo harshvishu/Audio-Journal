@@ -55,7 +55,7 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
         } else {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_data_entry_item, parent, false);
             clickableViewHolder = new ClickableViewHolderItem(view, (holder_view, position) -> {
-
+                DataEntry dataEntry = getItem(position);
                 switch (holder_view.getId()) {
                     case R.id.action_delete:
 //                        callback.actionDelete(getItem(position).getId());
@@ -69,7 +69,7 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
 
                         break;
                     case R.id.action_play:
-                        DataEntry dataEntry = getItem(position);
+
                         if (dataEntry != null) {
                             try {
 
@@ -83,8 +83,11 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
                                 e.printStackTrace();
                             }
                         }
+                    case R.id.action_camera:
+                        if (dataEntry != null) {
+                            callback.actionCamera(dataEntry.getId(), position);
 
-
+                        }
                         break;
                 }
             });
@@ -193,9 +196,12 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
     static class ClickableViewHolderItem extends ClickableViewHolder implements View.OnClickListener {
         @BindView(R.id.label_text)
         AppCompatTextView labelTitle;
+
         @BindView(R.id.action_play)
         AppCompatImageButton buttonPlay;
 
+        @BindView(R.id.action_camera)
+        AppCompatImageButton buttonCamera;
 
         @BindView(R.id.wave_view)
         WaveformView waveformView;
@@ -207,6 +213,7 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
             super(itemView, vhClick);
 
             buttonPlay.setOnClickListener(this);
+            buttonCamera.setOnClickListener(this);
 
         }
 
@@ -230,7 +237,7 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
         @Override
         public ViewHolderImage onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = inflater.inflate(R.layout.recycler_view_internal_image, parent, false);
-            return new ViewHolderImage(view, (view1, position) -> {
+            return new ViewHolderImage(view, (click_view, position) -> {
                 Toast.makeText(context, "click image: " + position, Toast.LENGTH_SHORT).show();
             });
         }
@@ -249,17 +256,25 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
         }
     }
 
-    class ViewHolderImage extends ClickableViewHolder {
+    class ViewHolderImage extends ClickableViewHolder implements View.OnClickListener {
         @BindView(R.id.image_view_internal)
         AppCompatImageView imageView;
 
-        public ViewHolderImage(View itemView, VhClick vhClick) {
+
+        ViewHolderImage(View itemView, VhClick vhClick) {
             super(itemView, vhClick);
-            itemView.setOnClickListener(view -> vhClick.onItemClick(view, getAdapterPosition()));
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            vhClick.onItemClick(view, getAdapterPosition());
         }
     }
 
     interface Callback {
-        void actionDelete(long id);
+        void actionDelete(long id, int position);
+
+        void actionCamera(long id, int position);
     }
 }

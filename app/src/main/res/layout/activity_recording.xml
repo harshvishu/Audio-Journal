@@ -17,8 +17,8 @@
 
     <com.brotherpowers.audiojournal.View.SquareLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerInParent="true"
+        android:layout_height="200dp"
+        android:layout_centerInParent="false"
         android:layout_margin="@dimen/spacing.16">
 
 
@@ -32,6 +32,11 @@
             app:textSize="36sp"/>
     </com.brotherpowers.audiojournal.View.SquareLayout>
 
+    <com.brotherpowers.hvsinewave.SineWaveView
+        app:strokeColor="#000"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@id/action.capture"

@@ -139,7 +139,7 @@ public class RecordingActivity extends AppCompatActivity implements AudioRecorde
         Number maxID = realm.where(DataEntry.class).sum("id");
 
         DataEntry dataEntry = new DataEntry();
-        dataEntry.setId(maxID.longValue());
+        dataEntry.setId(maxID.longValue() + 1L);
 
         RFile rFile = new RFile();
         rFile.setFileType(FileUtils.Type.AUDIO)
@@ -151,7 +151,6 @@ public class RecordingActivity extends AppCompatActivity implements AudioRecorde
             r.copyToRealmOrUpdate(dataEntry);
             r.copyToRealmOrUpdate(rFile);
         });
-
 
         finish();
     }
