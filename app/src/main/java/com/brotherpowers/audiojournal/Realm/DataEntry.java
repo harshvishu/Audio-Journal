@@ -2,6 +2,7 @@ package com.brotherpowers.audiojournal.Realm;
 
 import java.util.Date;
 
+import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -68,5 +69,17 @@ public class DataEntry extends RealmObject {
     public DataEntry setAttachments(RealmList<RFile> attachments) {
         this.attachments = attachments;
         return this;
+    }
+
+    public static long nexID(Realm realm){
+        long newID = 0;
+        try {
+            Number maxID = realm.where(DataEntry.class).max("id");
+            newID = maxID.longValue();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+        newID += 1L;
+        return newID;
     }
 }

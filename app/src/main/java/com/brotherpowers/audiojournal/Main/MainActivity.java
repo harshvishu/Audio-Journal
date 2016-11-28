@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -95,12 +96,21 @@ public class MainActivity extends AppCompatActivity implements DataEntryListAdap
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-
                 int position = viewHolder.getAdapterPosition();
-                DataEntry item = dataEntryListAdapter.getItem(position);
-                if (item != null) {
-                    actionDelete(item.getId(), position);
-                }
+                new AlertDialog.Builder(getContext(), R.style.AppTheme_AlertDialog)
+                        .setTitle("Delete")
+                        .setMessage("This action will remove all data related to this entry")
+                        .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
+
+                            DataEntry item = dataEntryListAdapter.getItem(position);
+                            if (item != null) {
+                                actionDelete(item.getId(), position);
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, (dialogInterface, i) -> dataEntryListAdapter.notifyItemChanged(position))
+                        .create().show();
+
+
             }
 
             @Override
@@ -165,7 +175,6 @@ public class MainActivity extends AppCompatActivity implements DataEntryListAdap
                                     icon.draw(c);
                                 }
                             }
-
                         }
                     }
                 }
@@ -266,6 +275,12 @@ public class MainActivity extends AppCompatActivity implements DataEntryListAdap
                 }
             }
         });
+
+        // Remove the cached Attachment adapter
+        dataEntryListAdapter.attachmentAdapter.remove(id);
+
+        // Remove Cached Samples
+        dataEntryListAdapter.cachedSamples.remove(id);
     }
 
     @Override

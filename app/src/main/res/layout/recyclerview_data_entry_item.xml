@@ -125,11 +125,10 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycler_view_internal"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="56dp"
                 android:layout_marginLeft="@dimen/spacing.20"
                 android:layout_marginRight="@dimen/spacing.20"
                 android:orientation="horizontal"
-                android:visibility="gone"
                 app:layoutManager="android.support.v7.widget.LinearLayoutManager"/>
 
         </LinearLayout>

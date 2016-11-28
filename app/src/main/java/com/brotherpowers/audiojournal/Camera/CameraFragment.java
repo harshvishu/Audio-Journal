@@ -207,7 +207,7 @@ public class CameraFragment extends Fragment implements AutoFitTextureView.Touch
             public void onNext(final RxCamera rxCamera) {
                 camera = rxCamera;
 
-                actionOpenFlash();
+//                actionOpenFlash();
             }
         });
     }

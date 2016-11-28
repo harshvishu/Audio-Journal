@@ -6,9 +6,11 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
+import android.support.v4.util.LongSparseArray;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,17 +19,21 @@ import android.widget.Toast;
 
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Realm.DataEntry;
+import com.brotherpowers.audiojournal.Realm.RFile;
 import com.brotherpowers.audiojournal.Recorder.AudioPlayer;
 import com.brotherpowers.audiojournal.Utils.Extensions;
+import com.brotherpowers.audiojournal.Utils.FileUtils;
 import com.brotherpowers.audiojournal.View.ClickableViewHolder;
 import com.brotherpowers.waveformview.Utils;
 import com.brotherpowers.waveformview.WaveformView;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
 import butterknife.BindView;
 import io.realm.OrderedRealmCollection;
 import io.realm.RealmRecyclerViewAdapter;
+import io.realm.RealmResults;
 
 /**
  * Created by harsh_v on 11/4/16.
@@ -37,11 +43,15 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
     private final int VIEW_PLACEHOLDER = 0;
     private final int VIEW_ITEM = 1;
     private Callback callback;
+    final LongSparseArray<ImageAdapter> attachmentAdapter;
+    final LongSparseArray<short[]> cachedSamples;
 
 
-    public DataEntryListAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<DataEntry> data) {
+    DataEntryListAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<DataEntry> data) {
         super(context, data, true);
         callback = (Callback) context;
+        attachmentAdapter = new LongSparseArray<>();
+        cachedSamples = new LongSparseArray<>();
     }
 
     @Override
@@ -103,6 +113,7 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
             // Do Nothing
         } else {
             DataEntry entry = getItem(position);
+            long id = entry.getId();
 
             if (entry == null || !entry.isLoaded() || !entry.isValid()) {
                 return;
@@ -125,7 +136,13 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
             if (audioFile != null && audioFile.exists()) {
 
                 try {
-                    short[] samples = Utils.getAudioSamples(audioFile);
+                    final short[] samples;
+                    if (cachedSamples.get(id) != null) {
+                        samples = cachedSamples.get(id);
+                    } else {
+                        samples = Utils.getAudioSamples(audioFile);
+                    }
+
                     MediaMetadataRetriever mmr = new MediaMetadataRetriever();
                     Uri uri = FileProvider.getUriForFile(context, context.getString(R.string.file_provider_authority), audioFile);
 
@@ -142,9 +159,27 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
                 System.out.println(">>>> null file");
             }
 
+            RealmResults<RFile> images = entry.getAttachments()
+                    .where()
+                    .equalTo("fileType", FileUtils.Type.IMAGE.value)
+                    .findAll();
 
-//            viewHolderItem.recyclerViewInternal.setAdapter(new ImageAdapter());
-//            viewHolderItem.recyclerViewInternal.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+            if (images.isEmpty()) {
+                viewHolderItem.recyclerViewInternal.setVisibility(View.GONE);
+            } else {
+                final ImageAdapter imageAdapter;
+                if (attachmentAdapter.get(entry.getId()) == null) {
+                    imageAdapter = new ImageAdapter(context, images);
+                    attachmentAdapter.append(entry.getId(), imageAdapter);
+                } else {
+                    imageAdapter = attachmentAdapter.get(entry.getId());
+                    imageAdapter.updateData(images);
+                }
+
+                viewHolderItem.recyclerViewInternal.setVisibility(View.VISIBLE);
+                viewHolderItem.recyclerViewInternal.setAdapter(imageAdapter);
+                viewHolderItem.recyclerViewInternal.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+            }
 
         }
 
@@ -232,7 +267,14 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
         }
     }
 
-    private class ImageAdapter extends RecyclerView.Adapter<ViewHolderImage> {
+    private class ImageAdapter extends RealmRecyclerViewAdapter<RFile, ViewHolderImage> {
+        public ImageAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<RFile> data) {
+            super(context, data, true);
+        }
+
+        /*public ImageAdapter(RealmResults<RFile> images) {
+
+        }*/
 
         @Override
         public ViewHolderImage onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -244,16 +286,14 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
 
         @Override
         public void onBindViewHolder(ViewHolderImage holder, int position) {
-//            Picasso.with(context)
-//                    .load(R.drawable.harsh)
-//                    .fit()
-//                    .into(holder.imageView);
+            RFile rFile = getData().get(position);
+
+            Picasso.with(context)
+                    .load(rFile.file(context))
+                    .fit()
+                    .into(holder.imageView);
         }
 
-        @Override
-        public int getItemCount() {
-            return 20;
-        }
     }
 
     class ViewHolderImage extends ClickableViewHolder implements View.OnClickListener {

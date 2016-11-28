@@ -69,8 +69,10 @@ public class CameraActivity extends AppCompatActivity implements CameraFragment.
             return;
         }
 
+        long newID = DataEntry.nexID(realm);
 
         RFile rFile = new RFile();
+        rFile.setId(newID);
         rFile.setFileType(FileUtils.Type.IMAGE);
         rFile.setFileName(file.getName());
 

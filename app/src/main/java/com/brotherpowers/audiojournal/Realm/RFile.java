@@ -26,7 +26,7 @@ public class RFile extends RealmObject {
     private int fileType;
 
 
-    public String getFile_name() {
+    public String getFileName() {
         return file_name;
     }
 
@@ -59,6 +59,7 @@ public class RFile extends RealmObject {
         this.id = id;
         return this;
     }
+
     public File file(Context context) {
         if (TextUtils.isEmpty(file_name)) {
             return null;
