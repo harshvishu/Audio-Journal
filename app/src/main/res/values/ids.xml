@@ -7,4 +7,5 @@
     <item name="label.message" type="id"/>
     <item name="wave_view" type="id"/>
     <item name="action.camera" type="id"/>
+    <item name="action.reminder" type="id"/>
 </resources>

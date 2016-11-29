@@ -102,6 +102,7 @@
                     app:srcCompat="@drawable/ic_camera"/>
 
                 <android.support.v7.widget.AppCompatImageButton
+                    android:id="@id/action.reminder"
                     style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
                     android:layout_width="@dimen/button_32"
                     android:layout_height="@dimen/button_32"

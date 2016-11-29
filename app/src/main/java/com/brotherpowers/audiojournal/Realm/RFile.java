@@ -7,6 +7,7 @@ import com.brotherpowers.audiojournal.Utils.FileUtils;
 
 import java.io.File;
 
+import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -14,7 +15,7 @@ import io.realm.annotations.PrimaryKey;
  * Created by harsh_v on 11/4/16.
  */
 
-public class RFile extends RealmObject {
+public class RFile extends RealmObject implements Essentials {
     @PrimaryKey
     private long id;
 
@@ -60,11 +61,32 @@ public class RFile extends RealmObject {
         return this;
     }
 
+
+
     public File file(Context context) {
         if (TextUtils.isEmpty(file_name)) {
             return null;
         }
         return FileUtils.sharedInstance.getFile(fileType(), file_name, context);
+    }
+
+    @Override
+    public long nexID(Realm realm) {
+        long newID = 0;
+        try {
+            Number maxID = realm.where(getClass()).max("id");
+            newID = maxID.longValue();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+        newID += 1L;
+        return newID;
+    }
+
+    @Override
+    public RFile generateId(Realm realm){
+        setId(nexID(realm));
+        return this;
     }
 
 }

@@ -21,6 +21,7 @@ import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Realm.DataEntry;
 import com.brotherpowers.audiojournal.Realm.RFile;
 import com.brotherpowers.audiojournal.Recorder.AudioPlayer;
+import com.brotherpowers.audiojournal.Reminder.Alarm;
 import com.brotherpowers.audiojournal.Utils.Extensions;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
 import com.brotherpowers.audiojournal.View.ClickableViewHolder;
@@ -43,13 +44,13 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
     private final int VIEW_PLACEHOLDER = 0;
     private final int VIEW_ITEM = 1;
     private Callback callback;
-    final LongSparseArray<ImageAdapter> attachmentAdapter;
+    final LongSparseArray<AttachmentAdapter> attachmentAdapter;
     final LongSparseArray<short[]> cachedSamples;
 
 
-    DataEntryListAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<DataEntry> data) {
+    DataEntryListAdapter(@NonNull Context context, Callback callback, @Nullable OrderedRealmCollection<DataEntry> data) {
         super(context, data, true);
-        callback = (Callback) context;
+        this.callback = callback;
         attachmentAdapter = new LongSparseArray<>();
         cachedSamples = new LongSparseArray<>();
     }
@@ -98,6 +99,10 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
                             callback.actionCamera(dataEntry.getId(), position);
 
                         }
+                        break;
+                    case R.id.action_reminder:
+                        // TODO: 11/29/16 test code
+                        Alarm.set(context, dataEntry.getId());
                         break;
                 }
             });
@@ -167,17 +172,17 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
             if (images.isEmpty()) {
                 viewHolderItem.recyclerViewInternal.setVisibility(View.GONE);
             } else {
-                final ImageAdapter imageAdapter;
-                if (attachmentAdapter.get(entry.getId()) == null) {
-                    imageAdapter = new ImageAdapter(context, images);
-                    attachmentAdapter.append(entry.getId(), imageAdapter);
+                final AttachmentAdapter attachmentAdapter;
+                if (this.attachmentAdapter.get(entry.getId()) == null) {
+                    attachmentAdapter = new AttachmentAdapter(context, images);
+                    this.attachmentAdapter.append(entry.getId(), attachmentAdapter);
                 } else {
-                    imageAdapter = attachmentAdapter.get(entry.getId());
-                    imageAdapter.updateData(images);
+                    attachmentAdapter = this.attachmentAdapter.get(entry.getId());
+                    attachmentAdapter.updateData(images);
                 }
 
                 viewHolderItem.recyclerViewInternal.setVisibility(View.VISIBLE);
-                viewHolderItem.recyclerViewInternal.setAdapter(imageAdapter);
+                viewHolderItem.recyclerViewInternal.setAdapter(attachmentAdapter);
                 viewHolderItem.recyclerViewInternal.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
             }
 
@@ -209,7 +214,7 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
      *
      * @return size of the actual data we are using for this adapter
      */
-    int getActualSizeOfData() {
+    public int getActualSizeOfData() {
         return super.getItemCount();
     }
 
@@ -238,6 +243,9 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
         @BindView(R.id.action_camera)
         AppCompatImageButton buttonCamera;
 
+        @BindView(R.id.action_reminder)
+        AppCompatImageButton buttonReminder;
+
         @BindView(R.id.wave_view)
         WaveformView waveformView;
 
@@ -249,7 +257,7 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
 
             buttonPlay.setOnClickListener(this);
             buttonCamera.setOnClickListener(this);
-
+            buttonReminder.setOnClickListener(this);
         }
 
 
@@ -267,12 +275,12 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
         }
     }
 
-    private class ImageAdapter extends RealmRecyclerViewAdapter<RFile, ViewHolderImage> {
-        public ImageAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<RFile> data) {
+    private class AttachmentAdapter extends RealmRecyclerViewAdapter<RFile, ViewHolderImage> {
+        AttachmentAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<RFile> data) {
             super(context, data, true);
         }
 
-        /*public ImageAdapter(RealmResults<RFile> images) {
+        /*public AttachmentAdapter(RealmResults<RFile> images) {
 
         }*/
 
@@ -312,7 +320,7 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
         }
     }
 
-    interface Callback {
+    public interface Callback {
         void actionDelete(long id, int position);
 
         void actionCamera(long id, int position);

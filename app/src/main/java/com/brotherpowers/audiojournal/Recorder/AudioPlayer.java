@@ -9,7 +9,7 @@ import java.io.IOException;
  * Created by harsh_v on 11/23/16.
  */
 
-public class AudioPlayer {
+public class AudioPlayer  {
     public static AudioPlayer sharedInstance = new AudioPlayer();
 
     private MediaPlayer mediaPlayer;
@@ -20,6 +20,10 @@ public class AudioPlayer {
 
     //Private constructor
     private AudioPlayer() {
+    }
+
+    public void play(File file, Listener listener) {
+        play(file, 0x999L, 0x999, listener);
     }
 
     public void play(File file, long id, int position, Listener listener) {

@@ -11,7 +11,7 @@ import io.realm.annotations.PrimaryKey;
  * Created by harsh_v on 11/4/16.
  */
 
-public class DataEntry extends RealmObject {
+public class DataEntry extends RealmObject implements Essentials {
 
     @PrimaryKey
     private long id;
@@ -71,15 +71,23 @@ public class DataEntry extends RealmObject {
         return this;
     }
 
-    public static long nexID(Realm realm){
+
+    @Override
+    public long nexID(Realm realm) {
         long newID = 0;
         try {
-            Number maxID = realm.where(DataEntry.class).max("id");
+            Number maxID = realm.where(getClass()).max("id");
             newID = maxID.longValue();
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
         newID += 1L;
         return newID;
+    }
+
+    @Override
+    public DataEntry generateId(Realm realm) {
+        setId(nexID(realm));
+        return this;
     }
 }

@@ -1,5 +1,6 @@
 package com.brotherpowers.audiojournal.Camera;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -20,7 +21,7 @@ import io.realm.Realm;
 public class CameraActivity extends AppCompatActivity implements CameraFragment.CameraInterface {
     private static final String ARG_ID = "ARG_ID";
 
-    public static void start(AppCompatActivity parentActivity, long id) {
+    public static void start(Activity parentActivity, long id) {
         Intent intent = new Intent(parentActivity, CameraActivity.class);
         intent.putExtra(ARG_ID, id);
         parentActivity.startActivity(intent);
@@ -69,10 +70,9 @@ public class CameraActivity extends AppCompatActivity implements CameraFragment.
             return;
         }
 
-        long newID = DataEntry.nexID(realm);
 
         RFile rFile = new RFile();
-        rFile.setId(newID);
+        rFile.generateId(realm);
         rFile.setFileType(FileUtils.Type.IMAGE);
         rFile.setFileName(file.getName());
 
