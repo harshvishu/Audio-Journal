@@ -41,7 +41,6 @@ import io.realm.Realm;
  */
 public class ReminderNotification extends Service {
     private static final String ACTION_PLAY = "com.brotherpowers.audiojournal.Reminder.action.PLAY";
-
     private static final String EXTRA_JSON = "com.brotherpowers.audiojournal.Reminder.extra.JSON";
 
 

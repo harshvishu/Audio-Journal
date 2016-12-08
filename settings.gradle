@@ -1,1 +1,1 @@
-include ':app', ':hvwaveformview', ':hvprogressview', ':hvsinewave'
+include ':app', ':hvwaveformview', ':hvprogressview', ':hvsinewave', ':hvcamera'

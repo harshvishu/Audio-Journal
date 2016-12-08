@@ -1,11 +1,11 @@
 <fragment
     android:id="@+id/fragment_camera"
-    android:name="com.brotherpowers.audiojournal.Camera.CameraFragment"
-    class="com.brotherpowers.audiojournal.Camera.CameraFragment"
+    android:name="com.brotherpowers.hvcamera.CameraOld.CameraOld"
+    class="com.brotherpowers.hvcamera.CameraOld.CameraOld"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:layout="@layout/fragment_camera"/>
+    tools:layout="@layout/fragment_hvcamera"/>

@@ -11,6 +11,8 @@ import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Realm.DataEntry;
 import com.brotherpowers.audiojournal.Realm.RFile;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
+import com.brotherpowers.hvcamera.CameraFragmentInteractionInterface;
+import com.brotherpowers.hvcamera.CameraOld.CameraOld;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,7 +20,7 @@ import java.io.IOException;
 
 import io.realm.Realm;
 
-public class CameraActivity extends AppCompatActivity implements CameraFragment.CameraInterface {
+public class CameraActivity extends AppCompatActivity implements CameraFragment.CameraInterface, CameraFragmentInteractionInterface {
     private static final String ARG_ID = "ARG_ID";
 
     public static void start(Activity parentActivity, long id) {
@@ -27,7 +29,7 @@ public class CameraActivity extends AppCompatActivity implements CameraFragment.
         parentActivity.startActivity(intent);
     }
 
-    private CameraFragment cameraFragment;
+    private CameraOld cameraFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +41,8 @@ public class CameraActivity extends AppCompatActivity implements CameraFragment.
             throw new RuntimeException("Invalid ID");
         }
 
-        cameraFragment = (CameraFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_camera);
-        cameraFragment.setCameraInterface(this);
+        cameraFragment = (CameraOld) getSupportFragmentManager().findFragmentById(R.id.fragment_camera);
+//        cameraFragment.setCameraInterface(this);
 
     }
 
@@ -84,4 +86,14 @@ public class CameraActivity extends AppCompatActivity implements CameraFragment.
         Toast.makeText(this, "Added Image", Toast.LENGTH_SHORT).show();
     }
 
+
+    @Override
+    public void onImageCaptured(byte[] data, int angle) {
+
+    }
+
+    @Override
+    public void onImageCaptured(Bitmap bitmap) {
+        onCapturePicture(bitmap);
+    }
 }
