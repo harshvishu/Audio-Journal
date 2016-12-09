@@ -1,9 +1,11 @@
 package com.brotherpowers.audiojournal.Camera;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
@@ -13,6 +15,7 @@ import com.brotherpowers.audiojournal.Realm.RFile;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
 import com.brotherpowers.hvcamera.CameraFragmentInteractionInterface;
 import com.brotherpowers.hvcamera.CameraOld.CameraOld;
+import com.brotherpowers.hvcamera.HVBaseFragment;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,7 +32,7 @@ public class CameraActivity extends AppCompatActivity implements CameraFragment.
         parentActivity.startActivity(intent);
     }
 
-    private CameraOld cameraFragment;
+    private HVBaseFragment cameraFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +44,7 @@ public class CameraActivity extends AppCompatActivity implements CameraFragment.
             throw new RuntimeException("Invalid ID");
         }
 
-        cameraFragment = (CameraOld) getSupportFragmentManager().findFragmentById(R.id.fragment_camera);
+        cameraFragment = (HVBaseFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_camera);
 //        cameraFragment.setCameraInterface(this);
 
     }

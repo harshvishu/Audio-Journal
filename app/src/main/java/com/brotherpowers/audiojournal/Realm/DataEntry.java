@@ -77,7 +77,7 @@ public class DataEntry extends RealmObject implements Essentials {
         long newID = 0;
         try {
             Number maxID = realm.where(getClass()).max("id");
-            newID = maxID.longValue();
+            newID = maxID == null ? 0 : maxID.longValue();
         } catch (NullPointerException e) {
             e.printStackTrace();
         }

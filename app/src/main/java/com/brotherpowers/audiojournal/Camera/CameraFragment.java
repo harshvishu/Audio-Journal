@@ -102,7 +102,7 @@ public class CameraFragment extends Fragment implements AutoFitTextureView.Touch
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_hvcamera, container, false);
+        View view = inflater.inflate(R.layout.fragment_camera, container, false);
         ButterKnife.bind(this, view);
 
         return view;
@@ -113,7 +113,6 @@ public class CameraFragment extends Fragment implements AutoFitTextureView.Touch
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        System.out.println(">>>>>> VIEW CREATED ");
 
 //        openCamera(MAX_PREVIEW_WIDTH, MAX_PREVIEW_WIDTH);
 
@@ -151,7 +150,6 @@ public class CameraFragment extends Fragment implements AutoFitTextureView.Touch
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            System.out.println(">>>> REQ PERMISSION");
             requestCameraPermission();
             return;
         }
