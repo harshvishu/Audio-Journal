@@ -7,8 +7,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.Point;
@@ -24,9 +22,10 @@ import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
-import android.media.Image;
 import android.media.ImageReader;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -40,7 +39,6 @@ import android.widget.Toast;
 import com.brotherpowers.hvcamera.HVBaseFragment;
 import com.brotherpowers.hvcamera.R;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -93,6 +91,7 @@ public class Camera21 extends HVBaseFragment {
     private String mCameraId;
     private CameraCaptureSession mCaptureSession;
     private CameraDevice mCameraDevice;
+
     private Size mPreviewSize;
     private CaptureRequest.Builder mPreviewRequestBuilder;
     private CaptureRequest mPreviewRequest;
@@ -101,7 +100,7 @@ public class Camera21 extends HVBaseFragment {
     private boolean mFlashSupported;                            // Whether the current camera device supports Flash or not.
     private int mSensorOrientation;                             // Orientation of the camera sensor
     private ImageReader mImageReader;                           // An {@link ImageReader} that handles still image capture.
-
+    private FlashMode flashMode = FlashMode.AUTO;
 
     /**
      * {@link TextureView.SurfaceTextureListener} handles several lifecycle events on a
@@ -171,24 +170,14 @@ public class Camera21 extends HVBaseFragment {
 
         @Override
         public void onImageAvailable(final ImageReader reader) {
-            final Image image = reader.acquireNextImage();
+
             mBackgroundHandler.post(new Runnable() {
                 @Override
                 public void run() {
 
-                    final Image.Plane[] planes = image.getPlanes();
-                    final ByteBuffer buffer = planes[0].getBuffer();
-                    final byte[] data = new byte[buffer.capacity()];
-                    buffer.get(data);
-                    final Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-
-                    interactionInterface.onImageCaptured(bitmap);
-                    // TODO: 12/9/16 implement here
-
-                    image.close();
+                    interactionInterface.onImageCaptured(reader.acquireNextImage());
                 }
             });
-
         }
 
     };
@@ -417,6 +406,7 @@ public class Camera21 extends HVBaseFragment {
                 Size largest = Collections.max(
                         Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),
                         new CompareSizesByArea());
+
                 mImageReader = ImageReader.newInstance(largest.getWidth(), largest.getHeight(),
                         ImageFormat.JPEG, /*maxImages*/2);
                 mImageReader.setOnImageAvailableListener(
@@ -427,6 +417,8 @@ public class Camera21 extends HVBaseFragment {
                 int displayRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
                 //noinspection ConstantConditions
                 mSensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+
+
                 boolean swappedDimensions = false;
                 switch (displayRotation) {
                     case Surface.ROTATION_0:
@@ -475,15 +467,14 @@ public class Camera21 extends HVBaseFragment {
                         maxPreviewHeight, largest);
 
                 // We fit the aspect ratio of TextureView to the size of preview we picked.
-//                int orientation = getResources().getConfiguration().orientation;
-
-                /*if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                int orientation = getResources().getConfiguration().orientation;
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                     textureView.setAspectRatio(
                             mPreviewSize.getWidth(), mPreviewSize.getHeight());
                 } else {
                     textureView.setAspectRatio(
                             mPreviewSize.getHeight(), mPreviewSize.getWidth());
-                }*/
+                }
 
                 // Check if the flash is supported.
                 Boolean available = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
@@ -510,15 +501,18 @@ public class Camera21 extends HVBaseFragment {
             requestCameraPermission();
             return;
         }
+
         setUpCameraOutputs(width, height);
         configureTransform(width, height);
         Activity activity = getActivity();
+
         CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
         try {
             if (!mCameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Time out waiting to lock camera opening.");
             }
             manager.openCamera(mCameraId, mStateCallback, mBackgroundHandler);
+
         } catch (CameraAccessException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -588,7 +582,7 @@ public class Camera21 extends HVBaseFragment {
                                 mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE,
                                         CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
                                 // Flash is automatically enabled when necessary.
-                                setAutoFlash(mPreviewRequestBuilder);
+                                setFlashMode(mPreviewRequestBuilder);
 
                                 // Finally, we start displaying the camera preview.
                                 mPreviewRequest = mPreviewRequestBuilder.build();
@@ -704,7 +698,8 @@ public class Camera21 extends HVBaseFragment {
             // Use the same AE and AF modes as the preview.
             captureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
                     CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
-            setAutoFlash(captureBuilder);
+
+            setFlashMode(captureBuilder);
 
             // Orientation
             int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
@@ -754,7 +749,7 @@ public class Camera21 extends HVBaseFragment {
             // Reset the auto-focus trigger
             mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
                     CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
-            setAutoFlash(mPreviewRequestBuilder);
+            setFlashMode(mPreviewRequestBuilder);
             mCaptureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
                     mBackgroundHandler);
             // After this, the camera will go back to the normal state of preview.
@@ -766,10 +761,41 @@ public class Camera21 extends HVBaseFragment {
         }
     }
 
-    private void setAutoFlash(CaptureRequest.Builder requestBuilder) {
+    private void setFlashMode(CaptureRequest.Builder requestBuilder) {
         if (mFlashSupported) {
-            requestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
-                    CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+            switch (flashMode) {
+                case AUTO:
+                    requestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
+                            CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+                    break;
+                case ON:
+                    requestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
+                            CaptureRequest.CONTROL_AE_MODE_ON);
+                    break;
+                case OFF:
+                    requestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
+                            CaptureRequest.CONTROL_AE_MODE_OFF);
+                    break;
+            }
+
+            // Set flash button resource
+            new Handler(Looper.getMainLooper())
+                    .post(new Runnable() {
+                        @Override
+                        public void run() {
+                            switch (flashMode) {
+                                case AUTO:
+                                    buttonFlash.setImageResource(R.drawable.ic_flash_auto);
+                                    break;
+                                case ON:
+                                    buttonFlash.setImageResource(R.drawable.ic_flash_on);
+                                    break;
+                                case OFF:
+                                    buttonFlash.setImageResource(R.drawable.ic_flash_off);
+                                    break;
+                            }
+                        }
+                    });
         }
     }
 
@@ -780,6 +806,24 @@ public class Camera21 extends HVBaseFragment {
 
         if (id == R.id.picture) {
             takePicture();
+        } else if (id == R.id.flash) {
+            switch (flashMode) {
+                case AUTO:
+                    flashMode = FlashMode.ON;
+
+                    break;
+                case ON:
+                    flashMode = FlashMode.OFF;
+                    break;
+                case OFF:
+                    flashMode = FlashMode.AUTO;
+                    break;
+            }
+            setFlashMode(mPreviewRequestBuilder);
         }
+    }
+
+    enum FlashMode {
+        AUTO, ON, OFF;
     }
 }

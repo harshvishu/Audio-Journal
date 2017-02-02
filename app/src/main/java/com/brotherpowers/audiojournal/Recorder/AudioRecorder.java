@@ -6,19 +6,19 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Utils.Extensions;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
 /**
  * Created by harsh_v on 11/23/16.
  */
 
 class AudioRecorder {
-    static final int MAX_AUDIO_LENGTH = 60_000; // 1 Minute
+    static final int MAX_AUDIO_LENGTH = 60_000 * 2; // 1 Minute
 
     private final File file;
     private STATE recordingState;
@@ -110,15 +110,22 @@ class AudioRecorder {
 
                 while (recordingState == STATE.RECORDING) {
 
-                    float elapsedTime = (float) (System.currentTimeMillis() - startTime) / 1000f;
-                    String text = context.getString(R.string.Sec, elapsedTime);
+                    float elapsedTime = (float) (System.currentTimeMillis() - startTime);
+                    int min = (int) (elapsedTime / (1000 * 60));
+                    int sec = (int) (elapsedTime / 1000);
+                    int mil = (int) (elapsedTime % 100);
+
+                    String s = String.format(Locale.getDefault(), "%02d:%02d:%02d", min, sec, mil);
+
+                   /* String text = context.getString(R.string.Sec, elapsedTime);
                     if (elapsedTime > 60f) {
                         text = context.getString(R.string.Min, 1);
-                    }
-                    float progress = 100 * elapsedTime / 60;
+                    }*/
+
+                    float progress = 100 * (elapsedTime / MAX_AUDIO_LENGTH);
 
                     if (listener != null) {
-                        listener.onProgress(progress, text);
+                        listener.onProgress(progress, s);
                     }
 
                     try {
@@ -127,7 +134,6 @@ class AudioRecorder {
                         e.printStackTrace();
                     }
                 }
-
             }
         };
     }

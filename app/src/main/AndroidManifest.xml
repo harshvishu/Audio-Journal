@@ -57,12 +57,6 @@
 
         <activity android:name=".TextEditor.TextEditor">
         </activity>
-        <activity
-            android:name=".Camera.CameraActivity"
-            android:label="@string/title_activity_camera"
-            android:launchMode="singleTop"
-            android:theme="@style/AppTheme.FullScreen">
-        </activity>
 
         <receiver
             android:name=".Reminder.Reminder"

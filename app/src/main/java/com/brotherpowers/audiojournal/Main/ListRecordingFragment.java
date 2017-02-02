@@ -20,7 +20,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.brotherpowers.audiojournal.Camera.CameraActivity;
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Realm.DataEntry;
 import com.brotherpowers.audiojournal.Utils.Extensions;
@@ -211,6 +210,6 @@ public class ListRecordingFragment extends Fragment implements DataEntryListAdap
 
     @Override
     public void actionCamera(long id, int position) {
-        CameraActivity.start(getActivity(), id);
+//        CameraActivity.start(getActivity(), id);
     }
 }

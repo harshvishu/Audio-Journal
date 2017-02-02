@@ -9,9 +9,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/hvcamera" />
+            <option value="$PROJECT_DIR$/cameraview" />
             <option value="$PROJECT_DIR$/hvprogressview" />
-            <option value="$PROJECT_DIR$/hvsinewave" />
             <option value="$PROJECT_DIR$/hvwaveformview" />
           </set>
         </option>

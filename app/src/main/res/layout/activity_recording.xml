@@ -6,37 +6,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.AppCompatTextView
-        android:id="@id/label.message"
-        style="@style/Base.TextAppearance.AppCompat.Display1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        android:text="Record"/>
 
     <com.brotherpowers.audiojournal.View.SquareLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
         android:layout_centerInParent="false"
+        android:layout_centerVertical="true"
         android:layout_margin="@dimen/spacing.16">
-
 
         <com.brotherpowers.hvprogressview.ProgressView
             android:id="@+id/progress_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
+            app:drawable="@drawable/ic_knob"
             app:progressColor="#DF703F"
-            app:progressWidth="10dp"
-            app:textSize="36sp"/>
+            android:padding="@dimen/spacing.16"
+            app:progressWidth="8dp"
+            app:textSize="18sp"/>
+
     </com.brotherpowers.audiojournal.View.SquareLayout>
 
-    <com.brotherpowers.hvsinewave.SineWaveView
-        app:strokeColor="#000"
-        android:layout_alignParentBottom="true"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@id/action.capture"

@@ -1,0 +1,5 @@
+<resources>
+    <declare-styleable name="CircularProgressView">
+
+    </declare-styleable>
+</resources>

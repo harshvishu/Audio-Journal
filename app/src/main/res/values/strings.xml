@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Audio Journal</string>
     <string name="action_settings">Settings</string>
-    <!--<string name="file_provider_authority">com.brotherpowers.audiojournal</string>-->
+
     <string name="you_have_no_entry_in_your_journal">You have no entry in your journal</string>
     <string name="share">Share</string>
     <string name="photos">Photos</string>

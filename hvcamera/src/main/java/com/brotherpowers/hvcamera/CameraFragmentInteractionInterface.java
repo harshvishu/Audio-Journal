@@ -1,6 +1,9 @@
 package com.brotherpowers.hvcamera;
 
+import android.annotation.TargetApi;
 import android.graphics.Bitmap;
+import android.media.Image;
+import android.os.Build;
 
 /**
  * Created by harsh_v on 12/8/16.
@@ -23,4 +26,6 @@ public interface CameraFragmentInteractionInterface {
      */
     void onImageCaptured(Bitmap bitmap);
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    void onImageCaptured(Image image);
 }

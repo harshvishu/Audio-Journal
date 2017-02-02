@@ -73,9 +73,6 @@ public class RecordingActivity extends AppCompatActivity implements AudioRecorde
     @BindView(R.id.action_capture)
     FloatingActionButton buttonCapture;
 
-    @BindView(R.id.label_message)
-    AppCompatTextView labelMessage;
-
 
     private static AudioRecorder audioRecorder;
     private AudioRecorder.STATE recordingState;
