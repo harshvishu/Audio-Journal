@@ -208,8 +208,8 @@ public class WaveformView extends View {
         float lastY = -1;
 
         path.reset();
-        path.moveTo(0, height);
-        path.lineTo(0, centerY);
+        path.moveTo(getLeft(), height);
+        path.lineTo(getLeft(), centerY);
 
         // For efficiency, we don't draw all of the samples in the buffer, but only the ones
         // that align with pixel boundaries.

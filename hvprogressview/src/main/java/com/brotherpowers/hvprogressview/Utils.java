@@ -18,4 +18,8 @@ final class Utils {
         arr.recycle();
         return fontSize;
     }
+
+    interface Constants {
+        int START_ANGLE = -90;
+    }
 }

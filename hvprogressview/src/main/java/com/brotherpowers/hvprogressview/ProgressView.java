@@ -1,7 +1,5 @@
 package com.brotherpowers.hvprogressview;
 
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -16,7 +14,6 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
 
 /**
  * Created by harsh_v on 11/22/16.
@@ -61,6 +58,7 @@ public class ProgressView extends View {
         int progressColor = array.getColor(R.styleable.ProgressView_progressColor, ContextCompat.getColor(context, R.color.progressColor));
         int backgroundColor = array.getColor(R.styleable.ProgressView_backgroundColor, ContextCompat.getColor(context, R.color.backgroundColor));
         int textColor = array.getColor(R.styleable.ProgressView_textColor, ContextCompat.getColor(context, R.color.textColor));
+
         drawableKnob = array.getDrawable(R.styleable.ProgressView_drawable);
         if (drawableKnob == null) {
             drawableKnob = ContextCompat.getDrawable(context, R.drawable.ic_knob);
@@ -105,18 +103,8 @@ public class ProgressView extends View {
         mBackgroundPaint.setStrokeWidth(progressWith);
 
 
-//        drawableKnob = ContextCompat.getDrawable(context, R.drawable.ic_knob);
-
         bounds = new RectF();
 
-
-
-        ObjectAnimator animator = ObjectAnimator.ofInt(progressWith, "backgroundColor", Color.WHITE, Color.RED);
-//        animator.setRepeatCount(ObjectAnimator.INFINITE);
-//        animator.setRepeatMode(ObjectAnimator.REVERSE);
-        animator.setInterpolator(new AccelerateInterpolator());
-        animator.setDuration(5000);
-        animator.start();
     }
 
     @Override
@@ -198,8 +186,8 @@ public class ProgressView extends View {
         drawableKnob.draw(canvas);
 
 
-        int textX = (int) ((radius - 50 - mTextPaint.getTextSize()) * Math.cos(angle) + bounds.centerX());
-        int textY = (int) ((radius - 50 - mTextPaint.getTextSize()) * Math.sin(angle) + bounds.centerY());
+        int textX = (int) ((radius - 64 - mTextPaint.getTextSize()) * Math.cos(angle) + bounds.centerX());
+        int textY = (int) ((radius - 64 - mTextPaint.getTextSize()) * Math.sin(angle) + bounds.centerY());
 
         canvas.drawText(text, textX, textY, mTextPaint);
 

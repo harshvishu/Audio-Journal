@@ -91,7 +91,6 @@ class AudioRecorder {
         });
 
         mediaRecorder.start();
-
         timerThread = createTimerThread(context);
         timerThread.start();
 
@@ -111,7 +110,7 @@ class AudioRecorder {
                 while (recordingState == STATE.RECORDING) {
 
                     float elapsedTime = (float) (System.currentTimeMillis() - startTime);
-                    int min = (int) (elapsedTime / (1000 * 60));
+                    int min = (int) (elapsedTime / 60_000);
                     int sec = (int) (elapsedTime / 1000);
                     int mil = (int) (elapsedTime % 100);
 

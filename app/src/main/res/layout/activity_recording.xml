@@ -24,23 +24,24 @@
             app:progressColor="#DF703F"
             android:padding="@dimen/spacing.16"
             app:progressWidth="8dp"
-            app:textSize="18sp"/>
+            app:textSize="12sp"/>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@id/action.capture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/fab_margin"
+            android:tint="#fff"
+            app:backgroundTint="@color/colorAccent"
+            app:elevation="6dp"
+            app:pressedTranslationZ="12dp"
+            app:srcCompat="@drawable/ic_mic"/>
 
     </com.brotherpowers.audiojournal.View.SquareLayout>
 
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@id/action.capture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:tint="#fff"
-        app:backgroundTint="@color/colorAccent"
-        app:elevation="6dp"
-        app:pressedTranslationZ="12dp"
-        app:srcCompat="@drawable/ic_mic"/>
 
 </RelativeLayout>
