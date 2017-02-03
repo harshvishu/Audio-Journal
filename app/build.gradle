@@ -98,6 +98,7 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'io.realm:android-adapters:1.4.0'
     compile 'com.bugsnag:bugsnag-android:3.4.0'
+    compile 'com.android.support:support-v4:25.1.0'
     testCompile 'junit:junit:4.12'
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
 }

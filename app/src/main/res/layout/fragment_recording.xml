@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/activity_recording"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.brotherpowers.audiojournal.View.SquareLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/spacing.16">
+
+            <com.brotherpowers.hvprogressview.ProgressView
+                android:id="@+id/progress_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:padding="@dimen/spacing.16"
+                app:drawable="@drawable/ic_knob"
+                app:knobRadius="24"
+                app:progressColor="@color/colorPrimary"
+                app:progressWidth="6dp"
+                app:textSize="12sp"/>
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@id/action.capture"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/fab_margin"
+                android:tint="#fff"
+                app:backgroundTint="@color/colorPrimary"
+                app:elevation="6dp"
+                app:pressedTranslationZ="12dp"
+                app:srcCompat="@drawable/ic_mic"/>
+
+        </com.brotherpowers.audiojournal.View.SquareLayout>
+    </FrameLayout>
+
+    <!-- <include
+         android:id="@+id/data.counter"
+         layout="@layout/data_counters"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:layout_alignParentBottom="true"/>-->
+
+
+</RelativeLayout>

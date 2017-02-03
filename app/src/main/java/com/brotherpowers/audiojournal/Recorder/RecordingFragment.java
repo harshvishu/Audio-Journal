@@ -1,14 +1,13 @@
 package com.brotherpowers.audiojournal.Recorder;
 
-import android.Manifest;
-import android.app.Activity;
-import android.content.Intent;
-import android.content.pm.PackageManager;
+
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 
 import com.brotherpowers.audiojournal.R;
@@ -24,13 +23,11 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 
 import static com.brotherpowers.audiojournal.Recorder.AudioRecorder.MAX_AUDIO_LENGTH;
-import static com.brotherpowers.audiojournal.Utils.Constants.REQ_REC_PERMISSION;
 
-
-public class RecordingActivity extends AppCompatActivity implements AudioRecorder.Listener {
-    private static final String ARG_DATA_ENTRY_ID = "ARG_DATA_ENTRY_ID";
-    private static final String ARG_FILE_ID = "ARG_FILE_ID";
-
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class RecordingFragment extends Fragment implements AudioRecorder.Listener {
 
     @BindView(R.id.progress_view)
     ProgressView progressView;
@@ -38,66 +35,65 @@ public class RecordingActivity extends AppCompatActivity implements AudioRecorde
     @BindView(R.id.action_capture)
     FloatingActionButton buttonCapture;
 
+    public RecordingFragment() {
+        // Required empty public constructor
+    }
 
     private static AudioRecorder audioRecorder;
     private AudioRecorder.STATE recordingState;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recording);
-        ButterKnife.bind(this);
-        //noinspection ConstantConditions
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setRetainInstance(true);
 
-        if (savedInstanceState == null) {
-            audioRecorder = new AudioRecorder(this, MAX_AUDIO_LENGTH);
-        }
 
+        audioRecorder = new AudioRecorder(getContext(), MAX_AUDIO_LENGTH);
         audioRecorder.setListener(this);
-
         recordingState = audioRecorder.getRecordingState();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_recording, container, false);
+        ButterKnife.bind(this, view);
+
+
         if (recordingState == AudioRecorder.STATE.RECORDING) {
             buttonCapture.setImageResource(R.drawable.ic_stop);
         } else {
             buttonCapture.setImageResource(R.drawable.ic_mic);
         }
 
+        buttonCapture.setOnClickListener(v -> {
 
-        buttonCapture.setOnClickListener(view -> {
             if (recordingState == AudioRecorder.STATE.PENDING) {
-                audioRecorder.start(this);
-
+                audioRecorder.start(getContext());
             } else if (recordingState == AudioRecorder.STATE.RECORDING) {
                 audioRecorder.stop();
             }
         });
-
+        return view;
     }
 
-    @Override
-    public void onBackPressed() {
-        if (audioRecorder.getRecordingState() == AudioRecorder.STATE.RECORDING) {
-            audioRecorder.reset();
-        }
-        super.onBackPressed();
-    }
 
     @Override
     public void onRecordingStart(AudioRecorder.STATE recordingState) {
         this.recordingState = recordingState;
 
-        buttonCapture.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fab_open));
+        buttonCapture.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.fab_open));
         buttonCapture.setImageResource(R.drawable.ic_stop);
 
     }
+
 
     @Override
     public void onRecordingStop(AudioRecorder.STATE recordingState, File file) {
         this.recordingState = recordingState;
 
         Realm realm = Realm.getDefaultInstance();
-
 
         DataEntry dataEntry = new DataEntry();
         dataEntry.generateId(realm);
@@ -114,11 +110,11 @@ public class RecordingActivity extends AppCompatActivity implements AudioRecorde
         });
 
 
+        this.recordingState = AudioRecorder.STATE.PENDING;
+        buttonCapture.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.fab_open));
+        buttonCapture.setImageResource(R.drawable.ic_mic);
         progressView.reset();
         audioRecorder.reset();
-        this.recordingState = AudioRecorder.STATE.PENDING;
-        buttonCapture.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fab_open));
-        buttonCapture.setImageResource(R.drawable.ic_play);
 //        finish();
     }
 
