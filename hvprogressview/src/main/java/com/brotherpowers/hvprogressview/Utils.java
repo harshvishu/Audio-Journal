@@ -19,7 +19,9 @@ final class Utils {
         return fontSize;
     }
 
-    interface Constants {
+    interface Defaults {
         int START_ANGLE = -90;
+        int TEXT_OFFSET = 64;
+        String TEXT = "00:00:00";
     }
 }

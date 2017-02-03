@@ -3,10 +3,8 @@ package com.brotherpowers.hvprogressview;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.graphics.SweepGradient;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -14,6 +12,8 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
+
+import static com.brotherpowers.hvprogressview.Utils.Defaults.TEXT;
 
 /**
  * Created by harsh_v on 11/22/16.
@@ -47,11 +47,12 @@ public class ProgressView extends View {
     private float endAngle;
     private float sweepAngle;           // Current angle from progress
     private float knobOffset;           // Offset for Knob
-    private int knobRadius = 16;
+    private int knobRadius;
 
-    private String text = "00:00:00";
+    private String text = TEXT;
     private Drawable drawableKnob;
 
+    private float initialSweepAngle;
 
     private void init(Context context, AttributeSet attrs, int defStyle) {
         TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.ProgressView, defStyle, 0);
@@ -63,7 +64,6 @@ public class ProgressView extends View {
         if (drawableKnob == null) {
             drawableKnob = ContextCompat.getDrawable(context, R.drawable.ic_knob);
         }
-
 
         knobOffset = array.getFloat(R.styleable.ProgressView_knobOffset, 0.0f);     // knob Offset
         knobRadius = array.getInt(R.styleable.ProgressView_knobRadius, 24);         // knob Radius
@@ -80,7 +80,8 @@ public class ProgressView extends View {
         float endOffset = context.getResources().getInteger(R.integer.endAngle);
         endAngle = array.getFloat(R.styleable.ProgressView_endAngle, endOffset);
 
-        sweepAngle = array.getFloat(R.styleable.ProgressView_sweepAngle, 0f);
+        initialSweepAngle = array.getFloat(R.styleable.ProgressView_sweepAngle, 0f);
+        sweepAngle = initialSweepAngle;
         array.recycle();
 
 
@@ -91,7 +92,6 @@ public class ProgressView extends View {
 
         mProgressPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mProgressPaint.setStyle(Paint.Style.STROKE);
-        mProgressPaint.setShader(new SweepGradient(5, 5, new int[]{Color.RED, Color.BLUE, Color.GREEN}, new float[]{0.5f, 0.3f, 0.2f}));
         mProgressPaint.setStrokeCap(Paint.Cap.ROUND);
         mProgressPaint.setColor(progressColor);
         mProgressPaint.setStrokeWidth(progressWith);
@@ -101,7 +101,6 @@ public class ProgressView extends View {
         mBackgroundPaint.setStrokeCap(Paint.Cap.ROUND);
         mBackgroundPaint.setColor(backgroundColor);
         mBackgroundPaint.setStrokeWidth(progressWith);
-
 
         bounds = new RectF();
 
@@ -138,103 +137,52 @@ public class ProgressView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         bounds.set(getPaddingLeft(), getPaddingTop(), w - getPaddingRight(), h - getPaddingBottom());
-
     }
 
 
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
-        /*{
-            float r1 = (bounds.width() / 2);
-            float r2 = r1 - 25;
-
-            for (float degree = startAngle; degree < startAngle + endAngle; degree += 1.0f) {
-
-                double angle = (degree * (Math.PI / 180));
-
-                float x1 = (float) (r1 * Math.cos(angle) + (bounds.centerX()));
-                float y1 = (float) (r1 * Math.sin(angle) + (bounds.centerY()));
-
-                float x2 = (float) (r2 * Math.cos(angle) + (bounds.centerX()));
-                float y2 = (float) (r2 * Math.sin(angle) + (bounds.centerY()));
-
-                mBackgroundPaint.setStrokeWidth(1f);
-                canvas.drawLine(x1, y1, x2, y2, mBackgroundPaint);
-
-            }
-        }*/
-
-        //      background arc
-        canvas.drawArc(bounds, startAngle, endAngle, false, mBackgroundPaint);
-        canvas.drawOval(bounds, mBackgroundPaint);
-
-        mBackgroundPaint.setStrokeWidth(8);
-        canvas.drawArc(bounds, startAngle, sweepAngle, false, mProgressPaint);
-
-        drawText(canvas);
 
         double angle = ((startAngle + sweepAngle) * (Math.PI / 180)); // Angle
         float radius = (bounds.width() / 2) - knobOffset; // Radius
 
-        int x1 = (int) (radius * Math.cos(angle) + bounds.centerX());
-        int y1 = (int) (radius * Math.sin(angle) + bounds.centerY());
+        drawCurves(canvas);
 
-//        canvas.drawLine(bounds.centerX(), bounds.centerY(), x1, y1, mBackgroundPaint);
+        drawKnob(canvas, angle, radius);
 
-        drawableKnob.setBounds(x1 - knobRadius, y1 - knobRadius, x1 + knobRadius, y1 + knobRadius);
-        drawableKnob.draw(canvas);
-
-
-        int textX = (int) ((radius - 64 - mTextPaint.getTextSize()) * Math.cos(angle) + bounds.centerX());
-        int textY = (int) ((radius - 64 - mTextPaint.getTextSize()) * Math.sin(angle) + bounds.centerY());
-
-        canvas.drawText(text, textX, textY, mTextPaint);
-
-
-/*
-
-        canvas.drawPicture(new Picture());
-
-        RectF sineRect = new RectF(bounds.left + 10, bounds.centerY() + 10, bounds.right - 10, bounds.bottom - 10);
-        System.out.println(sineRect);
-
-        float a, w, h, x, y;
-        w = sineRect.width();
-        h = sineRect.height();
-
-        x = sineRect.left;
-        canvas.drawLine(x, sineRect.centerY(), (int) w, sineRect.centerY(), mBackgroundPaint);//Draw a line from left to right as the y=0 line.
-        while (x < w) {
-            a = (x / w) * ((float) 2.0 * (float) 3.131592654);
-            y = (sineRect.centerY()) - ((float) Math.sin(2 * a) * (sineRect.centerY() / (float) 2.1));
-
-            canvas.drawPoint(x, y, mBackgroundPaint);
-            x++;
-        }*/
-
-
-//        canvas.drawBitmap(drawableKnob, x1, y1, 20, mBackgroundPaint);
+        drawText(canvas, angle, radius);
 
     }
 
-    private void drawText(Canvas canvas) {
+    /**
+     * Draw Arc for progress & background
+     */
+    private void drawCurves(Canvas canvas) {
+//        canvas.drawArc(bounds, startAngle, endAngle, false, mBackgroundPaint);
+        canvas.drawOval(bounds, mBackgroundPaint);
+        canvas.drawArc(bounds, startAngle, sweepAngle, false, mProgressPaint);
+    }
 
-       /* Rect texBounds = new Rect();
-        mTextPaint.getTextBounds(text, 0, "77.77".length(), texBounds);
+    /**
+     * Draw Knob
+     */
+    private void drawKnob(Canvas canvas, double angle, float radius) {
+        int x1 = (int) (radius * Math.cos(angle) + bounds.centerX());
+        int y1 = (int) (radius * Math.sin(angle) + bounds.centerY());
 
-        texBounds.left = (int) (texBounds.left + bounds.left);
-        texBounds.top = (int) (texBounds.top + bounds.top);
-        texBounds.right = (int) (texBounds.right + bounds.right);
-        texBounds.bottom = (int) (texBounds.bottom + bounds.bottom);
+        drawableKnob.setBounds(x1 - knobRadius, y1 - knobRadius, x1 + knobRadius, y1 + knobRadius);
+        drawableKnob.draw(canvas);
+    }
 
-        StaticLayout textStaticLayout = new StaticLayout(text, mTextPaint, texBounds.width(), Layout.Alignment.ALIGN_CENTER, 1f, 0f, false);
-
-        canvas.save();
-        canvas.clipRect(texBounds);
-        canvas.translate(texBounds.left, (texBounds.centerY() - textStaticLayout.getHeight() / 2f));
-        textStaticLayout.draw(canvas);
-        canvas.restore();*/
+    /**
+     * Draw text
+     */
+    private void drawText(Canvas canvas, double angle, float radius) {
+        float offset = radius - knobRadius - Utils.Defaults.TEXT_OFFSET - mTextPaint.getTextSize();
+        int x = (int) (offset * Math.cos(angle) + bounds.centerX());
+        int y = (int) (offset * Math.sin(angle) + bounds.centerY());
+        canvas.drawText(text, x, y, mTextPaint);
     }
 
     public void setText(String text) {
@@ -264,5 +212,10 @@ public class ProgressView extends View {
      */
     private float calculateAngle(float progress) {
         return endAngle * progress / max;
+    }
+
+    public void reset() {
+        sweepAngle = initialSweepAngle;
+        text = TEXT;
     }
 }

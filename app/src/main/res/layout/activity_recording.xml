@@ -6,42 +6,52 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-    <com.brotherpowers.audiojournal.View.SquareLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerHorizontal="true"
-        android:layout_centerInParent="false"
-        android:layout_centerVertical="true"
-        android:layout_margin="@dimen/spacing.16">
+        android:layout_above="@+id/data.counter">
 
-        <com.brotherpowers.hvprogressview.ProgressView
-            android:id="@+id/progress_view"
+        <com.brotherpowers.audiojournal.View.SquareLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_centerInParent="true"
-            app:drawable="@drawable/ic_knob"
-            app:progressColor="#DF703F"
-            android:padding="@dimen/spacing.16"
-            app:progressWidth="8dp"
-            app:textSize="12sp"/>
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@id/action.capture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
             android:layout_gravity="center"
-            android:layout_margin="@dimen/fab_margin"
-            android:tint="#fff"
-            app:backgroundTint="@color/colorAccent"
-            app:elevation="6dp"
-            app:pressedTranslationZ="12dp"
-            app:srcCompat="@drawable/ic_mic"/>
+            android:layout_margin="@dimen/spacing.16">
 
-    </com.brotherpowers.audiojournal.View.SquareLayout>
+            <com.brotherpowers.hvprogressview.ProgressView
+                android:id="@+id/progress_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:padding="@dimen/spacing.16"
+                app:drawable="@drawable/ic_knob"
+                app:knobRadius="24"
+                app:progressColor="@color/colorPrimary"
+                app:progressWidth="6dp"
+                app:textSize="12sp"/>
 
+            <android.support.design.widget.FloatingActionButton
+                android:id="@id/action.capture"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/fab_margin"
+                android:tint="#fff"
+                app:backgroundTint="@color/colorPrimary"
+                app:elevation="6dp"
+                app:pressedTranslationZ="12dp"
+                app:srcCompat="@drawable/ic_mic"/>
+
+        </com.brotherpowers.audiojournal.View.SquareLayout>
+    </FrameLayout>
+
+    <include
+        android:id="@+id/data.counter"
+        layout="@layout/data_counters"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"/>
 
 
 </RelativeLayout>

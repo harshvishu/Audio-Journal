@@ -9,7 +9,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatTextView;
 import android.view.animation.AnimationUtils;
 
 import com.brotherpowers.audiojournal.R;
@@ -83,7 +82,7 @@ public class RecordingActivity extends AppCompatActivity implements AudioRecorde
         setContentView(R.layout.activity_recording);
         ButterKnife.bind(this);
         //noinspection ConstantConditions
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
             audioRecorder = new AudioRecorder(this, MAX_AUDIO_LENGTH);
@@ -148,7 +147,12 @@ public class RecordingActivity extends AppCompatActivity implements AudioRecorde
             r.copyToRealmOrUpdate(rFile);
         });
 
-        finish();
+
+        progressView.reset();
+        this.recordingState = AudioRecorder.STATE.PENDING;
+        buttonCapture.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fab_open));
+        buttonCapture.setImageResource(R.drawable.ic_play);
+//        finish();
     }
 
     @Override

@@ -26,19 +26,19 @@
             android:name=".Main.MainActivity"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".Recorder.RecordingActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="sensorPortrait">
+            <!--  <meta-data
+                  android:name="android.support.PARENT_ACTIVITY"
+                  android:value=".Main.MainActivity"/>-->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".Recorder.RecordingActivity"
-            android:launchMode="singleTop"
-            android:parentActivityName=".Main.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Main.MainActivity"/>
         </activity>
 
         <provider

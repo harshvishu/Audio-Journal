@@ -110,8 +110,8 @@ class AudioRecorder {
                 while (recordingState == STATE.RECORDING) {
 
                     float elapsedTime = (float) (System.currentTimeMillis() - startTime);
-                    int min = (int) (elapsedTime / 60_000);
-                    int sec = (int) (elapsedTime / 1000);
+                    int min = (int) (elapsedTime / 60_000) % 60;
+                    int sec = (int) (elapsedTime / 1000) % 60;
                     int mil = (int) (elapsedTime % 100);
 
                     String s = String.format(Locale.getDefault(), "%02d:%02d:%02d", min, sec, mil);

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    android:background="@color/selection_gray"
+    android:background="@color/colorPrimary"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:padding="@dimen/spacing.20"
     android:layout_width="match_parent"
@@ -14,6 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:drawableTop="@drawable/ic_equalizer_white"
+        android:textColor="#FFF"
         android:gravity="center"
         android:text="99.50"
         android:textAppearance="@style/DataCounterTextAppearance"/>
@@ -28,6 +29,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:textColor="#FFF"
         android:drawableTop="@drawable/ic_create_white"
         android:gravity="center"
         android:text="127"
@@ -42,6 +44,7 @@
     <android.support.v7.widget.AppCompatTextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:textColor="#FFF"
         android:layout_weight="1"
         android:drawableTop="@drawable/ic_photo_library_white"
         android:gravity="center"
@@ -61,6 +64,7 @@
         android:drawableTop="@drawable/ic_alarm_white"
         android:gravity="center"
         android:text="11"
+        android:textColor="#FFF"
         android:textAppearance="@style/DataCounterTextAppearance"/>
 
 </LinearLayout>
