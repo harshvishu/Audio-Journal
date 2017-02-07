@@ -139,7 +139,6 @@ public class WaveformView extends View {
         onSamplesChanged();
     }
 
-    final int pointerRadius = 10;
 
     @SuppressLint("DrawAllocation")
     @Override
@@ -154,9 +153,9 @@ public class WaveformView extends View {
 
         canvas.drawPath(path, mWaveFillPaint);
 
-        canvas.drawCircle(pointerRadius, centerY, pointerRadius, mPointerPaint);
+//        canvas.drawCircle(pointerRadius, centerY, pointerRadius, mPointerPaint);
 
-        canvas.drawCircle(getWidth() - pointerRadius, centerY, pointerRadius, mPointerPaint);
+//        canvas.drawCircle(getWidth() - pointerRadius, centerY, pointerRadius, mPointerPaint);
 
         if (mMode == MODE_PLAYBACK) {
             drawAxis(canvas, width);
@@ -240,57 +239,27 @@ public class WaveformView extends View {
     private void createPlaybackWaveForm() {
         float max = Short.MAX_VALUE;
 
-        short[][] extremes = Utils.getExtremes(samples, width);
-
         path.reset();
         path.moveTo(origin.x, centerY);
 
         // For efficiency, we don't draw all of the samples in the buffer, but only the ones
         // that align with pixel boundaries.
-        if (width > 10) {
-            for (int x = origin.x; x < width - 10; x += 10) {
-//                short sample = extremes[x][0];
-//                float y = centerY - ((sample / max) * (centerY - LAYOUT_MARGIN_VERTICAL));
+        float spacing = 3.0f;
+        if (width > spacing) {
+            for (float x = 0; x < width - spacing; x += spacing) {
+                int index = (int) ((x / width) * samples.length);
+                short sample = samples[index];
+                float y = centerY - ((sample / max) * (centerY - LAYOUT_MARGIN_VERTICAL));
 
-                float avgY = 0;
-                for (int j = x; j < x + 10; j++) {
-                    short sample = extremes[j][0];
-                    avgY += centerY - ((sample / max) * (centerY - LAYOUT_MARGIN_VERTICAL));
-                }
-                avgY /= 10;
-
-                // Add the initial points
-                path.lineTo(x, avgY);
-                path.lineTo(x + 8, avgY);
-                path.lineTo(x + 8, centerY);
-                path.moveTo(x + 10, centerY);
-
-            }
-
-            path.moveTo(width, centerY);
-
-            // draw minimums
-            for (int x = width - 1; x >= origin.x + 10; x -= 10) {
-
-                float avgY = 0;
-                for (int j = x; j >= x - 10; j--) {
-                    short sample = extremes[j][0];
-                    avgY += centerY + ((sample / max) * (centerY - LAYOUT_MARGIN_VERTICAL));
-                }
-                avgY /= 10;
-
-                path.lineTo(x, avgY);
-                path.lineTo(x - 8, avgY);
-                path.lineTo(x - 8, centerY);
-                path.moveTo(x - 10, centerY);
+                path.lineTo(x, y);
+                path.lineTo(x + spacing - 1, y);
+                path.lineTo(x + spacing - 1, centerY);
+                path.moveTo(x + spacing, centerY);
             }
         }
 
-
-        path.lineTo(width, centerY);
-
+//        path.lineTo(width, centerY);
         path.close();
-
     }
 
     @SuppressLint("DefaultLocale")
@@ -311,9 +280,6 @@ public class WaveformView extends View {
     }
 
     public void setSamples(short[] samples, int duration) {
-//        setAudioLength(duration);
-//        setSamples(samples);
-
         this.mAudioLength = duration;
         this.samples = samples;
         onSamplesChanged();

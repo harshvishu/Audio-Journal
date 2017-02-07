@@ -51,7 +51,6 @@ public final class Utils {
 
     public static short[][] getExtremes(short[] data, int sampleSize) {
 
-
         short[][] newData = new short[sampleSize][];
         int groupSize = data.length / sampleSize;
 
