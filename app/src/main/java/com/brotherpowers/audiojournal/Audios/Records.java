@@ -1,4 +1,4 @@
-package com.brotherpowers.audiojournal.Main;
+package com.brotherpowers.audiojournal.Audios;
 
 
 import android.graphics.Canvas;
@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Realm.DataEntry;
+import com.brotherpowers.audiojournal.Reminder.Alarm;
 import com.brotherpowers.audiojournal.Utils.Extensions;
 import com.brotherpowers.audiojournal.View.RecyclerViewDecor;
 
@@ -35,18 +36,18 @@ import io.realm.Sort;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ListRecordingFragment extends Fragment implements DataEntryListAdapter.Callback {
+public class Records extends Fragment implements RecordsAdapter.Callback {
 
 
-    public ListRecordingFragment() {
+    public Records() {
         // Required empty public constructor
     }
 
-    public static ListRecordingFragment newInstance() {
+    public static Records newInstance() {
 
         Bundle args = new Bundle();
 
-        ListRecordingFragment fragment = new ListRecordingFragment();
+        Records fragment = new Records();
         fragment.setArguments(args);
         return fragment;
     }
@@ -54,7 +55,7 @@ public class ListRecordingFragment extends Fragment implements DataEntryListAdap
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
 
-    private DataEntryListAdapter dataEntryListAdapter;
+    private RecordsAdapter recordsAdapter;
     private Realm realm;
 
     @Override
@@ -70,7 +71,6 @@ public class ListRecordingFragment extends Fragment implements DataEntryListAdap
     }
 
 
-
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -80,11 +80,11 @@ public class ListRecordingFragment extends Fragment implements DataEntryListAdap
         recyclerView.addItemDecoration(new RecyclerViewDecor());
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        dataEntryListAdapter = new DataEntryListAdapter(getContext(),this, realm.where(DataEntry.class)
+        recordsAdapter = new RecordsAdapter(getContext(), this, realm.where(DataEntry.class)
                 .findAllAsync()
                 .sort("created_at", Sort.DESCENDING)
         );
-        recyclerView.setAdapter(dataEntryListAdapter);
+        recyclerView.setAdapter(recordsAdapter);
 
         Paint paintForSwipeView = new Paint();
         paintForSwipeView.setStyle(Paint.Style.FILL_AND_STROKE);
@@ -105,22 +105,23 @@ public class ListRecordingFragment extends Fragment implements DataEntryListAdap
                         .setMessage("This action will remove all data related to this entry")
                         .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
 
-                            DataEntry item = dataEntryListAdapter.getItem(position);
+                            DataEntry item = recordsAdapter.getItem(position);
                             if (item != null) {
                                 actionDelete(item.getId(), position);
                             }
                         })
-                        .setNegativeButton(android.R.string.cancel, (dialogInterface, i) -> dataEntryListAdapter.notifyItemChanged(position))
+                        .setNegativeButton(android.R.string.cancel, (dialogInterface, i) -> recordsAdapter.notifyItemChanged(position))
                         .create().show();
 
 
             }
 
+
             @Override
             public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
 
 
-                if (dataEntryListAdapter.getActualSizeOfData() > 0) {
+                if (recordsAdapter.getActualSizeOfData() > 0) {
 
                     if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
 
@@ -186,7 +187,7 @@ public class ListRecordingFragment extends Fragment implements DataEntryListAdap
             }
         });
 
-        itemTouchHelper.attachToRecyclerView(recyclerView);
+//        itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
     @Override
@@ -202,14 +203,25 @@ public class ListRecordingFragment extends Fragment implements DataEntryListAdap
         });
 
         // Remove the cached Attachment adapter
-        dataEntryListAdapter.attachmentAdapter.remove(id);
+        recordsAdapter.attachmentAdapter.remove(id);
 
         // Remove Cached Samples
-        dataEntryListAdapter.cachedSamples.remove(id);
+        recordsAdapter.cachedSamples.remove(id);
     }
 
     @Override
     public void actionCamera(long id, int position) {
 //        CameraActivity.start(getActivity(), id);
+    }
+
+    @Override
+    public void addReminder(int position) {
+        DataEntry dataEntry = recordsAdapter.getItem(position);
+
+        realm.executeTransaction(r -> {
+            dataEntry.setRemindAt(System.currentTimeMillis() + 2000);
+        });
+
+        Alarm.set(getContext(), dataEntry);
     }
 }

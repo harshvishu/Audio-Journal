@@ -1,4 +1,4 @@
-package com.brotherpowers.audiojournal.Main;
+package com.brotherpowers.audiojournal.Audios;
 
 import android.content.Context;
 import android.media.MediaMetadataRetriever;
@@ -40,15 +40,16 @@ import io.realm.RealmResults;
  * Created by harsh_v on 11/4/16.
  */
 
-class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, ClickableViewHolder> implements AudioPlayer.Listener {
+class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ClickableViewHolder> implements AudioPlayer.Listener {
     private final int VIEW_PLACEHOLDER = 0;
     private final int VIEW_ITEM = 1;
+
     private Callback callback;
     final LongSparseArray<AttachmentAdapter> attachmentAdapter;
     final LongSparseArray<short[]> cachedSamples;
 
 
-    DataEntryListAdapter(@NonNull Context context, Callback callback, @Nullable OrderedRealmCollection<DataEntry> data) {
+    RecordsAdapter(@NonNull Context context, Callback callback, @Nullable OrderedRealmCollection<DataEntry> data) {
         super(context, data, true);
         this.callback = callback;
         attachmentAdapter = new LongSparseArray<>();
@@ -102,7 +103,7 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
                         break;
                     case R.id.action_reminder:
                         // TODO: 11/29/16 test code
-                        Alarm.set(context, dataEntry.getId());
+                        callback.addReminder(position);
                         break;
                 }
             });
@@ -324,5 +325,7 @@ class DataEntryListAdapter extends RealmRecyclerViewAdapter<DataEntry, Clickable
         void actionDelete(long id, int position);
 
         void actionCamera(long id, int position);
+
+        void addReminder(int position);
     }
 }

@@ -26,7 +26,6 @@ public class RFile extends RealmObject implements Essentials {
     // Enum to support FileType
     private int fileType;
 
-
     public String getFileName() {
         return file_name;
     }

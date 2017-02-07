@@ -48,6 +48,7 @@ public class ProgressView extends View {
     private float sweepAngle;           // Current angle from progress
     private float knobOffset;           // Offset for Knob
     private int knobRadius;
+    private int max = 100;
 
     private String text = TEXT;
     private Drawable drawableKnob;
@@ -191,7 +192,6 @@ public class ProgressView extends View {
     }
 
 
-    private int max = 100;
 
     public void setMax(int max) {
         this.max = max;
@@ -215,7 +215,6 @@ public class ProgressView extends View {
     }
 
     public void reset() {
-        sweepAngle = initialSweepAngle;
-        text = TEXT;
+        setProgress(0f, TEXT);
     }
 }

@@ -109,6 +109,12 @@ public class ReminderNotification extends Service {
                 DataEntry dataEntry = Realm.getDefaultInstance().where(DataEntry.class)
                         .equalTo("id", id).findFirst();
 
+                assert dataEntry!= null;
+
+                // Remove the reminder time
+                Realm realm = Realm.getDefaultInstance();
+                realm.executeTransaction(r -> dataEntry.setRemindAt(null));
+
                 RFile rFile = dataEntry.audioFile();
                 File file = rFile.file(context);
 
@@ -149,7 +155,7 @@ public class ReminderNotification extends Service {
                     @Override
                     public void progress(float progress, long id, int position) {
                         System.out.println("progress: " + progress);
-
+                        manger.cancel(0x99);
                     }
                 });
 

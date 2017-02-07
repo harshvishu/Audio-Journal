@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.brotherpowers.audiojournal.Utils.Extensions;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
 
 import java.io.File;
@@ -18,7 +17,7 @@ import java.util.Locale;
  */
 
 class AudioRecorder {
-    static final int MAX_AUDIO_LENGTH = 60_000 * 2; // 1 Minute
+    static final int MAX_AUDIO_LENGTH = 15_000 * 1; // 1 Minute
 
     private final File file;
     private STATE recordingState;
@@ -31,8 +30,7 @@ class AudioRecorder {
 
     @SuppressWarnings("FieldCanBeLocal")
     private Thread timerThread;
-//    private Thread samplingThread;
-//    short[] samples = new short[1024];
+
 
     /**
      * @param context  {@link Context}
@@ -40,7 +38,7 @@ class AudioRecorder {
      */
     AudioRecorder(Context context, int duration) {
         file = FileUtils.sharedInstance.getFile(FileUtils.Type.AUDIO, String.valueOf(System.currentTimeMillis()), context);
-        sampleRate = Extensions.getMaxSampleRate(context);
+        sampleRate = 44100;
         maxDuration = duration;
 
         recordingState = STATE.PENDING;
@@ -71,6 +69,7 @@ class AudioRecorder {
         mediaRecorder.setOutputFile(file.getPath());
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
         mediaRecorder.setMaxDuration(maxDuration); // ONE MINUTE
+        mediaRecorder.setAudioChannels(2);
 
         try {
             mediaRecorder.prepare();
@@ -94,8 +93,6 @@ class AudioRecorder {
         timerThread = createTimerThread(context);
         timerThread.start();
 
-//        samplingThread = createSamplingThread();
-//        samplingThread.start();
     }
 
 
@@ -110,16 +107,11 @@ class AudioRecorder {
                 while (recordingState == STATE.RECORDING) {
 
                     float elapsedTime = (float) (System.currentTimeMillis() - startTime);
-                    int min = (int) (elapsedTime / 60_000) % 60;
+                    int min = (int) (elapsedTime / (1000 * 60)) % 60;
                     int sec = (int) (elapsedTime / 1000) % 60;
                     int mil = (int) (elapsedTime % 100);
 
                     String s = String.format(Locale.getDefault(), "%02d:%02d:%02d", min, sec, mil);
-
-                   /* String text = context.getString(R.string.Sec, elapsedTime);
-                    if (elapsedTime > 60f) {
-                        text = context.getString(R.string.Min, 1);
-                    }*/
 
                     float progress = 100 * (elapsedTime / MAX_AUDIO_LENGTH);
 
@@ -136,38 +128,6 @@ class AudioRecorder {
             }
         };
     }
-
-    /*@NonNull
-    private Thread createSamplingThread() {
-        return new Thread() {
-            @Override
-            public void run() {
-                super.run();
-
-                while (recordingState == STATE.RECORDING) {
-
-                    try {
-                        samples = Utils.getAudioSamples(file);
-
-                        if (listener != null) {
-                            listener.onSamples(samples, (int) file.length() / sampleRate);
-                        }
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    try {
-                        Thread.sleep(1000 / 12); //12 fps refresh rate
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-            }
-        };
-    }*/
-
 
     /**
      * Stop  recording

@@ -7,10 +7,13 @@ import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
 
+import com.brotherpowers.audiojournal.Realm.DataEntry;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import java.util.Date;
+
+import io.realm.Realm;
 
 /**
  * Created by harsh_v on 11/29/16.
@@ -24,24 +27,32 @@ public class Alarm {
 
     /**
      * @param context {@link Context}
-     * @param id      {@link com.brotherpowers.audiojournal.Realm.DataEntry}
      */
-    public static void set(Context context, long id) {
+    public static void set(Context context, DataEntry dataEntry) {
+        Long remind_at = dataEntry.getRemindAt();
+        if (remind_at == null) {
+            return;
+        }
+
+        if (System.currentTimeMillis() > remind_at) {
+            Realm realm = Realm.getDefaultInstance();
+            realm.executeTransaction(r -> dataEntry.setRemindAt(null));
+            return;
+        }
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, Reminder.class);
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("id", id);
-        Gson gson = new Gson();
 
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("id", dataEntry.getId());
+        Gson gson = new Gson();
 
         intent.putExtra("data", gson.toJson(jsonObject));
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
-
-        long time = System.currentTimeMillis() + (1000 * 2);
-
+        // Time at which
+        long time = remind_at;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             AlarmManager.AlarmClockInfo alarmClockInfo = new AlarmManager.AlarmClockInfo(time, pendingIntent);

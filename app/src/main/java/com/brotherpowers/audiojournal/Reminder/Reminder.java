@@ -18,6 +18,4 @@ public class Reminder extends WakefulBroadcastReceiver {
         ReminderNotification.startActionPlay(context, s);
 
     }
-
-
 }

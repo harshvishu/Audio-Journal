@@ -22,20 +22,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".Main.MainActivity"
-            android:launchMode="singleTop"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-        <activity
             android:name=".Recorder.RecordingActivity"
             android:launchMode="singleTop"
             android:screenOrientation="sensorPortrait">
-
-            <!--
-                  <meta-data
-                  android:name="android.support.PARENT_ACTIVITY"
-                  android:value=".Main.MainActivity"/>
-            -->
 
         </activity>
 
@@ -69,9 +58,8 @@
         </service>
 
         <activity
-            android:name=".Main.Main2Activity"
+            android:name=".Main.MainActivity"
             android:screenOrientation="sensorPortrait"
-            android:label="@string/title_activity_main2"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

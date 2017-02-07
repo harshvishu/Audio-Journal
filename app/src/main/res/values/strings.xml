@@ -12,8 +12,8 @@
     <string name="picture">Picture</string>
     <string name="title_activity_camera">CameraActivity</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_main2">Main2Activity</string>
-    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="camera_permission_confirmation">App needs camera permission in order to take pictures.</string>
+    <string name="camera_permission_not_granted">Cannot take pictures without camera permission.</string>
+    <string name="record_permission_confirmation">App needs recorder permission in order to record voice notes.</string>
+    <string name="record_permission_not_granted">Cannot record audio without recording permission.</string>
 </resources>

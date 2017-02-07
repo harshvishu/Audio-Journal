@@ -18,9 +18,13 @@ public class DataEntry extends RealmObject implements Essentials {
 
     private RFile audioFile;
 
-    private RealmList<RFile> attachments;
-
     private String title;
+
+    private long length;
+
+    private Long remind_at;
+
+    private RealmList<RFile> attachments;
 
     // No Setter
     private Date created_at;
@@ -71,6 +75,23 @@ public class DataEntry extends RealmObject implements Essentials {
         return this;
     }
 
+
+    public long getLength() {
+        return length;
+    }
+
+    public DataEntry setLength(long length) {
+        this.length = length;
+        return this;
+    }
+
+    public void setRemindAt(Long remind_at) {
+        this.remind_at = remind_at;
+    }
+
+    public Long getRemindAt() {
+        return remind_at;
+    }
 
     @Override
     public long nexID(Realm realm) {
