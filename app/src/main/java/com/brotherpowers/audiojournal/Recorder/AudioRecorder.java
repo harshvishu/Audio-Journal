@@ -16,8 +16,8 @@ import java.util.Locale;
  * Created by harsh_v on 11/23/16.
  */
 
-class AudioRecorder {
-    static final int MAX_AUDIO_LENGTH = 15_000 * 1; // 1 Minute
+public class AudioRecorder {
+    static final int MAX_AUDIO_LENGTH = 60_000 * 5; // 1 Minute
 
     private final File file;
     private STATE recordingState;

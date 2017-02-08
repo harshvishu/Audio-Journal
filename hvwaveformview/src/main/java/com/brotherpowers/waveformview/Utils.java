@@ -30,19 +30,9 @@ public final class Utils {
     }
 
     public static short[] getAudioSamples(File audioFile) throws IOException {
-        RandomAccessFile raf = new RandomAccessFile(audioFile, "r");
-
-        int n = 0;
-        if (raf.length() > 1024) {
-            n = 1024;
-            raf.seek(raf.length() - 1024);
-        }
-
-        byte[] buffer = new byte[n];
-        raf.read(buffer,0,n);
-
-//        DataInputStream dis = new DataInputStream(new FileInputStream(audioFile));
-//        dis.readFully(buffer);
+        byte[] buffer = new byte[(int) audioFile.length()];
+        DataInputStream dis = new DataInputStream(new FileInputStream(audioFile));
+        dis.readFully(buffer);
         ShortBuffer sb = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
         short[] samples = new short[sb.limit()];
         sb.get(samples);

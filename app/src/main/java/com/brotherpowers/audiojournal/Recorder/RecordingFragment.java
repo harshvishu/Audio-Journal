@@ -48,6 +48,16 @@ public class RecordingFragment extends Fragment implements AudioRecorder.Listene
         // Required empty public constructor
     }
 
+    public static RecordingFragment newInstance() {
+
+        Bundle args = new Bundle();
+
+        RecordingFragment fragment = new RecordingFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+
     private static AudioRecorder audioRecorder;
     private AudioRecorder.STATE recordingState;
 

@@ -8,18 +8,12 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
-import com.brotherpowers.audiojournal.Audios.Records;
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Realm.DataEntry;
 import com.brotherpowers.audiojournal.Realm.RFile;
-import com.brotherpowers.audiojournal.Recorder.RecordingFragment;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
 
 import java.util.Locale;
@@ -69,16 +63,8 @@ public class MainActivity extends AppCompatActivity {
         Realm realm = Realm.getDefaultInstance();
 
 
-        int[] arr = new int[]{
-                R.drawable.ic_recording,
-                R.drawable.ic_equalizer_white,
-//                R.drawable.ic_create_white,
-                R.drawable.ic_photo_library_white,
-                R.drawable.ic_alarm_white
-        };
-
         for (int i = 0; i < tabLayout.getTabCount(); i++) {
-            tabLayout.getTabAt(i).setIcon(arr[i]);
+            tabLayout.getTabAt(i).setIcon(Section.value(i).drawable);
             String s = "";
             switch (i) {
                 case 0: {
@@ -141,36 +127,6 @@ public class MainActivity extends AppCompatActivity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        public PlaceholderFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main2, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            return rootView;
-        }
-    }
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -184,20 +140,14 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            switch (position) {
-                case 0:
-                    return new RecordingFragment();
-                case 1:
-                    return Records.newInstance();
-            }
-
-            return PlaceholderFragment.newInstance(position + 1);
+            // Return fragment from position
+            return Section.value(position).fragment;
         }
 
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 4;
+            return Section.values().length;
         }
     }
 }
