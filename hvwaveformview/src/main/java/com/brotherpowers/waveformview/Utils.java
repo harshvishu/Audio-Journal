@@ -4,14 +4,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.TypedValue;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.ShortBuffer;
 import java.util.Arrays;
 
 /**
@@ -29,18 +21,8 @@ public final class Utils {
         return fontSize;
     }
 
-    public static short[] getAudioSamples(File audioFile) throws IOException {
-        byte[] buffer = new byte[(int) audioFile.length()];
-        DataInputStream dis = new DataInputStream(new FileInputStream(audioFile));
-        dis.readFully(buffer);
-        ShortBuffer sb = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
-        short[] samples = new short[sb.limit()];
-        sb.get(samples);
-        return samples;
-    }
 
     public static short[][] getExtremes(short[] data, int sampleSize) {
-
         short[][] newData = new short[sampleSize][];
         int groupSize = data.length / sampleSize;
 
@@ -54,9 +36,19 @@ public final class Utils {
                 min = (short) Math.min(min, a);
                 max = (short) Math.max(max, a);
             }
+            if (max < 0) {
+                max = 0;
+            }
+            if (min > 0) {
+                min = 0;
+            }
             newData[i] = new short[]{max, min};
         }
 
         return newData;
+    }
+
+    public static int calculateAudioLength(int samplesCount, int sampleRate, int channelCount) {
+        return ((samplesCount / channelCount) * 1000) / sampleRate;
     }
 }

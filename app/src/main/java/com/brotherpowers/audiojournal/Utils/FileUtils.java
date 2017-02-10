@@ -10,12 +10,17 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
+import org.apache.commons.io.IOUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.ShortBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -131,5 +136,18 @@ public class FileUtils {
 
     }
 
+    public static short[] getAudioSamples(File file) throws IOException {
+        InputStream is = new FileInputStream(file);
+        byte[] data;
+        try {
+            data = IOUtils.toByteArray(is);
+        } finally {
+            is.close();
+        }
 
+        ShortBuffer sb = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
+        short[] samples = new short[sb.limit()];
+        sb.get(samples);
+        return samples;
+    }
 }

@@ -4,12 +4,19 @@ import android.media.MediaPlayer;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by harsh_v on 11/23/16.
  */
 
-public class AudioPlayer  {
+public class AudioPlayer {
     public static AudioPlayer sharedInstance = new AudioPlayer();
 
     private MediaPlayer mediaPlayer;
@@ -17,9 +24,11 @@ public class AudioPlayer  {
     private long id = -1L;
     private int position = -1;
 
+    private CompositeDisposable _disposables;
 
     //Private constructor
     private AudioPlayer() {
+        _disposables = new CompositeDisposable();
     }
 
     public void play(File file, Listener listener) {
@@ -70,6 +79,29 @@ public class AudioPlayer  {
                 }
             });
 
+
+            Disposable disposable = Observable.interval(1000 / 3, TimeUnit.MILLISECONDS, Schedulers.io())
+                    .subscribeWith(new DisposableObserver<Long>() {
+                        @Override
+                        public void onNext(Long value) {
+                            if (mediaPlayer != null && listener != null) {
+                                listener.progress(mediaPlayer.getCurrentPosition(), id, position);
+
+                            }
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+
+                        }
+
+                        @Override
+                        public void onComplete() {
+
+                        }
+                    });
+            _disposables.add(disposable);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -79,6 +111,7 @@ public class AudioPlayer  {
      * call after stop
      */
     private void onStop() {
+        _disposables.clear();
         mediaPlayer.release();
         mediaPlayer = null;
 
@@ -87,7 +120,6 @@ public class AudioPlayer  {
         }
         id = -1L;
         position = -1;
-
         listener = null;
     }
 
@@ -109,19 +141,19 @@ public class AudioPlayer  {
         this.listener = listener;
     }
 
-    public interface Listener {
-        void onStart(long id, int position);
-
-        void onStop(long id, int position);
-
-        void progress(float progress, long id, int position);
-    }
-
     public long getId() {
         return id;
     }
 
     public int getPosition() {
         return position;
+    }
+
+    public interface Listener {
+        void onStart(long id, int position);
+
+        void onStop(long id, int position);
+
+        void progress(float progress, long id, int position);
     }
 }

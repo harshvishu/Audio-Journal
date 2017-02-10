@@ -8,6 +8,8 @@ import android.graphics.PorterDuff;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -22,12 +24,17 @@ import android.view.ViewGroup;
 
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Realm.DataEntry;
+import com.brotherpowers.audiojournal.Recorder.AudioPlayer;
 import com.brotherpowers.audiojournal.Reminder.Alarm;
 import com.brotherpowers.audiojournal.Utils.Extensions;
 import com.brotherpowers.audiojournal.View.RecyclerViewDecor;
 
+import java.io.File;
+import java.util.concurrent.TimeUnit;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
@@ -36,7 +43,7 @@ import io.realm.Sort;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class Records extends Fragment implements RecordsAdapter.Callback {
+public class Records extends Fragment implements RecordsAdapter.Callback, AudioPlayer.Listener {
 
 
     public Records() {
@@ -105,14 +112,13 @@ public class Records extends Fragment implements RecordsAdapter.Callback {
                         .setMessage("This action will remove all data related to this entry")
                         .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
 
-                            DataEntry item = recordsAdapter.getItem(position);
-                            if (item != null) {
-                                actionDelete(item.getId(), position);
-                            }
+                            DataEntry entry = recordsAdapter.getItem(position);
+                            assert entry != null;
+                            actionDelete(position);
+
                         })
                         .setNegativeButton(android.R.string.cancel, (dialogInterface, i) -> recordsAdapter.notifyItemChanged(position))
                         .create().show();
-
 
             }
 
@@ -191,9 +197,12 @@ public class Records extends Fragment implements RecordsAdapter.Callback {
     }
 
     @Override
-    public void actionDelete(long id, int position) {
+    public void actionDelete(int position) {
+        DataEntry entry = recordsAdapter.getItem(position);
+        assert entry != null;
+
         realm.executeTransaction(r -> {
-            RealmResults<DataEntry> dataEntries = r.where(DataEntry.class).equalTo("id", id).findAll();
+            RealmResults<DataEntry> dataEntries = r.where(DataEntry.class).equalTo("id", entry.getId()).findAll();
             if (!dataEntries.isEmpty()) {
                 for (DataEntry dataEntry : dataEntries) {
                     dataEntry.deleteFromRealm();
@@ -203,25 +212,70 @@ public class Records extends Fragment implements RecordsAdapter.Callback {
         });
 
         // Remove the cached Attachment adapter
-        recordsAdapter.attachmentAdapter.remove(id);
+        recordsAdapter.attachmentAdapter.remove(entry.getId());
 
         // Remove Cached Samples
-        recordsAdapter.cachedSamples.remove(id);
+        recordsAdapter.cachedSamples.remove(entry.getId());
     }
 
+
     @Override
-    public void actionCamera(long id, int position) {
-//        CameraActivity.start(getActivity(), id);
+    public void actionCamera(int position) {
+        DataEntry entry = recordsAdapter.getItem(position);
+        assert entry != null;
     }
 
     @Override
     public void addReminder(int position) {
-        DataEntry dataEntry = recordsAdapter.getItem(position);
+        DataEntry entry = recordsAdapter.getItem(position);
+        assert entry != null;
 
         realm.executeTransaction(r -> {
-            dataEntry.setRemindAt(System.currentTimeMillis() + 2000);
+            entry.setRemindAt(System.currentTimeMillis() + 2000);
         });
+        Alarm.set(getContext(), entry);
+    }
 
-        Alarm.set(getContext(), dataEntry);
+    @Override
+    public void actionPlay(int position) {
+        DataEntry entry = recordsAdapter.getItem(position);
+        assert entry != null;
+
+        long id = entry.getId();
+
+        File file = entry.audioFile().file(getContext());
+        if (file != null && file.exists()) {
+            Observable.timer(100, TimeUnit.MILLISECONDS)
+                    .subscribe(aLong -> {
+                        AudioPlayer.sharedInstance.play(file, id, position, this);
+                    });
+        }
+    }
+
+    @Override
+    public void onStart(long id, int position) {
+        RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(position);
+        if (holder instanceof RecordsAdapter.VHAudioRecord) {
+            ((RecordsAdapter.VHAudioRecord) holder).buttonPlay.setImageResource(R.drawable.ic_stop);
+        }
+    }
+
+    @Override
+    public void onStop(long id, int position) {
+        RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(position);
+        new Handler(Looper.getMainLooper()).post(() -> {
+            if (holder instanceof RecordsAdapter.VHAudioRecord) {
+                ((RecordsAdapter.VHAudioRecord) holder).buttonPlay.setImageResource(R.drawable.ic_play);
+                ((RecordsAdapter.VHAudioRecord) holder).waveformView.setMarkerPosition(0);
+            }
+        });
+    }
+
+    @Override
+    public void progress(float progress, long id, int position) {
+        RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(position);
+        if (holder instanceof RecordsAdapter.VHAudioRecord) {
+            ((RecordsAdapter.VHAudioRecord) holder).waveformView.setMarkerPosition((int) progress);
+        }
     }
 }

@@ -85,4 +85,17 @@ public final class Extensions {
 
         return Color.argb(alpha, red, green, blue);
     }
+
+    public static String getFormattedAudioTime(long length) {
+        String s;
+        int hours = (int) ((length / (1000 * 60 * 60)) % 24);
+        int min = (int) ((length / (1000 * 60)) % 60);
+        int sec = (int) (length / 1000) % 100;
+        if (hours == 0) {
+            s = String.format(Locale.getDefault(), "%02d:%02d", min, sec);
+        } else {
+            s = String.format(Locale.getDefault(), "%02d:%02d", hours, min);
+        }
+        return s;
+    }
 }

@@ -12,11 +12,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.brotherpowers.audiojournal.R;
-import com.brotherpowers.audiojournal.Realm.DataEntry;
-import com.brotherpowers.audiojournal.Realm.RFile;
-import com.brotherpowers.audiojournal.Utils.FileUtils;
-
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -63,40 +58,10 @@ public class MainActivity extends AppCompatActivity {
         Realm realm = Realm.getDefaultInstance();
 
 
+        // set up the tabs
         for (int i = 0; i < tabLayout.getTabCount(); i++) {
-            tabLayout.getTabAt(i).setIcon(Section.value(i).drawable);
-            String s = "";
-            switch (i) {
-                case 0: {
-                    long length = realm.where(DataEntry.class).sum("length").longValue();
-                    int hours = (int) ((length / (1000 * 60 * 60)) % 24);
-                    int min = (int) ((length / (1000 * 60)) % 60);
-                    int sec = (int) (length / 1000) % 100;
-                    if (hours == 0) {
-                        s = String.format(Locale.getDefault(), "%02d:%02d", min, sec);
-                    } else {
-                        s = String.format(Locale.getDefault(), "%02d:%02d", hours, min);
-                    }
-                    break;
-                }
-                case 1: {
-                    long totalNumberOfRecords = realm.where(DataEntry.class).count();
-                    s = String.format(Locale.getDefault(), "%02d", totalNumberOfRecords);
-                    break;
-                }
-                case 2: {
-                    long totalNumberOfPictures = realm.where(RFile.class).equalTo("fileType", FileUtils.Type.IMAGE.value).count();
-                    s = String.format(Locale.getDefault(), "%02d", totalNumberOfPictures);
-                    break;
-                }
-                case 3: {
-                    long totalNumberOfReminders = realm.where(DataEntry.class).isNotNull("remind_at").count();
-                    s = String.format(Locale.getDefault(), "%02d", totalNumberOfReminders);
-                    break;
-                }
-
-            }
-            tabLayout.getTabAt(i).setText(s);
+            tabLayout.getTabAt(i).setIcon(Section.at(i).drawable);
+            tabLayout.getTabAt(i).setText(Section.at(i).title(realm));
         }
 
     }
@@ -141,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             // Return fragment from position
-            return Section.value(position).fragment;
+            return Section.at(position).fragment;
         }
 
         @Override

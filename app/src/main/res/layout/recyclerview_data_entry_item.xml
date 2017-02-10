@@ -53,19 +53,12 @@
                     android:tint="@color/colorAccent"
                     app:srcCompat="@drawable/ic_play"/>
 
-                <!--  <android.support.v4.widget.Space
-                      android:id="@+id/space_1"
-                      android:layout_width="@dimen/button_56"
-                      android:layout_height="@dimen/button_56"
-                      android:layout_alignParentEnd="true"
-                      android:layout_alignParentRight="true"/>-->
-
                 <com.brotherpowers.waveformview.WaveformView
                     android:id="@id/wave_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_centerVertical="true"
-                    android:layout_margin="8dp"
+                    android:layout_margin="4dp"
                     android:layout_toEndOf="@id/action.play"
                     android:layout_toRightOf="@id/action.play"
                     android:textAppearance="@style/TextAppearance.AppCompat.Widget.DropDownItem"

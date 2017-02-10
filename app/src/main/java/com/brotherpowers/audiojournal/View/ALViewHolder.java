@@ -9,10 +9,10 @@ import butterknife.ButterKnife;
  * Created by harsh_v on 10/14/16.
  */
 
-public class ClickableViewHolder extends RecyclerView.ViewHolder {
+public class ALViewHolder extends RecyclerView.ViewHolder {
     final public VhClick vhClick;
 
-    public ClickableViewHolder(View itemView, VhClick vhClick) {
+    public ALViewHolder(View itemView, VhClick vhClick) {
         super(itemView);
         this.vhClick = vhClick;
         ButterKnife.bind(this, itemView);

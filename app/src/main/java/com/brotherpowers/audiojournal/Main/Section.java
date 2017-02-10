@@ -6,7 +6,15 @@ import android.util.SparseArray;
 
 import com.brotherpowers.audiojournal.Audios.Records;
 import com.brotherpowers.audiojournal.R;
+import com.brotherpowers.audiojournal.Realm.DataEntry;
+import com.brotherpowers.audiojournal.Realm.RFile;
 import com.brotherpowers.audiojournal.Recorder.RecordingFragment;
+import com.brotherpowers.audiojournal.Utils.Extensions;
+import com.brotherpowers.audiojournal.Utils.FileUtils;
+
+import java.util.Locale;
+
+import io.realm.Realm;
 
 /**
  * Created by harsh_v on 2/8/17.
@@ -34,13 +42,45 @@ public enum Section {
     public final Fragment fragment;
 
     Section(int position, @DrawableRes int drawable, Fragment fragment) {
-        System.out.println(">>>>>>>>>>>>>>>>");
         this.position = position;
         this.drawable = drawable;
         this.fragment = fragment;
     }
 
-    public static Section value(int position) {
+    public static Section at(int position) {
         return ARRAY.get(position);
     }
+
+    public String title(Realm realm) {
+        String s = "";
+        switch (this) {
+            case recorder: {
+                long length = realm.where(DataEntry.class).sum("length").longValue();
+                s = Extensions.getFormattedAudioTime(length);
+                break;
+            }
+            case records: {
+                long totalNumberOfRecords = realm.where(DataEntry.class).count();
+                s = String.format(Locale.getDefault(), "%2d", totalNumberOfRecords);
+                break;
+            }
+            case pictures: {
+                long totalNumberOfPictures = realm.where(RFile.class).equalTo("fileType", FileUtils.Type.IMAGE.value).count();
+                s = String.format(Locale.getDefault(), "%2d", totalNumberOfPictures);
+                if (totalNumberOfPictures > 0) {
+                }
+                break;
+            }
+            case reminders: {
+                long totalNumberOfReminders = realm.where(DataEntry.class).isNotNull("remind_at").count();
+                s = String.format(Locale.getDefault(), "%2d", totalNumberOfReminders);
+                if (totalNumberOfReminders > 0) {
+                }
+                break;
+            }
+        }
+        return s;
+    }
+
+
 }

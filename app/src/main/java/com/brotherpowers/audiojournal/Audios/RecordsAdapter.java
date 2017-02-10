@@ -21,11 +21,9 @@ import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Realm.DataEntry;
 import com.brotherpowers.audiojournal.Realm.RFile;
 import com.brotherpowers.audiojournal.Recorder.AudioPlayer;
-import com.brotherpowers.audiojournal.Reminder.Alarm;
 import com.brotherpowers.audiojournal.Utils.Extensions;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
-import com.brotherpowers.audiojournal.View.ClickableViewHolder;
-import com.brotherpowers.waveformview.Utils;
+import com.brotherpowers.audiojournal.View.ALViewHolder;
 import com.brotherpowers.waveformview.WaveformView;
 import com.squareup.picasso.Picasso;
 
@@ -40,7 +38,7 @@ import io.realm.RealmResults;
  * Created by harsh_v on 11/4/16.
  */
 
-class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ClickableViewHolder> implements AudioPlayer.Listener {
+class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
     private final int VIEW_PLACEHOLDER = 0;
     private final int VIEW_ITEM = 1;
 
@@ -57,62 +55,37 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ClickableViewHo
     }
 
     @Override
-    public ClickableViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ClickableViewHolder clickableViewHolder;
+    public ALViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        ALViewHolder ALViewHolder;
         Context context = parent.getContext();
 
         if (viewType == VIEW_PLACEHOLDER) {
             View view = LayoutInflater.from(context).inflate(R.layout.recyclerview_data_entry_placeholder, parent, false);
-            clickableViewHolder = new ClickableViewHolderPlaceHolder(view, null);
+            ALViewHolder = new VHPlaceHolder(view, null);
         } else {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_data_entry_item, parent, false);
-            clickableViewHolder = new ClickableViewHolderItem(view, (holder_view, position) -> {
-                DataEntry dataEntry = getItem(position);
+            ALViewHolder = new VHAudioRecord(view, (holder_view, position) -> {
+
+
                 switch (holder_view.getId()) {
-                    case R.id.action_delete:
-//                        callback.actionDelete(getItem(position).getId());
-                        /*realm.executeTransaction(r -> {
-                            DataEntry managedObject = getItem(position);
-                            if (managedObject != null) {
-                                managedObject.deleteFromRealm();
-                            }
-                        });*/
-                        // TODO: 11/23/16 replaced by swipe  listener
-
-                        break;
                     case R.id.action_play:
-
-                        if (dataEntry != null) {
-                            try {
-
-                                File file = dataEntry.audioFile().file(context);
-                                if (file != null && file.exists()) {
-
-                                    AudioPlayer.sharedInstance.play(file, dataEntry.getId(), position, this);
-
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
+                        callback.actionPlay(position);
                     case R.id.action_camera:
-                        if (dataEntry != null) {
-                            callback.actionCamera(dataEntry.getId(), position);
+                        callback.actionCamera(position);
 
-                        }
                         break;
                     case R.id.action_reminder:
-                        // TODO: 11/29/16 test code
+
                         callback.addReminder(position);
                         break;
                 }
             });
         }
-        return clickableViewHolder;
+        return ALViewHolder;
     }
 
     @Override
-    public void onBindViewHolder(ClickableViewHolder holder, int position) {
+    public void onBindViewHolder(ALViewHolder holder, int position) {
         int viewType = getItemViewType(position);
 
         if (viewType == VIEW_PLACEHOLDER) {
@@ -121,72 +94,71 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ClickableViewHo
             DataEntry entry = getItem(position);
             long id = entry.getId();
 
-            if (entry == null || !entry.isLoaded() || !entry.isValid()) {
+            if (!entry.isLoaded() || !entry.isValid()) {
                 return;
             }
 
-            ClickableViewHolderItem viewHolderItem = (ClickableViewHolderItem) holder;
+            if (holder instanceof VHAudioRecord) {
 
-            String str = Extensions.formatHumanReadable.format(entry.getCreated_at());
-            viewHolderItem.labelTitle.setText(str);
+                String str = Extensions.formatHumanReadable.format(entry.getCreated_at());
+                ((VHAudioRecord) holder).labelTitle.setText(str);
 
-            if (entry.audioFile() == null) {
-                viewHolderItem.buttonPlay.setImageResource(R.drawable.ic_mic);
-            } else if (AudioPlayer.sharedInstance.getId() == entry.getId()) {
-                viewHolderItem.buttonPlay.setImageResource(R.drawable.ic_stop);
-            } else {
-                viewHolderItem.buttonPlay.setImageResource(R.drawable.ic_play);
-            }
+                if (entry.audioFile() == null) {
+                    ((VHAudioRecord) holder).buttonPlay.setImageResource(R.drawable.ic_mic);
+                } else if (AudioPlayer.sharedInstance.getId() == entry.getId()) {
+                    ((VHAudioRecord) holder).buttonPlay.setImageResource(R.drawable.ic_stop);
+                } else {
+                    ((VHAudioRecord) holder).buttonPlay.setImageResource(R.drawable.ic_play);
+                }
 
-            File audioFile = entry.audioFile().file(context);
-            if (audioFile != null && audioFile.exists()) {
+                File audioFile = entry.audioFile().file(context);
+                if (audioFile != null && audioFile.exists()) {
 
-                try {
-                    final short[] samples;
-                    if (cachedSamples.get(id) != null) {
-                        samples = cachedSamples.get(id);
+                    try {
+                        final short[] samples;
+                        if (cachedSamples.get(id) != null) {
+                            samples = cachedSamples.get(id);
+                        } else {
+                            samples = FileUtils.getAudioSamples(audioFile);
+                            cachedSamples.append(id, samples);
+                        }
+
+                        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+                        Uri uri = FileProvider.getUriForFile(context, context.getString(R.string.file_provider_authority), audioFile);
+
+                        mmr.setDataSource(context, uri);
+                        int duration = Integer.valueOf(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+                        ((VHAudioRecord) holder).waveformView.setSampleRate(44100);
+                        ((VHAudioRecord) holder).waveformView.setChannels(1);
+                        ((VHAudioRecord) holder).waveformView.setSamples(samples);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                RealmResults<RFile> images = entry.getAttachments()
+                        .where()
+                        .equalTo("fileType", FileUtils.Type.IMAGE.value)
+                        .findAll();
+
+                if (images.isEmpty()) {
+                    ((VHAudioRecord) holder).recyclerViewInternal.setVisibility(View.GONE);
+                } else {
+                    final AttachmentAdapter attachmentAdapter;
+                    if (this.attachmentAdapter.get(entry.getId()) == null) {
+                        attachmentAdapter = new AttachmentAdapter(context, images);
+                        this.attachmentAdapter.append(entry.getId(), attachmentAdapter);
                     } else {
-                        samples = Utils.getAudioSamples(audioFile);
+                        attachmentAdapter = this.attachmentAdapter.get(entry.getId());
+                        attachmentAdapter.updateData(images);
                     }
 
-                    MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-                    Uri uri = FileProvider.getUriForFile(context, context.getString(R.string.file_provider_authority), audioFile);
-
-                    mmr.setDataSource(context, uri);
-                    int duration = Integer.valueOf(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-                    viewHolderItem.waveformView.setSamples(samples, duration);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    ((VHAudioRecord) holder).recyclerViewInternal.setVisibility(View.VISIBLE);
+                    ((VHAudioRecord) holder).recyclerViewInternal.setAdapter(attachmentAdapter);
+                    ((VHAudioRecord) holder).recyclerViewInternal.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
                 }
-
-
-            } else {
-                System.out.println(">>>> null file");
             }
-
-            RealmResults<RFile> images = entry.getAttachments()
-                    .where()
-                    .equalTo("fileType", FileUtils.Type.IMAGE.value)
-                    .findAll();
-
-            if (images.isEmpty()) {
-                viewHolderItem.recyclerViewInternal.setVisibility(View.GONE);
-            } else {
-                final AttachmentAdapter attachmentAdapter;
-                if (this.attachmentAdapter.get(entry.getId()) == null) {
-                    attachmentAdapter = new AttachmentAdapter(context, images);
-                    this.attachmentAdapter.append(entry.getId(), attachmentAdapter);
-                } else {
-                    attachmentAdapter = this.attachmentAdapter.get(entry.getId());
-                    attachmentAdapter.updateData(images);
-                }
-
-                viewHolderItem.recyclerViewInternal.setVisibility(View.VISIBLE);
-                viewHolderItem.recyclerViewInternal.setAdapter(attachmentAdapter);
-                viewHolderItem.recyclerViewInternal.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-            }
-
         }
 
     }
@@ -219,22 +191,8 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ClickableViewHo
         return super.getItemCount();
     }
 
-    @Override
-    public void onStart(long id, int position) {
-        notifyItemChanged(position);
-    }
 
-    @Override
-    public void onStop(long id, int position) {
-        notifyItemChanged(position);
-    }
-
-    @Override
-    public void progress(float progress, long id, int position) {
-
-    }
-
-    static class ClickableViewHolderItem extends ClickableViewHolder implements View.OnClickListener {
+    static class VHAudioRecord extends ALViewHolder implements View.OnClickListener {
         @BindView(R.id.label_text)
         AppCompatTextView labelTitle;
 
@@ -253,7 +211,7 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ClickableViewHo
         @BindView(R.id.recycler_view_internal)
         RecyclerView recyclerViewInternal;
 
-        ClickableViewHolderItem(View itemView, VhClick vhClick) {
+        VHAudioRecord(View itemView, VhClick vhClick) {
             super(itemView, vhClick);
 
             buttonPlay.setOnClickListener(this);
@@ -269,9 +227,9 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ClickableViewHo
     }
 
 
-    static class ClickableViewHolderPlaceHolder extends ClickableViewHolder {
+    static class VHPlaceHolder extends ALViewHolder {
 
-        ClickableViewHolderPlaceHolder(View itemView, VhClick vhClick) {
+        VHPlaceHolder(View itemView, VhClick vhClick) {
             super(itemView, vhClick);
         }
     }
@@ -305,7 +263,7 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ClickableViewHo
 
     }
 
-    class ViewHolderImage extends ClickableViewHolder implements View.OnClickListener {
+    class ViewHolderImage extends ALViewHolder implements View.OnClickListener {
         @BindView(R.id.image_view_internal)
         AppCompatImageView imageView;
 
@@ -322,10 +280,12 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ClickableViewHo
     }
 
     public interface Callback {
-        void actionDelete(long id, int position);
+        void actionDelete(int position);
 
-        void actionCamera(long id, int position);
+        void actionCamera(int position);
 
         void addReminder(int position);
+
+        void actionPlay(int position);
     }
 }
