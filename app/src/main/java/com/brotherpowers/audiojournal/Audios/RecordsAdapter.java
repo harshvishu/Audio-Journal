@@ -70,12 +70,11 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
                 switch (holder_view.getId()) {
                     case R.id.action_play:
                         callback.actionPlay(position);
+                        break;
                     case R.id.action_camera:
                         callback.actionCamera(position);
-
                         break;
                     case R.id.action_reminder:
-
                         callback.addReminder(position);
                         break;
                 }
@@ -86,78 +85,76 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
 
     @Override
     public void onBindViewHolder(ALViewHolder holder, int position) {
-        int viewType = getItemViewType(position);
 
-        if (viewType == VIEW_PLACEHOLDER) {
-            // Do Nothing
-        } else {
+        //While binding an audio record
+        if (holder instanceof VHAudioRecord) {
+
             DataEntry entry = getItem(position);
+            assert entry != null;
+
             long id = entry.getId();
 
             if (!entry.isLoaded() || !entry.isValid()) {
                 return;
             }
 
-            if (holder instanceof VHAudioRecord) {
+            String str = Extensions.formatHumanReadable.format(entry.getCreated_at());
+            ((VHAudioRecord) holder).labelTitle.setText(str);
 
-                String str = Extensions.formatHumanReadable.format(entry.getCreated_at());
-                ((VHAudioRecord) holder).labelTitle.setText(str);
+            if (entry.audioFile() == null) {
+                ((VHAudioRecord) holder).buttonPlay.setImageResource(R.drawable.ic_mic);
+            } else if (AudioPlayer.sharedInstance.getId() == entry.getId()) {
+                ((VHAudioRecord) holder).buttonPlay.setImageResource(R.drawable.ic_stop);
+            } else {
+                ((VHAudioRecord) holder).buttonPlay.setImageResource(R.drawable.ic_play);
+            }
 
-                if (entry.audioFile() == null) {
-                    ((VHAudioRecord) holder).buttonPlay.setImageResource(R.drawable.ic_mic);
-                } else if (AudioPlayer.sharedInstance.getId() == entry.getId()) {
-                    ((VHAudioRecord) holder).buttonPlay.setImageResource(R.drawable.ic_stop);
-                } else {
-                    ((VHAudioRecord) holder).buttonPlay.setImageResource(R.drawable.ic_play);
-                }
+            File audioFile = entry.audioFile().file(context);
+            if (audioFile != null && audioFile.exists()) {
 
-                File audioFile = entry.audioFile().file(context);
-                if (audioFile != null && audioFile.exists()) {
-
-                    try {
-                        final short[] samples;
-                        if (cachedSamples.get(id) != null) {
-                            samples = cachedSamples.get(id);
-                        } else {
-                            samples = FileUtils.getAudioSamples(audioFile);
-                            cachedSamples.append(id, samples);
-                        }
-
-                        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-                        Uri uri = FileProvider.getUriForFile(context, context.getString(R.string.file_provider_authority), audioFile);
-
-                        mmr.setDataSource(context, uri);
-                        int duration = Integer.valueOf(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-                        ((VHAudioRecord) holder).waveformView.setSampleRate(44100);
-                        ((VHAudioRecord) holder).waveformView.setChannels(1);
-                        ((VHAudioRecord) holder).waveformView.setSamples(samples);
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                RealmResults<RFile> images = entry.getAttachments()
-                        .where()
-                        .equalTo("fileType", FileUtils.Type.IMAGE.value)
-                        .findAll();
-
-                if (images.isEmpty()) {
-                    ((VHAudioRecord) holder).recyclerViewInternal.setVisibility(View.GONE);
-                } else {
-                    final AttachmentAdapter attachmentAdapter;
-                    if (this.attachmentAdapter.get(entry.getId()) == null) {
-                        attachmentAdapter = new AttachmentAdapter(context, images);
-                        this.attachmentAdapter.append(entry.getId(), attachmentAdapter);
+                try {
+                    final short[] samples;
+                    if (cachedSamples.get(id) != null) {
+                        samples = cachedSamples.get(id);
                     } else {
-                        attachmentAdapter = this.attachmentAdapter.get(entry.getId());
-                        attachmentAdapter.updateData(images);
+                        samples = FileUtils.getAudioSamples(audioFile);
+                        cachedSamples.append(id, samples);
                     }
 
-                    ((VHAudioRecord) holder).recyclerViewInternal.setVisibility(View.VISIBLE);
-                    ((VHAudioRecord) holder).recyclerViewInternal.setAdapter(attachmentAdapter);
-                    ((VHAudioRecord) holder).recyclerViewInternal.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+                    MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+                    Uri uri = FileProvider.getUriForFile(context, context.getString(R.string.file_provider_authority), audioFile);
+
+                    mmr.setDataSource(context, uri);
+                    int duration = Integer.valueOf(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+                    ((VHAudioRecord) holder).waveformView.setSampleRate(44100);
+                    ((VHAudioRecord) holder).waveformView.setChannels(1);
+                    ((VHAudioRecord) holder).waveformView.setSamples(samples);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+            }
+
+            RealmResults<RFile> images = entry.getAttachments()
+                    .where()
+                    .equalTo("fileType", FileUtils.Type.IMAGE.value)
+                    .findAll();
+
+            if (images.isEmpty()) {
+                ((VHAudioRecord) holder).recyclerViewInternal.setVisibility(View.GONE);
+            } else {
+                final AttachmentAdapter attachmentAdapter;
+                if (this.attachmentAdapter.get(entry.getId()) == null) {
+                    attachmentAdapter = new AttachmentAdapter(context, images);
+                    this.attachmentAdapter.append(entry.getId(), attachmentAdapter);
+                } else {
+                    attachmentAdapter = this.attachmentAdapter.get(entry.getId());
+                    attachmentAdapter.updateData(images);
+                }
+
+                ((VHAudioRecord) holder).recyclerViewInternal.setVisibility(View.VISIBLE);
+                ((VHAudioRecord) holder).recyclerViewInternal.setAdapter(attachmentAdapter);
+                ((VHAudioRecord) holder).recyclerViewInternal.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
             }
         }
 
@@ -239,10 +236,6 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
             super(context, data, true);
         }
 
-        /*public AttachmentAdapter(RealmResults<RFile> images) {
-
-        }*/
-
         @Override
         public ViewHolderImage onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = inflater.inflate(R.layout.recycler_view_internal_image, parent, false);
@@ -254,7 +247,6 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
         @Override
         public void onBindViewHolder(ViewHolderImage holder, int position) {
             RFile rFile = getData().get(position);
-
             Picasso.with(context)
                     .load(rFile.file(context))
                     .fit()

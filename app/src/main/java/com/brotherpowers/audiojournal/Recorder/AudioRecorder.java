@@ -17,7 +17,8 @@ import java.util.Locale;
  */
 
 public class AudioRecorder {
-    static final int MAX_AUDIO_LENGTH = 60_000 * 5; // 1 Minute
+    public static final int MAX_AUDIO_LENGTH = 60_000 * 5; // 1 Minute
+    public static final int SAMPLE_RATE = 44100; // 1 Minute
 
     private final File file;
     private STATE recordingState;

@@ -1,5 +1,6 @@
 package com.brotherpowers.waveformview;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -9,7 +10,9 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Picture;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
@@ -51,6 +54,7 @@ public class WaveformView extends View {
     private Paint mWaveStrokePaint;
     private Paint mMarkerPaint;
     private Paint mPointerPaint;
+    protected Paint mProgressFillPaint;
 
     private Drawable leftMarker;
     private Rect drawRect;
@@ -65,6 +69,10 @@ public class WaveformView extends View {
     private Bitmap mCachedWaveformBitmap;
     private boolean showTextAxis = true;
     private Path waveformPath;
+
+    private Bitmap playbackBitmap;
+    private Canvas playbackCanvas;
+
 
     private int width;
     private int height;
@@ -102,10 +110,15 @@ public class WaveformView extends View {
         mWaveFillPaint.setStyle(Paint.Style.FILL);
         mWaveFillPaint.setColor(waveFillColor);
 
+        mProgressFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mProgressFillPaint.setStyle(Paint.Style.FILL);
+        mProgressFillPaint.setColor(Color.BLACK);
+        mProgressFillPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+
         mMarkerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mMarkerPaint.setStyle(Paint.Style.STROKE);
-        mMarkerPaint.setStrokeWidth(strokeWidth);
-        mMarkerPaint.setColor(markerColor);
+        mMarkerPaint.setStrokeWidth(2);
+        mMarkerPaint.setColor(Color.RED);
 
         mPointerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPointerPaint.setStyle(Paint.Style.FILL);
@@ -131,33 +144,30 @@ public class WaveformView extends View {
             mHistoricalData.clear();
         }
         if (mMode == MODE_PLAYBACK) {
+
             createPlaybackWaveform();
         }
     }
 
+    @SuppressLint("DrawAllocation")
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
-        canvas.drawLine(0, centerY, width, centerY, mWaveFillPaint);
 
         LinkedList<float[]> temp = mHistoricalData;
         if (mMode == MODE_RECORDING && temp != null) {
             for (float[] p : temp) {
                 canvas.drawLines(p, mWaveStrokePaint);
-
             }
         } else if (mMode == MODE_PLAYBACK) {
-           /* if (mCachedWaveform != null) {
-                canvas.drawPicture(mCachedWaveform);
-            } else if (mCachedWaveformBitmap != null) {
-                canvas.drawBitmap(mCachedWaveformBitmap, null, drawRect, null);
-            }*/
-
+            canvas.drawLine(0, centerY, width, centerY, mWaveFillPaint);
             canvas.drawPath(waveformPath, mWaveFillPaint);
             // Marker
-            if (mMarkerPosition > -1 && mMarkerPosition < mAudioLength) {
-                canvas.drawLine(xStep * mMarkerPosition, 0, xStep * mMarkerPosition, height, mMarkerPaint);
+            if (mMarkerPosition > -1 && mMarkerPosition <= width && playbackCanvas != null) {
+                playbackCanvas.drawLine(0, centerY, xStep * mMarkerPosition, centerY, mWaveFillPaint);
+                playbackCanvas.drawPath(waveformPath, mWaveFillPaint);
+                playbackCanvas.drawRect(drawRect.left, 0, xStep * mMarkerPosition, height, mProgressFillPaint);
+                canvas.drawBitmap(playbackBitmap, 0, 0, mMarkerPaint);
             }
         }
     }
@@ -325,6 +335,9 @@ public class WaveformView extends View {
             return;
         }
 
+        playbackBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        playbackCanvas = new Canvas(playbackBitmap);
+
         Canvas cacheCanvas;
         if (Build.VERSION.SDK_INT >= 23 && isHardwareAccelerated()) {
             mCachedWaveform = new Picture();
@@ -359,5 +372,11 @@ public class WaveformView extends View {
         }
     }
 
+    private void clip() {
+        Region clipRegion = new Region(new Rect(drawRect.left, drawRect.top, mMarkerPosition, drawRect.bottom));
+        Region entireRegion = new Region(drawRect);
+        entireRegion.setPath(waveformPath, clipRegion);
+        entireRegion.op(clipRegion, Region.Op.INTERSECT);
+    }
 
 }

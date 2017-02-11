@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Realm.DataEntry;
 import com.brotherpowers.audiojournal.Recorder.AudioPlayer;
+import com.brotherpowers.audiojournal.Recorder.AudioRecorder;
 import com.brotherpowers.audiojournal.Reminder.Alarm;
 import com.brotherpowers.audiojournal.Utils.Extensions;
 import com.brotherpowers.audiojournal.View.RecyclerViewDecor;
@@ -43,7 +44,7 @@ import io.realm.Sort;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class Records extends Fragment implements RecordsAdapter.Callback, AudioPlayer.Listener {
+public class Records extends Fragment implements RecordsAdapter.Callback, AudioPlayer.PlaybackListener {
 
 
     public Records() {
@@ -125,10 +126,7 @@ public class Records extends Fragment implements RecordsAdapter.Callback, AudioP
 
             @Override
             public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-
-
                 if (recordsAdapter.getActualSizeOfData() > 0) {
-
                     if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
 
                         View itemView = viewHolder.itemView;
@@ -181,7 +179,6 @@ public class Records extends Fragment implements RecordsAdapter.Callback, AudioP
                                 int bottom = top + size;
 
                                 icon.setBounds(left, top, right, bottom);
-
                                 if (right >= background.left) {
                                     icon.draw(c);
                                 }
@@ -192,8 +189,6 @@ public class Records extends Fragment implements RecordsAdapter.Callback, AudioP
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
             }
         });
-
-//        itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
     @Override
@@ -206,13 +201,9 @@ public class Records extends Fragment implements RecordsAdapter.Callback, AudioP
             if (!dataEntries.isEmpty()) {
                 for (DataEntry dataEntry : dataEntries) {
                     dataEntry.deleteFromRealm();
-                    System.out.println("item removed");
                 }
             }
         });
-
-        // Remove the cached Attachment adapter
-        recordsAdapter.attachmentAdapter.remove(entry.getId());
 
         // Remove Cached Samples
         recordsAdapter.cachedSamples.remove(entry.getId());
@@ -227,6 +218,7 @@ public class Records extends Fragment implements RecordsAdapter.Callback, AudioP
 
     @Override
     public void addReminder(int position) {
+        // TODO: 2/11/17 pending
         DataEntry entry = recordsAdapter.getItem(position);
         assert entry != null;
 
@@ -252,8 +244,11 @@ public class Records extends Fragment implements RecordsAdapter.Callback, AudioP
         }
     }
 
+    /**
+     * Configure the view when audio starts
+     */
     @Override
-    public void onStart(long id, int position) {
+    public void onPlaybackStart(long id, int position) {
         RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(position);
         if (holder instanceof RecordsAdapter.VHAudioRecord) {
             ((RecordsAdapter.VHAudioRecord) holder).buttonPlay.setImageResource(R.drawable.ic_stop);
@@ -261,7 +256,7 @@ public class Records extends Fragment implements RecordsAdapter.Callback, AudioP
     }
 
     @Override
-    public void onStop(long id, int position) {
+    public void onPlaybackStop(long id, int position) {
         RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(position);
         new Handler(Looper.getMainLooper()).post(() -> {
             if (holder instanceof RecordsAdapter.VHAudioRecord) {
@@ -272,10 +267,10 @@ public class Records extends Fragment implements RecordsAdapter.Callback, AudioP
     }
 
     @Override
-    public void progress(float progress, long id, int position) {
+    public void playbackProgress(float progress, long id, int position) {
         RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(position);
         if (holder instanceof RecordsAdapter.VHAudioRecord) {
-            ((RecordsAdapter.VHAudioRecord) holder).waveformView.setMarkerPosition((int) progress);
+            ((RecordsAdapter.VHAudioRecord) holder).waveformView.setMarkerPosition((int) (progress * 1000) / AudioRecorder.SAMPLE_RATE);
         }
     }
 }

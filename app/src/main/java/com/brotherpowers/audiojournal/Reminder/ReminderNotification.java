@@ -139,22 +139,22 @@ public class ReminderNotification extends Service {
                 Notification notification = builder.build();
 
 
-                AudioPlayer.sharedInstance.play(file, new AudioPlayer.Listener() {
+                AudioPlayer.sharedInstance.play(file, new AudioPlayer.PlaybackListener() {
                     @Override
-                    public void onStart(long id, int position) {
+                    public void onPlaybackStart(long id, int position) {
                         System.out.println("start");
                         manger.notify(0x99, notification);
                     }
 
                     @Override
-                    public void onStop(long id, int position) {
+                    public void onPlaybackStop(long id, int position) {
                         System.out.println("stop");
                         stopSelf();
                     }
 
                     @Override
-                    public void progress(float progress, long id, int position) {
-                        System.out.println("progress: " + progress);
+                    public void playbackProgress(float progress, long id, int position) {
+                        System.out.println("playbackProgress: " + progress);
                         manger.cancel(0x99);
                     }
                 });

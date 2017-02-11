@@ -20,7 +20,7 @@ public class AudioPlayer {
     public static AudioPlayer sharedInstance = new AudioPlayer();
 
     private MediaPlayer mediaPlayer;
-    private Listener listener;
+    private PlaybackListener playbackListener;
     private long id = -1L;
     private int position = -1;
 
@@ -31,11 +31,11 @@ public class AudioPlayer {
         _disposables = new CompositeDisposable();
     }
 
-    public void play(File file, Listener listener) {
-        play(file, 0x999L, 0x999, listener);
+    public void play(File file, PlaybackListener playbackListener) {
+        play(file, 0x999L, 0x999, playbackListener);
     }
 
-    public void play(File file, long id, int position, Listener listener) {
+    public void play(File file, long id, int position, PlaybackListener playbackListener) {
         // stop and return
         if (this.id == id) {
             cancel();
@@ -45,7 +45,7 @@ public class AudioPlayer {
             cancel();
         }
 
-        this.listener = listener;
+        this.playbackListener = playbackListener;
         this.id = id;
         this.position = position;
 
@@ -66,8 +66,8 @@ public class AudioPlayer {
                 @Override
                 public void onPrepared(MediaPlayer mediaPlayer) {
                     mediaPlayer.start();
-                    if (listener != null) {
-                        listener.onStart(id, position);
+                    if (playbackListener != null) {
+                        playbackListener.onPlaybackStart(id, position);
                     }
                 }
             });
@@ -79,20 +79,19 @@ public class AudioPlayer {
                 }
             });
 
-
+            // Send progress details in an interval of second/3
             Disposable disposable = Observable.interval(1000 / 3, TimeUnit.MILLISECONDS, Schedulers.io())
                     .subscribeWith(new DisposableObserver<Long>() {
                         @Override
                         public void onNext(Long value) {
-                            if (mediaPlayer != null && listener != null) {
-                                listener.progress(mediaPlayer.getCurrentPosition(), id, position);
-
+                            if (mediaPlayer != null && playbackListener != null) {
+                                playbackListener.playbackProgress(mediaPlayer.getCurrentPosition(), id, position);
                             }
                         }
 
                         @Override
                         public void onError(Throwable e) {
-
+                            e.printStackTrace();
                         }
 
                         @Override
@@ -115,12 +114,12 @@ public class AudioPlayer {
         mediaPlayer.release();
         mediaPlayer = null;
 
-        if (listener != null) {
-            listener.onStop(id, position);
+        if (playbackListener != null) {
+            playbackListener.onPlaybackStop(id, position);
         }
         id = -1L;
         position = -1;
-        listener = null;
+        playbackListener = null;
     }
 
     public void cancel() {
@@ -137,8 +136,8 @@ public class AudioPlayer {
         return mediaPlayer != null && mediaPlayer.isPlaying();
     }
 
-    public void setListener(Listener listener) {
-        this.listener = listener;
+    public void setPlaybackListener(PlaybackListener playbackListener) {
+        this.playbackListener = playbackListener;
     }
 
     public long getId() {
@@ -149,11 +148,11 @@ public class AudioPlayer {
         return position;
     }
 
-    public interface Listener {
-        void onStart(long id, int position);
+    public interface PlaybackListener {
+        void onPlaybackStart(long id, int position);
 
-        void onStop(long id, int position);
+        void onPlaybackStop(long id, int position);
 
-        void progress(float progress, long id, int position);
+        void playbackProgress(float progress, long id, int position);
     }
 }
