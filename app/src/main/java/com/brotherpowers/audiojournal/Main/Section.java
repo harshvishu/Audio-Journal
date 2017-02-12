@@ -67,15 +67,11 @@ public enum Section {
             case pictures: {
                 long totalNumberOfPictures = realm.where(RFile.class).equalTo("fileType", FileUtils.Type.IMAGE.value).count();
                 s = String.format(Locale.getDefault(), "%2d", totalNumberOfPictures);
-                if (totalNumberOfPictures > 0) {
-                }
                 break;
             }
             case reminders: {
                 long totalNumberOfReminders = realm.where(DataEntry.class).isNotNull("remind_at").count();
                 s = String.format(Locale.getDefault(), "%2d", totalNumberOfReminders);
-                if (totalNumberOfReminders > 0) {
-                }
                 break;
             }
         }

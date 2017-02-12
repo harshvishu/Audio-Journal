@@ -13,16 +13,15 @@ import android.widget.Toast;
  * Created by harsh_v on 2/7/17.
  */
 
-public class ConfirmationDialogFragment extends DialogFragment {
+public class PermissionRequestFragment extends DialogFragment {
 
     private static final String ARG_MESSAGE = "message";
     private static final String ARG_PERMISSIONS = "permissions";
     private static final String ARG_REQUEST_CODE = "request_code";
     private static final String ARG_NOT_GRANTED_MESSAGE = "not_granted_message";
 
-    public static ConfirmationDialogFragment newInstance(@StringRes int message,
-                                                         String[] permissions, int requestCode, @StringRes int notGrantedMessage) {
-        ConfirmationDialogFragment fragment = new ConfirmationDialogFragment();
+    public static PermissionRequestFragment newInstance(@StringRes int message, String[] permissions, int requestCode, @StringRes int notGrantedMessage) {
+        PermissionRequestFragment fragment = new PermissionRequestFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_MESSAGE, message);
         args.putStringArray(ARG_PERMISSIONS, permissions);

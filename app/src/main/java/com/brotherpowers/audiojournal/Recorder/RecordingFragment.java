@@ -2,6 +2,8 @@ package com.brotherpowers.audiojournal.Recorder;
 
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
@@ -11,16 +13,18 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 
+import com.brotherpowers.audiojournal.Notifications.NotificationConstants;
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Realm.DataEntry;
 import com.brotherpowers.audiojournal.Realm.RFile;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
-import com.brotherpowers.audiojournal.View.ConfirmationDialogFragment;
+import com.brotherpowers.audiojournal.View.PermissionRequestFragment;
 import com.brotherpowers.hvprogressview.ProgressView;
 
 import java.io.File;
@@ -60,6 +64,7 @@ public class RecordingFragment extends Fragment implements AudioRecorder.Listene
 
     private static AudioRecorder audioRecorder;
     private AudioRecorder.STATE recordingState;
+    private OnFragmentInteractionListener interactionListener;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,6 +77,13 @@ public class RecordingFragment extends Fragment implements AudioRecorder.Listene
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        // Connect the interface with activity
+        this.interactionListener = (OnFragmentInteractionListener) context;
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -79,11 +91,9 @@ public class RecordingFragment extends Fragment implements AudioRecorder.Listene
         ButterKnife.bind(this, view);
 
 
-        if (recordingState == AudioRecorder.STATE.RECORDING) {
-            buttonCapture.setImageResource(R.drawable.ic_stop);
-        } else {
-            buttonCapture.setImageResource(R.drawable.ic_mic);
-        }
+        // Set the recording button with recording state
+        buttonCapture.setImageResource(recordingState == AudioRecorder.STATE.RECORDING
+                ? R.drawable.ic_stop : R.drawable.ic_mic);
 
         buttonCapture.setOnClickListener(v -> {
 
@@ -92,6 +102,9 @@ public class RecordingFragment extends Fragment implements AudioRecorder.Listene
                             == PackageManager.PERMISSION_GRANTED) {
 
                 if (recordingState == AudioRecorder.STATE.PENDING) {
+                    // Stop any audio player
+                    AudioPlayer.sharedInstance.cancel();
+
                     audioRecorder.start(getContext());
                 } else if (recordingState == AudioRecorder.STATE.RECORDING) {
                     audioRecorder.stop();
@@ -99,14 +112,13 @@ public class RecordingFragment extends Fragment implements AudioRecorder.Listene
 
             } else if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                     Manifest.permission.RECORD_AUDIO)) {
-                ConfirmationDialogFragment
+                PermissionRequestFragment
                         .newInstance(R.string.record_permission_confirmation,
                                 new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE},
                                 REQ_REC_PERMISSION,
                                 R.string.record_permission_not_granted)
                         .show(getChildFragmentManager(), FRAGMENT_DIALOG);
             } else {
-                System.out.println(">>>>> REQUEST PERMISSION");
                 ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE},
                         REQ_REC_PERMISSION);
             }
@@ -117,8 +129,11 @@ public class RecordingFragment extends Fragment implements AudioRecorder.Listene
 
 
     @Override
-    public void onRecordingStart(AudioRecorder.STATE recordingState) {
-        this.recordingState = recordingState;
+    public void onRecordingStart() {
+        this.recordingState = AudioRecorder.STATE.RECORDING;
+
+        // Interface
+        interactionListener.onRecordingStateChange(recordingState);
 
         buttonCapture.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.fab_open));
         buttonCapture.setImageResource(R.drawable.ic_stop);
@@ -127,8 +142,11 @@ public class RecordingFragment extends Fragment implements AudioRecorder.Listene
 
 
     @Override
-    public void onRecordingStop(AudioRecorder.STATE recordingState, File file) {
-        this.recordingState = recordingState;
+    public void onRecordingStop(File file) {
+        this.recordingState = AudioRecorder.STATE.FINISHED;
+
+        // Interface
+        interactionListener.onRecordingStateChange(recordingState);
 
         Realm realm = Realm.getDefaultInstance();
 
@@ -173,5 +191,17 @@ public class RecordingFragment extends Fragment implements AudioRecorder.Listene
     @Override
     public void onSamples(short[] samples, int length) {
 //        waveformView.setSamples(samples, length);
+    }
+
+    @Override
+    public void onStop() {
+        if (audioRecorder.getRecordingState() == AudioRecorder.STATE.RECORDING) {
+            audioRecorder.stop();
+        }
+        super.onStop();
+    }
+
+    public interface OnFragmentInteractionListener {
+        void onRecordingStateChange(AudioRecorder.STATE state);
     }
 }

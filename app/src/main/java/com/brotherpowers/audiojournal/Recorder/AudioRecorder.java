@@ -75,7 +75,7 @@ public class AudioRecorder {
         try {
             mediaRecorder.prepare();
             if (listener != null) {
-                listener.onRecordingStart(recordingState);
+                listener.onRecordingStart();
             }
 
         } catch (IOException e) {
@@ -151,7 +151,7 @@ public class AudioRecorder {
         }
 
         if (listener != null) {
-            listener.onRecordingStop(recordingState, file);
+            listener.onRecordingStop(file);
         }
     }
 
@@ -177,7 +177,7 @@ public class AudioRecorder {
     /**
      * Enum to describe recording states
      */
-    enum STATE {
+    public enum STATE {
         PENDING, RECORDING, FINISHED
     }
 
@@ -185,9 +185,9 @@ public class AudioRecorder {
      * Interface to interact with {@link AudioRecorder}
      */
     interface Listener {
-        void onRecordingStart(STATE recordingState);
+        void onRecordingStart();
 
-        void onRecordingStop(STATE recordingState, File file);
+        void onRecordingStop(File file);
 
         void onProgress(float progress, String text);
 

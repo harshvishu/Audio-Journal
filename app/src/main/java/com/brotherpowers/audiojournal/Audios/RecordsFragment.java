@@ -1,6 +1,7 @@
 package com.brotherpowers.audiojournal.Audios;
 
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -10,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -27,8 +29,8 @@ import com.brotherpowers.audiojournal.Realm.DataEntry;
 import com.brotherpowers.audiojournal.Recorder.AudioPlayer;
 import com.brotherpowers.audiojournal.Recorder.AudioRecorder;
 import com.brotherpowers.audiojournal.Reminder.Alarm;
-import com.brotherpowers.audiojournal.TextEditor.TextEditor;
 import com.brotherpowers.audiojournal.Utils.Extensions;
+import com.brotherpowers.audiojournal.View.PermissionRequestFragment;
 import com.brotherpowers.audiojournal.View.RecyclerViewDecor;
 
 import java.io.File;
@@ -66,6 +68,7 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
 
     private RecordsAdapter recordsAdapter;
     private Realm realm;
+    private OnFragmentInteractionListener interactionListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -79,6 +82,11 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
         return view;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.interactionListener = (OnFragmentInteractionListener) context;
+    }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -215,8 +223,10 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
         DataEntry entry = recordsAdapter.getItem(position);
         assert entry != null;
 
-        // TODO: 2/12/17 Start text editor
-        TextEditor.start(getActivity());
+        boolean success = interactionListener.startTextEditor(entry);
+        if (!success) {
+            // TODO: 2/12/17 show alert
+        }
     }
 
     @Override
@@ -281,5 +291,9 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
         if (holder instanceof RecordsAdapter.VHAudioRecord) {
             ((RecordsAdapter.VHAudioRecord) holder).waveformView.setMarkerPosition((int) (progress * 1000) / AudioRecorder.SAMPLE_RATE);
         }
+    }
+
+    public interface OnFragmentInteractionListener {
+        boolean startTextEditor(@NonNull DataEntry entry);
     }
 }

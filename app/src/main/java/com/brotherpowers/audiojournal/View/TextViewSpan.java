@@ -1,4 +1,4 @@
-package com.brotherpowers.audiojournal.TextEditor;
+package com.brotherpowers.audiojournal.View;
 
 import android.content.Context;
 import android.content.res.Resources;
