@@ -27,6 +27,7 @@ import com.brotherpowers.audiojournal.Realm.DataEntry;
 import com.brotherpowers.audiojournal.Recorder.AudioPlayer;
 import com.brotherpowers.audiojournal.Recorder.AudioRecorder;
 import com.brotherpowers.audiojournal.Reminder.Alarm;
+import com.brotherpowers.audiojournal.TextEditor.TextEditor;
 import com.brotherpowers.audiojournal.Utils.Extensions;
 import com.brotherpowers.audiojournal.View.RecyclerViewDecor;
 
@@ -44,18 +45,18 @@ import io.realm.Sort;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class Records extends Fragment implements RecordsAdapter.Callback, AudioPlayer.PlaybackListener {
+public class RecordsFragment extends Fragment implements RecordsAdapter.Callback, AudioPlayer.PlaybackListener {
 
 
-    public Records() {
+    public RecordsFragment() {
         // Required empty public constructor
     }
 
-    public static Records newInstance() {
+    public static RecordsFragment newInstance() {
 
         Bundle args = new Bundle();
 
-        Records fragment = new Records();
+        RecordsFragment fragment = new RecordsFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -209,6 +210,14 @@ public class Records extends Fragment implements RecordsAdapter.Callback, AudioP
         recordsAdapter.cachedSamples.remove(entry.getId());
     }
 
+    @Override
+    public void actionTextEditor(int position) {
+        DataEntry entry = recordsAdapter.getItem(position);
+        assert entry != null;
+
+        // TODO: 2/12/17 Start text editor
+        TextEditor.start(getActivity());
+    }
 
     @Override
     public void actionCamera(int position) {

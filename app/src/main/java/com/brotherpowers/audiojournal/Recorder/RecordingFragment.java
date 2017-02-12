@@ -66,7 +66,6 @@ public class RecordingFragment extends Fragment implements AudioRecorder.Listene
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
-
         audioRecorder = new AudioRecorder(getContext(), MAX_AUDIO_LENGTH);
         audioRecorder.setListener(this);
         recordingState = audioRecorder.getRecordingState();
@@ -107,7 +106,7 @@ public class RecordingFragment extends Fragment implements AudioRecorder.Listene
                                 R.string.record_permission_not_granted)
                         .show(getChildFragmentManager(), FRAGMENT_DIALOG);
             } else {
-                System.out.println(">>>>> REQUEST PEMISSION");
+                System.out.println(">>>>> REQUEST PERMISSION");
                 ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE},
                         REQ_REC_PERMISSION);
             }
@@ -148,6 +147,7 @@ public class RecordingFragment extends Fragment implements AudioRecorder.Listene
         mmr.setDataSource(getContext(), uri);
         String durationStr = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
         int millSecond = Integer.parseInt(durationStr);
+
         dataEntry.setLength(millSecond);
 
         dataEntry.setAudioFile(rFile);

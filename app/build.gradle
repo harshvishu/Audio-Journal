@@ -11,20 +11,15 @@ android {
     if (!versionPropsFile.canRead()) {
         throw new GradleException("Could not read version.properties!")
     }
-    def Properties versionProps = new Properties()
 
+    def Properties versionProps = new Properties()
     versionProps.load(new FileInputStream(versionPropsFile))
     def code = versionProps['BUILD_VERSION_CODE'].toInteger() + 1
     // INCREMENT BUILD VERSION CODE
     def major = versionProps['MAJOR'].toInteger()
-    def minor = versionProps['MINOR'].toInteger()
-    def patch = versionProps['PATCH'].toInteger() + 1 // INCREMENT PATCH NUMBER
-
-    // Reset patch and increment minor
-    if (patch > 999) {
-        minor = minor + 1
-        patch = 1
-    }
+    def minor = Calendar.getInstance().get(Calendar.MONTH) + 1
+    // +1 to as Month starts from 0
+    def patch = Calendar.getInstance().get(Calendar.DAY_OF_MONTH)   // Day as the suffix
 
     versionProps['MINOR'] = minor.toString()
     versionProps['PATCH'] = patch.toString()
@@ -44,7 +39,6 @@ android {
     }
     productFlavors {
         demo {
-            versionNameSuffix '.demo'
             applicationIdSuffix '.demo'
             resValue("string", "file_provider_authority", rootProject.ext.appId + applicationIdSuffix)
         }

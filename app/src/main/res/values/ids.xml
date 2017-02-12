@@ -8,4 +8,5 @@
     <item name="wave_view" type="id"/>
     <item name="action.camera" type="id"/>
     <item name="action.reminder" type="id"/>
+    <item name="action.textEditor" type="id"/>
 </resources>

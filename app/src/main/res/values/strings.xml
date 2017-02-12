@@ -10,10 +10,15 @@
     <string name="Sec">%2.2f Sec</string>
 
     <string name="picture">Picture</string>
-    <string name="title_activity_camera">CameraActivity</string>
+
+    <string name="title_activity_camera">Camera </string>
+    <string name="title_activity_text_editor">Text Editor</string>
 
     <string name="camera_permission_confirmation">App needs camera permission in order to take pictures.</string>
     <string name="camera_permission_not_granted">Cannot take pictures without camera permission.</string>
     <string name="record_permission_confirmation">App needs recorder permission in order to record voice notes.</string>
     <string name="record_permission_not_granted">Cannot record audio without recording permission.</string>
+
+    <string name="tet_string">Press [img src=ic_camera/] to accept or [img src=ic_add/] to retry</string>
+
 </resources>

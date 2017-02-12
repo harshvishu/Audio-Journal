@@ -4,7 +4,7 @@ import android.support.annotation.DrawableRes;
 import android.support.v4.app.Fragment;
 import android.util.SparseArray;
 
-import com.brotherpowers.audiojournal.Audios.Records;
+import com.brotherpowers.audiojournal.Audios.RecordsFragment;
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Realm.DataEntry;
 import com.brotherpowers.audiojournal.Realm.RFile;
@@ -23,9 +23,9 @@ import io.realm.Realm;
 public enum Section {
 
     recorder(0, R.drawable.ic_recording, RecordingFragment.newInstance()),
-    records(1, R.drawable.ic_equalizer_white, Records.newInstance()),
-    pictures(2, R.drawable.ic_photo_library_white, Records.newInstance()),
-    reminders(3, R.drawable.ic_alarm_white, Records.newInstance());
+    records(1, R.drawable.ic_equalizer_white, RecordsFragment.newInstance()),
+    pictures(2, R.drawable.ic_photo_library_white, RecordsFragment.newInstance()),
+    reminders(3, R.drawable.ic_alarm_white, RecordsFragment.newInstance());
 
     private static final SparseArray<Section> ARRAY = new SparseArray<>();
 

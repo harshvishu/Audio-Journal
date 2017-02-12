@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Picture;
@@ -17,6 +16,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import java.util.LinkedList;
+import java.util.Locale;
 
 import static com.brotherpowers.waveformview.Utils.getExtremes;
 
@@ -47,7 +47,6 @@ public class WaveformView extends View {
 
     private Paint mTextPaint;
     private Paint mWaveFillPaint;
-    private Paint mWaveStrokePaint;
     private Paint mMarkerPaint;
     protected Paint mProgressPaint;
 
@@ -77,10 +76,7 @@ public class WaveformView extends View {
     private void init(Context context, AttributeSet attrs, int defStyle) {
         final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.WaveformView, defStyle, 0);
 
-        final float strokeWidth = array.getFloat(R.styleable.WaveformView_strokeWidth, 1f);
-
         final int waveFillColor = array.getColor(R.styleable.WaveformView_waveFillColor, ContextCompat.getColor(context, R.color.wave));
-        final int waveStrokeColor = array.getColor(R.styleable.WaveformView_waveStrokeColor, ContextCompat.getColor(context, R.color.wave));
         final int markerColor = array.getColor(R.styleable.WaveformView_markerColor, ContextCompat.getColor(context, R.color.marker));
         final int textColor = array.getColor(R.styleable.WaveformView_timeCodeColor, ContextCompat.getColor(context, R.color.text));
 
@@ -91,11 +87,6 @@ public class WaveformView extends View {
         mTextPaint.setTextAlign(Paint.Align.CENTER);
         mTextPaint.setColor(textColor);
         mTextPaint.setTextSize(Utils.getFontSize(context, android.R.attr.textAppearance));
-
-        mWaveStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mWaveStrokePaint.setStyle(Paint.Style.STROKE);
-        mWaveStrokePaint.setStrokeWidth(strokeWidth);
-        mWaveStrokePaint.setColor(waveStrokeColor);
 
         mWaveFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mWaveFillPaint.setStyle(Paint.Style.FILL);
@@ -141,7 +132,7 @@ public class WaveformView extends View {
         LinkedList<float[]> temp = mHistoricalData;
         if (mMode == MODE_RECORDING && temp != null) {
             for (float[] p : temp) {
-                canvas.drawLines(p, mWaveStrokePaint);
+                canvas.drawLines(p, mWaveFillPaint);
             }
         } else if (mMode == MODE_PLAYBACK) {
             canvas.drawLine(0, centerY, width, centerY, mWaveFillPaint);
@@ -271,7 +262,6 @@ public class WaveformView extends View {
             lastY = y;
         }
 
-//        waveformPath.lineTo(width, centerY);
         waveformPath.close();
     }
 
@@ -335,7 +325,6 @@ public class WaveformView extends View {
         }
 
         Path mWaveform = drawPlaybackWaveform(width, height, mSamples);
-//        cacheCanvas.drawPath(mWaveform, mWaveFillPaint);
         cacheCanvas.drawPath(mWaveform, mWaveFillPaint);
         drawAxis(cacheCanvas, width);
 
@@ -356,7 +345,7 @@ public class WaveformView extends View {
         int secondStep = (int) (textWidth * seconds * 2) / width;
         secondStep = Math.max(secondStep, 1);
         for (float i = 0; i <= seconds; i += secondStep) {
-            canvas.drawText(String.format("%.2f", i), i * xStep, textHeight, mTextPaint);
+            canvas.drawText(String.format(Locale.getDefault(), "%.2f", i), i * xStep, textHeight, mTextPaint);
         }
     }
 

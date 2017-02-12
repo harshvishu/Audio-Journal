@@ -69,6 +69,9 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
 
 
                 switch (holder_view.getId()) {
+                    case R.id.action_textEditor:
+                        callback.actionTextEditor(position);
+                        break;
                     case R.id.action_play:
                         callback.actionPlay(position);
                         break;
@@ -195,6 +198,9 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
         @BindView(R.id.action_play)
         AppCompatImageButton buttonPlay;
 
+        @BindView(R.id.action_textEditor)
+        AppCompatImageButton buttonTextEditor;
+
         @BindView(R.id.action_camera)
         AppCompatImageButton buttonCamera;
 
@@ -210,6 +216,7 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
         VHAudioRecord(View itemView, VhClick vhClick) {
             super(itemView, vhClick);
 
+            buttonTextEditor.setOnClickListener(this);
             buttonPlay.setOnClickListener(this);
             buttonCamera.setOnClickListener(this);
             buttonReminder.setOnClickListener(this);
@@ -278,5 +285,7 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
         void addReminder(int position);
 
         void actionPlay(int position);
+
+        void actionTextEditor(int position);
     }
 }
