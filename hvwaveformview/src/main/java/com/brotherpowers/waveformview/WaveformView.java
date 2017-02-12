@@ -1,6 +1,5 @@
 package com.brotherpowers.waveformview;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -12,8 +11,6 @@ import android.graphics.Picture;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
-import android.graphics.Region;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
@@ -31,7 +28,6 @@ public class WaveformView extends View {
     private static final int HISTORY_SIZE = 2;
     public static final int MODE_RECORDING = 1;
     public static final int MODE_PLAYBACK = 2;
-    private static final int MAX_TRACK_DURATION = 60_000;
 
 
     public WaveformView(Context context) {
@@ -53,25 +49,24 @@ public class WaveformView extends View {
     private Paint mWaveFillPaint;
     private Paint mWaveStrokePaint;
     private Paint mMarkerPaint;
-    private Paint mPointerPaint;
-    protected Paint mProgressFillPaint;
+    protected Paint mProgressPaint;
 
-    private Drawable leftMarker;
-    private Rect drawRect;
     private int mMode;
     private int mAudioLength;
     private int mMarkerPosition;
     private int mSampleRate;
     private int mChannels;
     private short[] mSamples;
-    private LinkedList<float[]> mHistoricalData;
-    private Picture mCachedWaveform;
-    private Bitmap mCachedWaveformBitmap;
     private boolean showTextAxis = true;
-    private Path waveformPath;
 
+    private Path waveformPath;
+    @SuppressWarnings("FieldCanBeLocal")
+    private Bitmap mCachedWaveformBitmap;
     private Bitmap playbackBitmap;
     private Canvas playbackCanvas;
+    private Rect drawRect;
+    private Picture mCachedWaveform;
+    private LinkedList<float[]> mHistoricalData;
 
 
     private int width;
@@ -84,45 +79,36 @@ public class WaveformView extends View {
 
         final float strokeWidth = array.getFloat(R.styleable.WaveformView_strokeWidth, 1f);
 
-        final int waveFillColor = array.getColor(R.styleable.WaveformView_waveFillColor, ContextCompat.getColor(context, R.color.waveFill));
-        final int waveStrokeColor = array.getColor(R.styleable.WaveformView_waveStrokeColor, ContextCompat.getColor(context, R.color.waveStroke));
+        final int waveFillColor = array.getColor(R.styleable.WaveformView_waveFillColor, ContextCompat.getColor(context, R.color.wave));
+        final int waveStrokeColor = array.getColor(R.styleable.WaveformView_waveStrokeColor, ContextCompat.getColor(context, R.color.wave));
         final int markerColor = array.getColor(R.styleable.WaveformView_markerColor, ContextCompat.getColor(context, R.color.marker));
-        final int pointerColor = array.getColor(R.styleable.WaveformView_pointerColor, ContextCompat.getColor(context, R.color.pointer));
         final int textColor = array.getColor(R.styleable.WaveformView_timeCodeColor, ContextCompat.getColor(context, R.color.text));
 
         mMode = array.getInt(R.styleable.WaveformView_mode, MODE_PLAYBACK);
         array.recycle();
 
-        leftMarker = ContextCompat.getDrawable(context, R.drawable.ic_circle_fill);
-        leftMarker.setColorFilter(waveFillColor, PorterDuff.Mode.SRC);
-
         mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
         mTextPaint.setColor(textColor);
-        mTextPaint.setTextSize(16f/*Utils.getFontSize(context, android.R.attr.textAppearance)*/);
+        mTextPaint.setTextSize(Utils.getFontSize(context, android.R.attr.textAppearance));
 
         mWaveStrokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mWaveStrokePaint.setStyle(Paint.Style.STROKE);
         mWaveStrokePaint.setStrokeWidth(strokeWidth);
-        mWaveStrokePaint.setColor(Color.BLACK);
+        mWaveStrokePaint.setColor(waveStrokeColor);
 
         mWaveFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mWaveFillPaint.setStyle(Paint.Style.FILL);
         mWaveFillPaint.setColor(waveFillColor);
 
-        mProgressFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mProgressFillPaint.setStyle(Paint.Style.FILL);
-        mProgressFillPaint.setColor(Color.BLACK);
-        mProgressFillPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        mProgressPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mProgressPaint.setStyle(Paint.Style.FILL);
+        mProgressPaint.setColor(markerColor);
+        mProgressPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
 
         mMarkerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mMarkerPaint.setStyle(Paint.Style.STROKE);
-        mMarkerPaint.setStrokeWidth(2);
-        mMarkerPaint.setColor(Color.RED);
-
-        mPointerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mPointerPaint.setStyle(Paint.Style.FILL);
-        mPointerPaint.setColor(pointerColor);
+        mMarkerPaint.setStyle(Paint.Style.FILL);
+        mMarkerPaint.setColor(markerColor);
 
         waveformPath = new Path();
         mHistoricalData = new LinkedList<>();
@@ -144,12 +130,10 @@ public class WaveformView extends View {
             mHistoricalData.clear();
         }
         if (mMode == MODE_PLAYBACK) {
-
             createPlaybackWaveform();
         }
     }
 
-    @SuppressLint("DrawAllocation")
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -166,7 +150,7 @@ public class WaveformView extends View {
             if (mMarkerPosition > -1 && mMarkerPosition <= width && playbackCanvas != null) {
                 playbackCanvas.drawLine(0, centerY, xStep * mMarkerPosition, centerY, mWaveFillPaint);
                 playbackCanvas.drawPath(waveformPath, mWaveFillPaint);
-                playbackCanvas.drawRect(drawRect.left, 0, xStep * mMarkerPosition, height, mProgressFillPaint);
+                playbackCanvas.drawRect(drawRect.left, 0, xStep * mMarkerPosition, height, mProgressPaint);
                 canvas.drawBitmap(playbackBitmap, 0, 0, mMarkerPaint);
             }
         }
@@ -176,18 +160,20 @@ public class WaveformView extends View {
         return mMode;
     }
 
-    public void setMode(int mMode) {
-        mMode = mMode;
+    public WaveformView setMode(int mMode) {
+        this.mMode = mMode;
+        return this;
     }
 
     public short[] getSamples() {
         return mSamples;
     }
 
-    public void setSamples(short[] samples) {
+    public WaveformView setSamples(short[] samples) {
         mSamples = samples;
         calculateAudioSampleLength();
         onSamplesChanged();
+        return this;
     }
 
     public int getMarkerPosition() {
@@ -207,25 +193,26 @@ public class WaveformView extends View {
         return mSampleRate;
     }
 
-    public void setSampleRate(int sampleRate) {
+    public WaveformView setSampleRate(int sampleRate) {
         mSampleRate = sampleRate;
         calculateAudioSampleLength();
+        return this;
     }
 
     public int getChannels() {
         return mChannels;
     }
 
-    public void setChannels(int channels) {
+    public WaveformView setChannels(int channels) {
         mChannels = channels;
         calculateAudioSampleLength();
+        return this;
     }
 
     private void calculateAudioSampleLength() {
         if (mSamples == null || mSampleRate == 0 || mChannels == 0) {
             return;
         }
-
         mAudioLength = Utils.calculateAudioLength(mSamples.length, mSampleRate, mChannels);
     }
 
@@ -255,7 +242,7 @@ public class WaveformView extends View {
         }
     }
 
-    void drawRecordingWaveform(short[] buffer, float[] waveformPoints) {
+    private void drawRecordingWaveform(short[] buffer, float[] waveformPoints) {
         float lastX = -1;
         float lastY = -1;
         int pointIndex = 0;
@@ -288,7 +275,7 @@ public class WaveformView extends View {
         waveformPath.close();
     }
 
-    Path drawPlaybackWaveform(int width, int height, short[] buffer) {
+    private Path drawPlaybackWaveform(int width, int height, short[] buffer) {
         waveformPath.reset();
 
         final int space = 5;
@@ -355,6 +342,7 @@ public class WaveformView extends View {
         if (mCachedWaveform != null) {
             mCachedWaveform.endRecording();
         }
+        postInvalidate();
     }
 
     private void drawAxis(Canvas canvas, int width) {
@@ -372,11 +360,10 @@ public class WaveformView extends View {
         }
     }
 
-    private void clip() {
-        Region clipRegion = new Region(new Rect(drawRect.left, drawRect.top, mMarkerPosition, drawRect.bottom));
-        Region entireRegion = new Region(drawRect);
-        entireRegion.setPath(waveformPath, clipRegion);
-        entireRegion.op(clipRegion, Region.Op.INTERSECT);
+    public void reset() {
+        mMarkerPosition = -1;
+        playbackBitmap = null;
+        playbackCanvas = null;
+        onSamplesChanged();
     }
-
 }

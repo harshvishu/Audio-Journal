@@ -21,6 +21,7 @@ import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Realm.DataEntry;
 import com.brotherpowers.audiojournal.Realm.RFile;
 import com.brotherpowers.audiojournal.Recorder.AudioPlayer;
+import com.brotherpowers.audiojournal.Recorder.AudioRecorder;
 import com.brotherpowers.audiojournal.Utils.Extensions;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
 import com.brotherpowers.audiojournal.View.ALViewHolder;
@@ -101,9 +102,7 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
             String str = Extensions.formatHumanReadable.format(entry.getCreated_at());
             ((VHAudioRecord) holder).labelTitle.setText(str);
 
-            if (entry.audioFile() == null) {
-                ((VHAudioRecord) holder).buttonPlay.setImageResource(R.drawable.ic_mic);
-            } else if (AudioPlayer.sharedInstance.getId() == entry.getId()) {
+            if (AudioPlayer.sharedInstance.getId() == entry.getId()) {
                 ((VHAudioRecord) holder).buttonPlay.setImageResource(R.drawable.ic_stop);
             } else {
                 ((VHAudioRecord) holder).buttonPlay.setImageResource(R.drawable.ic_play);
@@ -126,7 +125,7 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
 
                     mmr.setDataSource(context, uri);
                     int duration = Integer.valueOf(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-                    ((VHAudioRecord) holder).waveformView.setSampleRate(44100);
+                    ((VHAudioRecord) holder).waveformView.setSampleRate(AudioRecorder.SAMPLE_RATE);
                     ((VHAudioRecord) holder).waveformView.setChannels(1);
                     ((VHAudioRecord) holder).waveformView.setSamples(samples);
 

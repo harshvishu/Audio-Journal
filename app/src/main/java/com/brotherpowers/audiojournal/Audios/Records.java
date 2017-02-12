@@ -261,7 +261,7 @@ public class Records extends Fragment implements RecordsAdapter.Callback, AudioP
         new Handler(Looper.getMainLooper()).post(() -> {
             if (holder instanceof RecordsAdapter.VHAudioRecord) {
                 ((RecordsAdapter.VHAudioRecord) holder).buttonPlay.setImageResource(R.drawable.ic_play);
-                ((RecordsAdapter.VHAudioRecord) holder).waveformView.setMarkerPosition(0);
+                ((RecordsAdapter.VHAudioRecord) holder).waveformView.reset();
             }
         });
     }
