@@ -20,7 +20,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:minHeight="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
             app:layout_collapseMode="pin"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:popupTheme="@style/AppTheme.PopupOverlay">
@@ -28,7 +28,6 @@
             <include layout="@layout/main_toolbar_custom_view"/>
 
         </android.support.v7.widget.Toolbar>
-
 
     </android.support.design.widget.AppBarLayout>
 

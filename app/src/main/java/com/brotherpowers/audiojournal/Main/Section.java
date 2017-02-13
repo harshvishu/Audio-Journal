@@ -1,7 +1,10 @@
 package com.brotherpowers.audiojournal.Main;
 
+import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.SparseArray;
 
 import com.brotherpowers.audiojournal.Audios.RecordsFragment;
@@ -22,10 +25,10 @@ import io.realm.Realm;
 
 public enum Section {
 
-    recorder(0, R.drawable.ic_recording, RecordingFragment.newInstance()),
-    records(1, R.drawable.ic_equalizer_white, RecordsFragment.newInstance()),
-    pictures(2, R.drawable.ic_photo_library_white, RecordsFragment.newInstance()),
-    reminders(3, R.drawable.ic_alarm_white, RecordsFragment.newInstance());
+    recorder(0, R.drawable.ic_recording, RecordingFragment.newInstance(), RecordingFragment.class),
+    records(1, R.drawable.ic_equalizer_white, RecordsFragment.newInstance(), RecordsFragment.class),
+    pictures(2, R.drawable.ic_photo_library_white, RecordsFragment.newInstance(), RecordsFragment.class),
+    reminders(3, R.drawable.ic_alarm_white, RecordsFragment.newInstance(), RecordsFragment.class);
 
     private static final SparseArray<Section> ARRAY = new SparseArray<>();
 
@@ -40,11 +43,13 @@ public enum Section {
     @DrawableRes
     public final int drawable;
     public final Fragment fragment;
+    public final Class fragmentClass;
 
-    Section(int position, @DrawableRes int drawable, Fragment fragment) {
+    Section(int position, @DrawableRes int drawable, Fragment fragment, Class fragmentClass) {
         this.position = position;
         this.drawable = drawable;
         this.fragment = fragment;
+        this.fragmentClass = fragmentClass;
     }
 
     public static Section at(int position) {
@@ -78,5 +83,7 @@ public enum Section {
         return s;
     }
 
-
+    public Drawable drawable(Context context) {
+        return ContextCompat.getDrawable(context, drawable);
+    }
 }

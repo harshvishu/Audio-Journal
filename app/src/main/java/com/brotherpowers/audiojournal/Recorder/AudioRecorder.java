@@ -41,7 +41,6 @@ public class AudioRecorder {
         file = FileUtils.sharedInstance.getFile(FileUtils.Type.AUDIO, String.valueOf(System.currentTimeMillis()), context);
         sampleRate = 44100;
         maxDuration = duration;
-
         recordingState = STATE.PENDING;
     }
 
@@ -70,7 +69,7 @@ public class AudioRecorder {
         mediaRecorder.setOutputFile(file.getPath());
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
         mediaRecorder.setMaxDuration(maxDuration); // ONE MINUTE
-        mediaRecorder.setAudioChannels(2);
+        mediaRecorder.setAudioChannels(1);
 
         try {
             mediaRecorder.prepare();
@@ -82,7 +81,7 @@ public class AudioRecorder {
             Log.e("AudioRecorder", "prepare() failed");
         }
 
-        mediaRecorder.setOnInfoListener((mediaRecorder1, what, extra) -> {
+        mediaRecorder.setOnInfoListener((mr, what, extra) -> {
 
             if (what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
                 onRecordingFinished();
@@ -102,7 +101,6 @@ public class AudioRecorder {
         return new Thread() {
             @Override
             public void run() {
-                super.run();
                 final long startTime = System.currentTimeMillis();
 
                 while (recordingState == STATE.RECORDING) {
@@ -167,7 +165,6 @@ public class AudioRecorder {
             if (mediaRecorder != null) {
                 mediaRecorder.release();
                 mediaRecorder = null;
-
             }
         } catch (Exception e) {
             e.printStackTrace();
