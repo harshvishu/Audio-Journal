@@ -171,8 +171,8 @@ public class WaveformView extends View {
         return mMarkerPosition;
     }
 
-    public void setMarkerPosition(int markerPosition) {
-        mMarkerPosition = markerPosition;
+    public void setMarkerPosition(int position) {
+        this.mMarkerPosition = position;
         postInvalidate();
     }
 

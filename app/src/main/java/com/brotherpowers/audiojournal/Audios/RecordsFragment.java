@@ -30,7 +30,6 @@ import com.brotherpowers.audiojournal.Recorder.AudioPlayer;
 import com.brotherpowers.audiojournal.Recorder.AudioRecorder;
 import com.brotherpowers.audiojournal.Reminder.Alarm;
 import com.brotherpowers.audiojournal.Utils.Extensions;
-import com.brotherpowers.audiojournal.View.PermissionRequestFragment;
 import com.brotherpowers.audiojournal.View.RecyclerViewDecor;
 
 import java.io.File;

@@ -20,5 +20,7 @@
     <string name="record_permission_not_granted">Cannot record audio without recording permission.</string>
 
     <string name="tet_string">Press [img src=ic_camera/] to accept or [img src=ic_add/] to retry</string>
+    <string name="Title">Title</string>
+    <string name="Note">Note</string>
 
 </resources>

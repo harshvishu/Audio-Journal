@@ -150,4 +150,16 @@ public class FileUtils {
         sb.get(samples);
         return samples;
     }
+
+    public static byte[] getAudioSampleBytes(File file) throws IOException {
+        InputStream is = new FileInputStream(file);
+        byte[] data;
+        try {
+            data = IOUtils.toByteArray(is);
+        } finally {
+            is.close();
+        }
+
+        return data;
+    }
 }

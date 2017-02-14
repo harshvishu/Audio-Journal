@@ -42,7 +42,7 @@
                 android:padding="8dp">
 
 
-                <android.support.v7.widget.AppCompatImageButton
+                <ImageButton
                     android:id="@id/action.play"
                     style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
                     android:layout_width="@dimen/button_56"
@@ -50,7 +50,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:tint="@color/colorAccent"
+                    android:tint="@color/colorPrimary"
                     app:srcCompat="@drawable/ic_play"/>
 
                 <com.brotherpowers.waveformview.WaveformView
@@ -62,8 +62,8 @@
                     android:layout_toEndOf="@id/action.play"
                     android:layout_toRightOf="@id/action.play"
                     android:textAppearance="@style/TextAppearance.AppCompat.Widget.DropDownItem"
-                    app:pointerColor="#397AB0"
-                    app:waveFillColor="#b7b7b7"/>
+                    app:markerColor="@color/colorPrimary"
+                    app:waveFillColor="@color/colorLightPrimary"/>
 
             </RelativeLayout>
 
@@ -75,7 +75,7 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <android.support.v7.widget.AppCompatImageButton
+                <ImageButton
                     android:id="@id/action.textEditor"
                     style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
                     android:layout_width="@dimen/button_32"
@@ -85,7 +85,7 @@
                     android:tint="@color/edit_buttons"
                     app:srcCompat="@drawable/ic_mode_edit"/>
 
-                <android.support.v7.widget.AppCompatImageButton
+                <ImageButton
                     android:id="@id/action.camera"
                     style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
                     android:layout_width="@dimen/button_32"
@@ -95,7 +95,7 @@
                     android:tint="@color/edit_buttons"
                     app:srcCompat="@drawable/ic_camera"/>
 
-                <android.support.v7.widget.AppCompatImageButton
+                <ImageButton
                     android:id="@id/action.reminder"
                     style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
                     android:layout_width="@dimen/button_32"
@@ -105,7 +105,7 @@
                     android:tint="@color/edit_buttons"
                     app:srcCompat="@drawable/ic_timer"/>
 
-                <android.support.v7.widget.AppCompatImageButton
+                <ImageButton
                     style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
                     android:layout_width="@dimen/button_32"
                     android:layout_height="@dimen/button_32"

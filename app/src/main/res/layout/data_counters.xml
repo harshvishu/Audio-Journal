@@ -9,7 +9,7 @@
     android:orientation="horizontal"
     android:weightSum="4">
 
-    <android.support.v7.widget.AppCompatTextView
+    <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -25,7 +25,7 @@
         android:layout_height="match_parent"
         android:background="#fff"/>
 
-    <android.support.v7.widget.AppCompatTextView
+    <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -41,7 +41,7 @@
         android:layout_height="match_parent"
         android:background="#fff"/>
 
-    <android.support.v7.widget.AppCompatTextView
+    <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textColor="#FFF"
@@ -57,7 +57,7 @@
         android:layout_height="match_parent"
         android:background="#fff"/>
 
-    <android.support.v7.widget.AppCompatTextView
+    <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"

@@ -1,18 +1,142 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context="com.brotherpowers.audiojournal.TextEditor.TextEditorFragment">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.brotherpowers.audiojournal.TextEditor.TextEditorFragment">
 
-    <android.support.design.widget.TextInputLayout
+    <HorizontalScrollView
+        android:paddingTop="4dp"
+        android:id="@+id/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/shadow_top"
+        android:scrollbars="none">
 
-        <com.brotherpowers.audiojournal.View.TextViewSpan
-            android:gravity="top"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/tet_string"/>
-    </android.support.design.widget.TextInputLayout>
+        <LinearLayout
+            android:gravity="bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-</FrameLayout>
+            <ImageButton
+                android:id="@+id/bold"
+                android:layout_width="@dimen/button_48"
+                android:layout_height="@dimen/button_48"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@null"
+                android:scaleType="center"
+                app:srcCompat="@drawable/ic_camera">
+            </ImageButton>
+
+            <ImageButton
+                android:id="@+id/italic"
+                android:layout_width="@dimen/button_48"
+                android:layout_height="@dimen/button_48"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@null"
+                android:scaleType="center"
+                app:srcCompat="@drawable/ic_camera">
+            </ImageButton>
+
+            <ImageButton
+                android:id="@+id/underline"
+                android:layout_width="@dimen/button_48"
+                android:layout_height="@dimen/button_48"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@null"
+                android:scaleType="center"
+                app:srcCompat="@drawable/ic_camera">
+            </ImageButton>
+
+            <ImageButton
+                android:id="@+id/strikethrough"
+                android:layout_width="@dimen/button_48"
+                android:layout_height="@dimen/button_48"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@null"
+                android:scaleType="center"
+                app:srcCompat="@drawable/ic_camera">
+            </ImageButton>
+
+            <ImageButton
+                android:id="@+id/bullet"
+                android:layout_width="@dimen/button_48"
+                android:layout_height="@dimen/button_48"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@null"
+                android:scaleType="center"
+                app:srcCompat="@drawable/ic_camera">
+            </ImageButton>
+
+            <ImageButton
+                android:id="@+id/quote"
+                android:layout_width="@dimen/button_48"
+                android:layout_height="@dimen/button_48"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@null"
+                android:scaleType="center"
+                app:srcCompat="@drawable/ic_camera">
+            </ImageButton>
+
+            <ImageButton
+                android:id="@+id/link"
+                android:layout_width="@dimen/button_48"
+                android:layout_height="@dimen/button_48"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@null"
+                android:scaleType="center"
+                app:srcCompat="@drawable/ic_camera">
+            </ImageButton>
+
+            <ImageButton
+                android:id="@+id/clear"
+                android:layout_width="@dimen/button_48"
+                android:layout_height="@dimen/button_48"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@null"
+                android:scaleType="center"
+                app:srcCompat="@drawable/ic_camera">
+            </ImageButton>
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
+
+    <EditText
+        android:id="@+id/input.title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="@android:color/transparent"
+        android:hint="@string/Title"
+        android:paddingEnd="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingStart="16dp"
+        android:paddingTop="16dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textStyle="bold"/>
+
+    <io.github.mthli.knife.KnifeText
+        android:id="@+id/input.text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/tools"
+        android:layout_below="@+id/input.title"
+        android:background="@android:color/transparent"
+        android:gravity="top"
+        android:hint="@string/Note"
+        android:paddingEnd="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingStart="16dp"
+        android:paddingTop="16dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:linkUnderline="true"
+        app:quoteColor="@color/colorAccent"/>
+
+</RelativeLayout>
