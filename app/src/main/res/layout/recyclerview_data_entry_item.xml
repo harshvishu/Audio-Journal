@@ -45,8 +45,8 @@
                 <ImageButton
                     android:id="@id/action.play"
                     style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
-                    android:layout_width="@dimen/button_56"
-                    android:layout_height="@dimen/button_56"
+                    android:layout_width="@dimen/button_large"
+                    android:layout_height="@dimen/button_large"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:background="?attr/selectableItemBackgroundBorderless"
@@ -78,8 +78,8 @@
                 <ImageButton
                     android:id="@id/action.textEditor"
                     style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
-                    android:layout_width="@dimen/button_32"
-                    android:layout_height="@dimen/button_32"
+                    android:layout_width="@dimen/button_small"
+                    android:layout_height="@dimen/button_small"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/notes"
                     android:tint="@color/edit_buttons"
@@ -88,8 +88,8 @@
                 <ImageButton
                     android:id="@id/action.camera"
                     style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
-                    android:layout_width="@dimen/button_32"
-                    android:layout_height="@dimen/button_32"
+                    android:layout_width="@dimen/button_small"
+                    android:layout_height="@dimen/button_small"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/photos"
                     android:tint="@color/edit_buttons"
@@ -98,8 +98,8 @@
                 <ImageButton
                     android:id="@id/action.reminder"
                     style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
-                    android:layout_width="@dimen/button_32"
-                    android:layout_height="@dimen/button_32"
+                    android:layout_width="@dimen/button_small"
+                    android:layout_height="@dimen/button_small"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/share"
                     android:tint="@color/edit_buttons"
@@ -107,13 +107,12 @@
 
                 <ImageButton
                     style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
-                    android:layout_width="@dimen/button_32"
-                    android:layout_height="@dimen/button_32"
+                    android:layout_width="@dimen/button_small"
+                    android:layout_height="@dimen/button_small"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/share"
                     android:tint="@color/edit_buttons"
                     app:srcCompat="@drawable/ic_share"/>
-
 
             </LinearLayout>
 

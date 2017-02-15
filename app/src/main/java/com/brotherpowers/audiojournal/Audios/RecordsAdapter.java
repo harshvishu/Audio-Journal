@@ -7,21 +7,21 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.support.v4.util.LongSparseArray;
-import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.brotherpowers.audiojournal.R;
+import com.brotherpowers.audiojournal.Realm.Attachment;
 import com.brotherpowers.audiojournal.Realm.DataEntry;
-import com.brotherpowers.audiojournal.Realm.RFile;
-import com.brotherpowers.audiojournal.Recorder.AudioPlayer;
-import com.brotherpowers.audiojournal.Recorder.AudioRecorder;
+import com.brotherpowers.audiojournal.AudioRecorder.AudioPlayer;
+import com.brotherpowers.audiojournal.AudioRecorder.AudioRecorder;
 import com.brotherpowers.audiojournal.Utils.Extensions;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
 import com.brotherpowers.audiojournal.View.ALViewHolder;
@@ -137,7 +137,7 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
                 }
             }
 
-            RealmResults<RFile> images = entry.getAttachments()
+            RealmResults<Attachment> images = entry.getAttachments()
                     .where()
                     .equalTo("fileType", FileUtils.Type.IMAGE.value)
                     .findAll();
@@ -193,19 +193,19 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
 
     static class VHAudioRecord extends ALViewHolder implements View.OnClickListener {
         @BindView(R.id.label_text)
-        AppCompatTextView labelTitle;
+        TextView labelTitle;
 
         @BindView(R.id.action_play)
-        AppCompatImageButton buttonPlay;
+        ImageButton buttonPlay;
 
         @BindView(R.id.action_textEditor)
-        AppCompatImageButton buttonTextEditor;
+        ImageButton buttonTextEditor;
 
         @BindView(R.id.action_camera)
-        AppCompatImageButton buttonCamera;
+        ImageButton buttonCamera;
 
         @BindView(R.id.action_reminder)
-        AppCompatImageButton buttonReminder;
+        ImageButton buttonReminder;
 
         @BindView(R.id.wave_view)
         WaveformView waveformView;
@@ -237,8 +237,8 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
         }
     }
 
-    private class AttachmentAdapter extends RealmRecyclerViewAdapter<RFile, ViewHolderImage> {
-        AttachmentAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<RFile> data) {
+    private class AttachmentAdapter extends RealmRecyclerViewAdapter<Attachment, ViewHolderImage> {
+        AttachmentAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<Attachment> data) {
             super(context, data, true);
         }
 
@@ -252,9 +252,9 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
 
         @Override
         public void onBindViewHolder(ViewHolderImage holder, int position) {
-            RFile rFile = getData().get(position);
+            Attachment attachment = getData().get(position);
             Picasso.with(context)
-                    .load(rFile.file(context))
+                    .load(attachment.file(context))
                     .fit()
                     .into(holder.imageView);
         }

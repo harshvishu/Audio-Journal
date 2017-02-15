@@ -7,7 +7,7 @@ import io.realm.RealmObject;
  * Created by harsh_v on 11/29/16.
  */
 
-interface Essentials {
+interface RealmDelegate {
     long nexID(Realm realm);
 
     RealmObject generateId(Realm realm);

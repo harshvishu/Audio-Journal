@@ -11,12 +11,12 @@ import io.realm.annotations.PrimaryKey;
  * Created by harsh_v on 11/4/16.
  */
 
-public class DataEntry extends RealmObject implements Essentials {
+public class DataEntry extends RealmObject implements RealmDelegate {
 
     @PrimaryKey
     private long id;
 
-    private RFile audioFile;
+    private Attachment audioFile;
 
     private String title;
 
@@ -24,7 +24,7 @@ public class DataEntry extends RealmObject implements Essentials {
 
     private Long remind_at;
 
-    private RealmList<RFile> attachments;
+    private RealmList<Attachment> attachments;
 
     // No Setter
     private Date created_at;
@@ -44,11 +44,11 @@ public class DataEntry extends RealmObject implements Essentials {
         return this;
     }
 
-    public RFile audioFile() {
+    public Attachment audioFile() {
         return audioFile;
     }
 
-    public DataEntry setAudioFile(RFile audioFile) {
+    public DataEntry setAudioFile(Attachment audioFile) {
         this.audioFile = audioFile;
         return this;
     }
@@ -66,11 +66,11 @@ public class DataEntry extends RealmObject implements Essentials {
         return created_at;
     }
 
-    public RealmList<RFile> getAttachments() {
+    public RealmList<Attachment> getAttachments() {
         return attachments;
     }
 
-    public DataEntry setAttachments(RealmList<RFile> attachments) {
+    public DataEntry setAttachments(RealmList<Attachment> attachments) {
         this.attachments = attachments;
         return this;
     }
@@ -102,7 +102,7 @@ public class DataEntry extends RealmObject implements Essentials {
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
-        newID += 1L;
+        newID += 1;
         return newID;
     }
 

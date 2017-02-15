@@ -9,8 +9,8 @@
     <dimen name="spacing.16">16dp</dimen>
     <dimen name="spacing.20">20dp</dimen>
 
-    <dimen name="button_56">56dp</dimen>
-    <dimen name="button_32">32dp</dimen>
-    <dimen name="button_48">48dp</dimen>
+    <dimen name="button_large">56dp</dimen>
+    <dimen name="button_small">32dp</dimen>
+    <dimen name="button_medium">48dp</dimen>
     <dimen name="appbar_padding_top">8dp</dimen>
 </resources>

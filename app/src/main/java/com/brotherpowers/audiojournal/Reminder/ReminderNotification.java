@@ -21,9 +21,9 @@ import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.brotherpowers.audiojournal.R;
+import com.brotherpowers.audiojournal.Realm.Attachment;
 import com.brotherpowers.audiojournal.Realm.DataEntry;
-import com.brotherpowers.audiojournal.Realm.RFile;
-import com.brotherpowers.audiojournal.Recorder.AudioPlayer;
+import com.brotherpowers.audiojournal.AudioRecorder.AudioPlayer;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -115,8 +115,8 @@ public class ReminderNotification extends Service {
                 Realm realm = Realm.getDefaultInstance();
                 realm.executeTransaction(r -> dataEntry.setRemindAt(null));
 
-                RFile rFile = dataEntry.audioFile();
-                File file = rFile.file(context);
+                Attachment attachment = dataEntry.audioFile();
+                File file = attachment.file(context);
 
                 uri = FileProvider.getUriForFile(context, context.getString(R.string.file_provider_authority), file);
 
@@ -132,7 +132,7 @@ public class ReminderNotification extends Service {
 
                 builder.setSmallIcon(R.mipmap.ic_launcher)
 //                        .setCustomContentView(remoteViews)
-                        .setContentTitle(rFile.getFileName())
+                        .setContentTitle(attachment.getFileName())
                         .setContentText("Playing")
                         .setAutoCancel(false);
 

@@ -36,6 +36,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center"
                 android:layout_margin="@dimen/fab_margin"
+                app:fabSize="normal"
                 android:tint="#fff"
                 app:backgroundTint="@color/colorPrimary"
                 app:elevation="6dp"

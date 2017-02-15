@@ -1,28 +1,27 @@
-package com.brotherpowers.audiojournal.Recorder;
+package com.brotherpowers.audiojournal.AudioRecorder;
 
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 
-import com.brotherpowers.audiojournal.Notifications.NotificationConstants;
 import com.brotherpowers.audiojournal.R;
+import com.brotherpowers.audiojournal.Realm.Attachment;
 import com.brotherpowers.audiojournal.Realm.DataEntry;
-import com.brotherpowers.audiojournal.Realm.RFile;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
 import com.brotherpowers.audiojournal.View.PermissionRequestFragment;
 import com.brotherpowers.hvprogressview.ProgressView;
@@ -33,30 +32,30 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
 
-import static com.brotherpowers.audiojournal.Recorder.AudioRecorder.MAX_AUDIO_LENGTH;
+import static com.brotherpowers.audiojournal.AudioRecorder.AudioRecorder.MAX_AUDIO_LENGTH;
 import static com.brotherpowers.audiojournal.Utils.Constants.REQ_REC_PERMISSION;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RecordingFragment extends Fragment implements AudioRecorder.Listener {
+public class AudioRecordingFragment extends Fragment implements AudioRecorder.Listener {
     private static final String FRAGMENT_DIALOG = "dialog";
 
     @BindView(R.id.progress_view)
     ProgressView progressView;
 
     @BindView(R.id.action_capture)
-    FloatingActionButton buttonCapture;
+    FloatingActionButton buttonRecord;
 
-    public RecordingFragment() {
+    public AudioRecordingFragment() {
         // Required empty public constructor
     }
 
-    public static RecordingFragment newInstance() {
+    public static AudioRecordingFragment newInstance() {
 
         Bundle args = new Bundle();
 
-        RecordingFragment fragment = new RecordingFragment();
+        AudioRecordingFragment fragment = new AudioRecordingFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -92,10 +91,10 @@ public class RecordingFragment extends Fragment implements AudioRecorder.Listene
 
 
         // Set the recording button with recording state
-        buttonCapture.setImageResource(recordingState == AudioRecorder.STATE.RECORDING
+        buttonRecord.setImageResource(recordingState == AudioRecorder.STATE.RECORDING
                 ? R.drawable.ic_stop : R.drawable.ic_mic);
 
-        buttonCapture.setOnClickListener(v -> {
+        buttonRecord.setOnClickListener(v -> {
 
             if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED &&
                     ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -104,10 +103,12 @@ public class RecordingFragment extends Fragment implements AudioRecorder.Listene
                 if (recordingState == AudioRecorder.STATE.PENDING) {
                     // Stop any audio player
                     AudioPlayer.sharedInstance.cancel();
-
                     audioRecorder.start(getContext());
+                    buttonRecord.setEnabled(false);     // Disable button click
+
                 } else if (recordingState == AudioRecorder.STATE.RECORDING) {
                     audioRecorder.stop();
+                    buttonRecord.setEnabled(false);     // Disable button click
                 }
 
             } else if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
@@ -135,9 +136,13 @@ public class RecordingFragment extends Fragment implements AudioRecorder.Listene
         // Interface
         interactionListener.onRecordingStateChange(recordingState);
 
-        buttonCapture.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.fab_open));
-        buttonCapture.setImageResource(R.drawable.ic_stop);
+        buttonRecord.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.fab_open));
+        buttonRecord.setImageResource(R.drawable.ic_stop);
+        System.out.println(">>>>>> enable button");
 
+        new Handler(Looper.getMainLooper()).post(() -> {
+            buttonRecord.setEnabled(true);     // Enable button click
+        });
     }
 
 
@@ -153,8 +158,8 @@ public class RecordingFragment extends Fragment implements AudioRecorder.Listene
         DataEntry dataEntry = new DataEntry();
         dataEntry.generateId(realm);
 
-        RFile rFile = new RFile();
-        rFile.setFileType(FileUtils.Type.AUDIO)
+        Attachment attachment = new Attachment();
+        attachment.setFileType(FileUtils.Type.AUDIO)
                 .setId(dataEntry.getId())
                 .setFileName(file.getName());
 
@@ -168,19 +173,22 @@ public class RecordingFragment extends Fragment implements AudioRecorder.Listene
 
         dataEntry.setLength(millSecond);
 
-        dataEntry.setAudioFile(rFile);
+        dataEntry.setAudioFile(attachment);
         realm.executeTransaction(r -> {
             r.copyToRealmOrUpdate(dataEntry);
-            r.copyToRealmOrUpdate(rFile);
+            r.copyToRealmOrUpdate(attachment);
         });
 
 
         this.recordingState = AudioRecorder.STATE.PENDING;
-        buttonCapture.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.fab_open));
-        buttonCapture.setImageResource(R.drawable.ic_mic);
+        buttonRecord.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.fab_open));
+        buttonRecord.setImageResource(R.drawable.ic_mic);
         progressView.reset();
         audioRecorder.reset();
-//        finish();
+
+        new Handler(Looper.getMainLooper()).post(() -> {
+            buttonRecord.setEnabled(true);     // Enable button click
+        });
     }
 
     @Override

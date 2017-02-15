@@ -11,7 +11,7 @@ import io.realm.RealmConfiguration;
  * Created by harsh_v on 11/4/16.
  */
 
-public class MyApp extends Application {
+public class AudioJournal extends Application {
     @Override
     public void onCreate() {
         super.onCreate();

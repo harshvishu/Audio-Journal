@@ -1,4 +1,4 @@
-package com.brotherpowers.audiojournal.Recorder;
+package com.brotherpowers.audiojournal.AudioRecorder;
 
 import android.media.MediaPlayer;
 

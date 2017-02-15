@@ -8,7 +8,6 @@
     tools:context="com.brotherpowers.audiojournal.TextEditor.TextEditorFragment">
 
     <HorizontalScrollView
-        android:paddingTop="4dp"
         android:id="@+id/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,89 +16,98 @@
         android:scrollbars="none">
 
         <LinearLayout
-            android:gravity="bottom"
+            android:paddingTop="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="bottom"
             android:orientation="horizontal">
 
             <ImageButton
                 android:id="@+id/bold"
-                android:layout_width="@dimen/button_48"
-                android:layout_height="@dimen/button_48"
-                android:background="?android:selectableItemBackground"
+                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="@dimen/button_medium"
+                android:layout_height="@dimen/button_medium"
                 android:contentDescription="@null"
                 android:scaleType="center"
-                app:srcCompat="@drawable/ic_camera">
+                android:tint="@color/colorPrimary"
+                app:srcCompat="@drawable/ic_format_bold">
             </ImageButton>
 
             <ImageButton
                 android:id="@+id/italic"
-                android:layout_width="@dimen/button_48"
-                android:layout_height="@dimen/button_48"
-                android:background="?android:selectableItemBackground"
+                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="@dimen/button_medium"
+                android:layout_height="@dimen/button_medium"
                 android:contentDescription="@null"
                 android:scaleType="center"
-                app:srcCompat="@drawable/ic_camera">
+                android:tint="@color/colorPrimary"
+                app:srcCompat="@drawable/ic_format_italic">
             </ImageButton>
 
             <ImageButton
                 android:id="@+id/underline"
-                android:layout_width="@dimen/button_48"
-                android:layout_height="@dimen/button_48"
-                android:background="?android:selectableItemBackground"
+                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="@dimen/button_medium"
+                android:layout_height="@dimen/button_medium"
                 android:contentDescription="@null"
                 android:scaleType="center"
-                app:srcCompat="@drawable/ic_camera">
+                android:tint="@color/colorPrimary"
+                app:srcCompat="@drawable/ic_format_underlined">
             </ImageButton>
 
             <ImageButton
                 android:id="@+id/strikethrough"
-                android:layout_width="@dimen/button_48"
-                android:layout_height="@dimen/button_48"
-                android:background="?android:selectableItemBackground"
+                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="@dimen/button_medium"
+                android:layout_height="@dimen/button_medium"
                 android:contentDescription="@null"
                 android:scaleType="center"
-                app:srcCompat="@drawable/ic_camera">
+                android:tint="@color/colorPrimary"
+                app:srcCompat="@drawable/ic_strikethrough">
             </ImageButton>
 
             <ImageButton
                 android:id="@+id/bullet"
-                android:layout_width="@dimen/button_48"
-                android:layout_height="@dimen/button_48"
-                android:background="?android:selectableItemBackground"
+                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="@dimen/button_medium"
+                android:layout_height="@dimen/button_medium"
                 android:contentDescription="@null"
                 android:scaleType="center"
-                app:srcCompat="@drawable/ic_camera">
+                android:tint="@color/colorPrimary"
+                app:srcCompat="@drawable/ic_format_list_bulleted">
             </ImageButton>
 
             <ImageButton
                 android:id="@+id/quote"
-                android:layout_width="@dimen/button_48"
-                android:layout_height="@dimen/button_48"
-                android:background="?android:selectableItemBackground"
+                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="@dimen/button_medium"
+                android:layout_height="@dimen/button_medium"
                 android:contentDescription="@null"
                 android:scaleType="center"
-                app:srcCompat="@drawable/ic_camera">
+                android:tint="@color/colorPrimary"
+                app:srcCompat="@drawable/ic_format_quote">
             </ImageButton>
 
             <ImageButton
                 android:id="@+id/link"
-                android:layout_width="@dimen/button_48"
-                android:layout_height="@dimen/button_48"
-                android:background="?android:selectableItemBackground"
+                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="@dimen/button_medium"
+                android:layout_height="@dimen/button_medium"
                 android:contentDescription="@null"
                 android:scaleType="center"
-                app:srcCompat="@drawable/ic_camera">
+                android:tint="@color/colorPrimary"
+                app:srcCompat="@drawable/ic_insert_link">
             </ImageButton>
 
             <ImageButton
                 android:id="@+id/clear"
-                android:layout_width="@dimen/button_48"
-                android:layout_height="@dimen/button_48"
-                android:background="?android:selectableItemBackground"
+                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="@dimen/button_medium"
+                android:layout_height="@dimen/button_medium"
                 android:contentDescription="@null"
                 android:scaleType="center"
-                app:srcCompat="@drawable/ic_camera">
+                android:tint="@color/colorPrimary"
+                app:srcCompat="@drawable/ic_format_clear">
             </ImageButton>
 
         </LinearLayout>
@@ -113,6 +121,11 @@
         android:layout_alignParentTop="true"
         android:background="@android:color/transparent"
         android:hint="@string/Title"
+        android:nextFocusDown="@+id/input.note"
+        android:imeOptions="actionNext"
+        android:inputType="textNoSuggestions"
+        android:maxLines="1"
+        android:lines="1"
         android:paddingEnd="16dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
@@ -122,7 +135,7 @@
         android:textStyle="bold"/>
 
     <io.github.mthli.knife.KnifeText
-        android:id="@+id/input.text"
+        android:id="@+id/input.note"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/tools"

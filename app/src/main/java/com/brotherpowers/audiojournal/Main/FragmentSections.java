@@ -7,11 +7,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.SparseArray;
 
+import com.brotherpowers.audiojournal.AudioRecorder.AudioRecordingFragment;
 import com.brotherpowers.audiojournal.Audios.RecordsFragment;
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Realm.DataEntry;
-import com.brotherpowers.audiojournal.Realm.RFile;
-import com.brotherpowers.audiojournal.Recorder.RecordingFragment;
+import com.brotherpowers.audiojournal.Realm.Attachment;
 import com.brotherpowers.audiojournal.Utils.Extensions;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
 
@@ -23,18 +23,18 @@ import io.realm.Realm;
  * Created by harsh_v on 2/8/17.
  */
 
-public enum Section {
+public enum FragmentSections {
 
-    recorder(0, R.drawable.ic_recording, RecordingFragment.newInstance(), RecordingFragment.class),
+    recorder(0, R.drawable.ic_recording, AudioRecordingFragment.newInstance(), AudioRecordingFragment.class),
     records(1, R.drawable.ic_equalizer_white, RecordsFragment.newInstance(), RecordsFragment.class),
     pictures(2, R.drawable.ic_photo_library_white, RecordsFragment.newInstance(), RecordsFragment.class),
     reminders(3, R.drawable.ic_alarm_white, RecordsFragment.newInstance(), RecordsFragment.class);
 
-    private static final SparseArray<Section> ARRAY = new SparseArray<>();
+    private static final SparseArray<FragmentSections> ARRAY = new SparseArray<>();
 
     static {
-        for (Section section : Section.values()) {
-            ARRAY.append(section.position, section);
+        for (FragmentSections sections : FragmentSections.values()) {
+            ARRAY.append(sections.position, sections);
         }
     }
 
@@ -45,14 +45,14 @@ public enum Section {
     public final Fragment fragment;
     public final Class fragmentClass;
 
-    Section(int position, @DrawableRes int drawable, Fragment fragment, Class fragmentClass) {
+    FragmentSections(int position, @DrawableRes int drawable, Fragment fragment, Class fragmentClass) {
         this.position = position;
         this.drawable = drawable;
         this.fragment = fragment;
         this.fragmentClass = fragmentClass;
     }
 
-    public static Section at(int position) {
+    public static FragmentSections at(int position) {
         return ARRAY.get(position);
     }
 
@@ -70,7 +70,7 @@ public enum Section {
                 break;
             }
             case pictures: {
-                long totalNumberOfPictures = realm.where(RFile.class).equalTo("fileType", FileUtils.Type.IMAGE.value).count();
+                long totalNumberOfPictures = realm.where(Attachment.class).equalTo("fileType", FileUtils.Type.IMAGE.value).count();
                 s = String.format(Locale.getDefault(), "%2d", totalNumberOfPictures);
                 break;
             }

@@ -6,18 +6,17 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTabHost;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.LinearLayout;
 
+import com.brotherpowers.audiojournal.AudioRecorder.AudioRecordingFragment;
 import com.brotherpowers.audiojournal.Audios.RecordsFragment;
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Realm.DataEntry;
-import com.brotherpowers.audiojournal.Recorder.AudioRecorder;
-import com.brotherpowers.audiojournal.Recorder.RecordingFragment;
-import com.brotherpowers.audiojournal.TextEditor.TextEditor;
+import com.brotherpowers.audiojournal.AudioRecorder.AudioRecorder;
+import com.brotherpowers.audiojournal.TextEditor.TextEditorActivity;
 import com.brotherpowers.audiojournal.View.AJViewPager;
 
 import butterknife.BindView;
@@ -26,7 +25,7 @@ import io.realm.Realm;
 
 
 public class MainActivity extends AppCompatActivity
-        implements RecordingFragment.OnFragmentInteractionListener, RecordsFragment.OnFragmentInteractionListener {
+        implements AudioRecordingFragment.OnFragmentInteractionListener, RecordsFragment.OnFragmentInteractionListener {
 
 
     /**
@@ -63,8 +62,8 @@ public class MainActivity extends AppCompatActivity
     private void setupTabLayout(Realm realm) {
         // set up the tabs
         for (int i = 0; i < tabLayout.getTabCount(); i++) {
-            tabLayout.getTabAt(i).setIcon(Section.at(i).drawable);
-            tabLayout.getTabAt(i).setText(Section.at(i).title(realm));
+            tabLayout.getTabAt(i).setIcon(FragmentSections.at(i).drawable);
+            tabLayout.getTabAt(i).setText(FragmentSections.at(i).title(realm));
         }
     }
 
@@ -94,7 +93,7 @@ public class MainActivity extends AppCompatActivity
             return false;
         }
         // Start Text Editor
-        TextEditor.start(this);
+        TextEditorActivity.start(this);
         return true;
     }
 
@@ -111,13 +110,13 @@ public class MainActivity extends AppCompatActivity
         @Override
         public Fragment getItem(int position) {
             // Return fragment from position
-            return Section.at(position).fragment;
+            return FragmentSections.at(position).fragment;
         }
 
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return Section.values().length;
+            return FragmentSections.values().length;
         }
     }
 

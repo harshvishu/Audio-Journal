@@ -14,7 +14,7 @@
     <uses-feature android:name="android.hardware.camera.autofocus"/>
 
     <application
-        android:name=".Main.MyApp"
+        android:name=".Main.AudioJournal"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
@@ -58,7 +58,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TextEditor.TextEditor"
+            android:name=".TextEditor.TextEditorActivity"
             android:parentActivityName=".Main.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data

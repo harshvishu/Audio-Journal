@@ -15,7 +15,8 @@ import io.realm.annotations.PrimaryKey;
  * Created by harsh_v on 11/4/16.
  */
 
-public class RFile extends RealmObject implements Essentials {
+public class Attachment extends RealmObject implements RealmDelegate {
+
     @PrimaryKey
     private long id;
 
@@ -46,7 +47,7 @@ public class RFile extends RealmObject implements Essentials {
         return FileUtils.Type.valueOf(fileType);
     }
 
-    public RFile setFileType(FileUtils.Type fileType) {
+    public Attachment setFileType(FileUtils.Type fileType) {
         this.fileType = fileType.value;
         return this;
     }
@@ -55,7 +56,7 @@ public class RFile extends RealmObject implements Essentials {
         return id;
     }
 
-    public RFile setId(long id) {
+    public Attachment setId(long id) {
         this.id = id;
         return this;
     }
@@ -83,7 +84,7 @@ public class RFile extends RealmObject implements Essentials {
     }
 
     @Override
-    public RFile generateId(Realm realm){
+    public Attachment generateId(Realm realm){
         setId(nexID(realm));
         return this;
     }
