@@ -58,9 +58,12 @@
             </intent-filter>
         </activity>
         <activity
+
             android:name=".TextEditor.TextEditorActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".Main.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize|stateVisible">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.brotherpowers.audiojournal.Main.MainActivity"/>

@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Audio-Journal.iml" filepath="$PROJECT_DIR$/Audio-Journal.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/audio-journal-android.iml" filepath="$PROJECT_DIR$/audio-journal-android.iml" />
       <module fileurl="file://$PROJECT_DIR$/cameraview/cameraview.iml" filepath="$PROJECT_DIR$/cameraview/cameraview.iml" />
       <module fileurl="file://$PROJECT_DIR$/hvprogressview/hvprogressview.iml" filepath="$PROJECT_DIR$/hvprogressview/hvprogressview.iml" />
       <module fileurl="file://$PROJECT_DIR$/hvwaveformview/hvwaveformview.iml" filepath="$PROJECT_DIR$/hvwaveformview/hvwaveformview.iml" />

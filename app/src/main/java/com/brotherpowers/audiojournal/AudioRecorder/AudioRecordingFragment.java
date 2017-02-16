@@ -20,8 +20,8 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 
 import com.brotherpowers.audiojournal.R;
-import com.brotherpowers.audiojournal.Realm.Attachment;
-import com.brotherpowers.audiojournal.Realm.DataEntry;
+import com.brotherpowers.audiojournal.Model.Attachment;
+import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
 import com.brotherpowers.audiojournal.View.PermissionRequestFragment;
 import com.brotherpowers.hvprogressview.ProgressView;

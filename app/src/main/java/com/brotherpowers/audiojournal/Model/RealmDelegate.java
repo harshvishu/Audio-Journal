@@ -1,4 +1,4 @@
-package com.brotherpowers.audiojournal.Realm;
+package com.brotherpowers.audiojournal.Model;
 
 import io.realm.Realm;
 import io.realm.RealmObject;

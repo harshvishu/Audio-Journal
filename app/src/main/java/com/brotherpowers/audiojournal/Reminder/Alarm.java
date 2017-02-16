@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
 
-import com.brotherpowers.audiojournal.Realm.DataEntry;
+import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 

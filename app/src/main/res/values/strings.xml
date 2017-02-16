@@ -22,5 +22,8 @@
     <string name="tet_string">Press [img src=ic_camera/] to accept or [img src=ic_add/] to retry</string>
     <string name="Title">Title</string>
     <string name="Note">Note</string>
+    <string name="save">save</string>
+    <string name="link_dialog_title">http(s)://</string>
+    <string name="link_dialog_hint">Insert link</string>
 
 </resources>

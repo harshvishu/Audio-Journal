@@ -10,8 +10,8 @@ import android.util.SparseArray;
 import com.brotherpowers.audiojournal.AudioRecorder.AudioRecordingFragment;
 import com.brotherpowers.audiojournal.Audios.RecordsFragment;
 import com.brotherpowers.audiojournal.R;
-import com.brotherpowers.audiojournal.Realm.DataEntry;
-import com.brotherpowers.audiojournal.Realm.Attachment;
+import com.brotherpowers.audiojournal.Model.DataEntry;
+import com.brotherpowers.audiojournal.Model.Attachment;
 import com.brotherpowers.audiojournal.Utils.Extensions;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
 

@@ -2,35 +2,26 @@ package com.brotherpowers.audiojournal.Audios;
 
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.brotherpowers.audiojournal.R;
-import com.brotherpowers.audiojournal.Realm.DataEntry;
+import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.brotherpowers.audiojournal.AudioRecorder.AudioPlayer;
 import com.brotherpowers.audiojournal.AudioRecorder.AudioRecorder;
 import com.brotherpowers.audiojournal.Reminder.Alarm;
-import com.brotherpowers.audiojournal.Utils.Extensions;
-import com.brotherpowers.audiojournal.View.RecyclerViewDecor;
+import com.brotherpowers.audiojournal.View.RecyclerViewDecorator;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -92,7 +83,7 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
 
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(llm);
-        recyclerView.addItemDecoration(new RecyclerViewDecor());
+        recyclerView.addItemDecoration(new RecyclerViewDecorator());
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         recordsAdapter = new RecordsAdapter(getContext(), this, realm.where(DataEntry.class)

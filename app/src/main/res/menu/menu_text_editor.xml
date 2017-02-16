@@ -3,8 +3,8 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.brotherpowers.audiojournal.TextEditor.TextEditorActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action.save.text_note"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never"/>
+        android:title="@string/save"
+        app:showAsAction="ifRoom"/>
 </menu>

@@ -13,6 +13,9 @@ import butterknife.ButterKnife;
 
 public class TextEditorActivity extends AppCompatActivity {
 
+
+    long entry_id;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,12 +24,23 @@ public class TextEditorActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        entry_id = getIntent().getLongExtra("id", -1);
+
+        if (savedInstanceState == null) {
+
+            getSupportFragmentManager().
+                    beginTransaction()
+                    .replace(R.id.container_text_editor, TextEditorFragment.newInstance(entry_id))
+                    .commit();
+        }
     }
 
-    public static void start(Activity parentActivity) {
-        parentActivity.startActivity(new Intent(parentActivity, TextEditorActivity.class));
+    public static void start(Activity parentActivity, long entry_id) {
+        Intent intent = new Intent(parentActivity, TextEditorActivity.class);
+        intent.putExtra("id", entry_id);
+        parentActivity.startActivity(intent);
     }
 
     @Override
@@ -34,7 +48,7 @@ public class TextEditorActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
-                break;
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

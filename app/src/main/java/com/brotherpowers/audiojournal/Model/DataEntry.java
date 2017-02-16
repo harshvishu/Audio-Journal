@@ -1,4 +1,6 @@
-package com.brotherpowers.audiojournal.Realm;
+package com.brotherpowers.audiojournal.Model;
+
+import com.brotherpowers.audiojournal.Utils.Constants;
 
 import java.util.Date;
 
@@ -13,6 +15,7 @@ import io.realm.annotations.PrimaryKey;
 
 public class DataEntry extends RealmObject implements RealmDelegate {
 
+
     @PrimaryKey
     private long id;
 
@@ -26,14 +29,9 @@ public class DataEntry extends RealmObject implements RealmDelegate {
 
     private RealmList<Attachment> attachments;
 
-    // No Setter
-    private Date created_at;
+    private Date created_at = new Date();
 
-    public DataEntry() {
-        super();
-        created_at = new Date();
-    }
-
+    public String text_note = Constants.TEXT_NOTE_DEFAULT_JSON;    // Default JSON for text_note
 
     public long getId() {
         return id;

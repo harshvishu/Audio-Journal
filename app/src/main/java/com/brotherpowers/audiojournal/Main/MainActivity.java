@@ -14,7 +14,7 @@ import android.widget.LinearLayout;
 import com.brotherpowers.audiojournal.AudioRecorder.AudioRecordingFragment;
 import com.brotherpowers.audiojournal.Audios.RecordsFragment;
 import com.brotherpowers.audiojournal.R;
-import com.brotherpowers.audiojournal.Realm.DataEntry;
+import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.brotherpowers.audiojournal.AudioRecorder.AudioRecorder;
 import com.brotherpowers.audiojournal.TextEditor.TextEditorActivity;
 import com.brotherpowers.audiojournal.View.AJViewPager;
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity
             return false;
         }
         // Start Text Editor
-        TextEditorActivity.start(this);
+        TextEditorActivity.start(this,entry.getId());
         return true;
     }
 

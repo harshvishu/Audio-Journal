@@ -6,9 +6,11 @@ import java.nio.charset.Charset;
  * Created by harsh_v on 10/28/16.
  */
 
-public interface Constants {
-    String MD5 = "MD5";
-    Charset UTF_8 = Charset.forName("utf-8");
+public final class Constants {
+    public static final String MD5 = "MD5";
+    public static final Charset UTF_8 = Charset.forName("utf-8");
 
-    int REQ_REC_PERMISSION = 0x1;
+    public static final int REQ_REC_PERMISSION = 0x1;
+
+    public static final String TEXT_NOTE_DEFAULT_JSON = "{\"title\":\"\",\"note\":\"\"}";
 }

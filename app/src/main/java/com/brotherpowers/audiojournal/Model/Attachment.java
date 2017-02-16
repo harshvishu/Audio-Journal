@@ -1,4 +1,4 @@
-package com.brotherpowers.audiojournal.Realm;
+package com.brotherpowers.audiojournal.Model;
 
 import android.content.Context;
 import android.text.TextUtils;
