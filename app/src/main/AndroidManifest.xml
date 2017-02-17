@@ -31,9 +31,6 @@
                 android:resource="@xml/file_paths"/>
         </provider>
 
-        <meta-data
-            android:name="com.bugsnag.android.API_KEY"
-            android:value="53f5b6d3116c7983c7a2872e14765ee7"/>
 
         <receiver
             android:name=".Reminder.Reminder"

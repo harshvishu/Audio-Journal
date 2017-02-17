@@ -87,7 +87,6 @@ dependencies {
     compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'io.realm:android-adapters:1.4.0'
-    compile 'com.bugsnag:bugsnag-android:3.4.0'
     compile 'com.android.support:support-v4:25.1.0'
     compile 'commons-io:commons-io:2.5'
     compile 'com.github.mthli:Knife:v1.1'

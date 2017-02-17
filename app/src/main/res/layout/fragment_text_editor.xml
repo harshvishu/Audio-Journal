@@ -131,8 +131,8 @@
         android:paddingRight="16dp"
         android:paddingStart="16dp"
         android:paddingTop="16dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
 
     <io.github.mthli.knife.KnifeText
         android:id="@+id/input.note"
@@ -146,9 +146,10 @@
         android:paddingEnd="16dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
+        android:inputType="textMultiLine"
         android:paddingStart="16dp"
         android:paddingTop="16dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:linkUnderline="true"
         app:quoteColor="@color/colorAccent"/>
 
