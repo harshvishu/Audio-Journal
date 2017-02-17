@@ -72,7 +72,7 @@ dependencies {
     })
     compile project(':hvwaveformview')
     compile project(':hvprogressview')
-    compile project(':cameraview')
+    compile 'com.github.harshvishu:cameraview:master-SNAPSHOT'
     compile "com.android.support:appcompat-v7:$rootProject.ext.supportLibraryVersion";
     compile "com.android.support:design:$rootProject.ext.supportLibraryVersion";
     compile "com.android.support:cardview-v7:$rootProject.ext.supportLibraryVersion";
