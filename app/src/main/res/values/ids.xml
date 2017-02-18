@@ -9,4 +9,5 @@
     <item name="action.camera" type="id"/>
     <item name="action.reminder" type="id"/>
     <item name="action.textEditor" type="id"/>
+    <item name="action.flash" type="id"/>
 </resources>

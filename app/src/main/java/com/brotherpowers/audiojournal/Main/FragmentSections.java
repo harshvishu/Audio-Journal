@@ -8,7 +8,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.SparseArray;
 
 import com.brotherpowers.audiojournal.AudioRecorder.AudioRecordingFragment;
-import com.brotherpowers.audiojournal.Audios.RecordsFragment;
+import com.brotherpowers.audiojournal.Records.RecordsFragment;
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.brotherpowers.audiojournal.Model.Attachment;

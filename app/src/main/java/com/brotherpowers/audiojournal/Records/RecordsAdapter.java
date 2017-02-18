@@ -1,4 +1,4 @@
-package com.brotherpowers.audiojournal.Audios;
+package com.brotherpowers.audiojournal.Records;
 
 import android.content.Context;
 import android.media.MediaMetadataRetriever;
@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.support.v4.util.LongSparseArray;
-import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Model.Attachment;
@@ -26,7 +24,6 @@ import com.brotherpowers.audiojournal.Utils.Extensions;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
 import com.brotherpowers.audiojournal.View.ALViewHolder;
 import com.brotherpowers.waveformview.WaveformView;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
@@ -44,7 +41,7 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
     private final int VIEW_ITEM = 1;
 
     private Callback callback;
-    final LongSparseArray<AttachmentAdapter> attachmentAdapter;
+    private final LongSparseArray<AttachmentAdapter> attachmentAdapter;
     final LongSparseArray<short[]> cachedSamples;
 
 
@@ -234,46 +231,6 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
 
         VHPlaceHolder(View itemView, VhClick vhClick) {
             super(itemView, vhClick);
-        }
-    }
-
-    private class AttachmentAdapter extends RealmRecyclerViewAdapter<Attachment, ViewHolderImage> {
-        AttachmentAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<Attachment> data) {
-            super(context, data, true);
-        }
-
-        @Override
-        public ViewHolderImage onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = inflater.inflate(R.layout.recycler_view_internal_image, parent, false);
-            return new ViewHolderImage(view, (click_view, position) -> {
-                Toast.makeText(context, "click image: " + position, Toast.LENGTH_SHORT).show();
-            });
-        }
-
-        @Override
-        public void onBindViewHolder(ViewHolderImage holder, int position) {
-            Attachment attachment = getData().get(position);
-            Picasso.with(context)
-                    .load(attachment.file(context))
-                    .fit()
-                    .into(holder.imageView);
-        }
-
-    }
-
-    class ViewHolderImage extends ALViewHolder implements View.OnClickListener {
-        @BindView(R.id.image_view_internal)
-        AppCompatImageView imageView;
-
-
-        ViewHolderImage(View itemView, VhClick vhClick) {
-            super(itemView, vhClick);
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View view) {
-            vhClick.onItemClick(view, getAdapterPosition());
         }
     }
 

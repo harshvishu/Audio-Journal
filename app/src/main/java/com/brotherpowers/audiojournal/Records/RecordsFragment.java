@@ -1,4 +1,4 @@
-package com.brotherpowers.audiojournal.Audios;
+package com.brotherpowers.audiojournal.Records;
 
 
 import android.content.Context;
@@ -16,10 +16,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.brotherpowers.audiojournal.R;
-import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.brotherpowers.audiojournal.AudioRecorder.AudioPlayer;
 import com.brotherpowers.audiojournal.AudioRecorder.AudioRecorder;
+import com.brotherpowers.audiojournal.Model.DataEntry;
+import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Reminder.Alarm;
 import com.brotherpowers.audiojournal.View.RecyclerViewDecorator;
 
@@ -131,6 +131,8 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
     public void actionCamera(int position) {
         DataEntry entry = recordsAdapter.getItem(position);
         assert entry != null;
+
+        interactionListener.startCamera(entry);
     }
 
     @Override
@@ -193,5 +195,7 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
 
     public interface OnFragmentInteractionListener {
         boolean startTextEditor(@NonNull DataEntry entry);
+
+        boolean startCamera(@NonNull DataEntry entry);
     }
 }

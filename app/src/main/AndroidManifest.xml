@@ -47,7 +47,8 @@
         <activity
             android:name=".Main.MainActivity"
             android:screenOrientation="sensorPortrait"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -55,12 +56,12 @@
             </intent-filter>
         </activity>
         <activity
-
-            android:name=".TextEditor.TextEditorActivity"
+            android:name=".Main.EditorActivity"
             android:launchMode="singleTop"
             android:parentActivityName=".Main.MainActivity"
+            android:screenOrientation="sensorPortrait"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize|stateVisible">
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.brotherpowers.audiojournal.Main.MainActivity"/>

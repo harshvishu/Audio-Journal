@@ -11,12 +11,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.LinearLayout;
 
-import com.brotherpowers.audiojournal.AudioRecorder.AudioRecordingFragment;
-import com.brotherpowers.audiojournal.Audios.RecordsFragment;
-import com.brotherpowers.audiojournal.R;
-import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.brotherpowers.audiojournal.AudioRecorder.AudioRecorder;
-import com.brotherpowers.audiojournal.TextEditor.TextEditorActivity;
+import com.brotherpowers.audiojournal.AudioRecorder.AudioRecordingFragment;
+import com.brotherpowers.audiojournal.Model.DataEntry;
+import com.brotherpowers.audiojournal.R;
+import com.brotherpowers.audiojournal.Records.RecordsFragment;
 import com.brotherpowers.audiojournal.View.AJViewPager;
 
 import butterknife.BindView;
@@ -77,9 +76,9 @@ public class MainActivity extends AppCompatActivity
         tabLayout.setClickable(!isRecording);
         tabLayout.setEnabled(!isRecording);
 
-        LinearLayout tabStrip = ((LinearLayout)tabLayout.getChildAt(0));
+        LinearLayout tabStrip = ((LinearLayout) tabLayout.getChildAt(0));
         tabStrip.setEnabled(false);
-        for(int i = 0; i < tabStrip.getChildCount(); i++) {
+        for (int i = 0; i < tabStrip.getChildCount(); i++) {
             tabStrip.getChildAt(i).setClickable(!isRecording);
         }
     }
@@ -93,9 +92,20 @@ public class MainActivity extends AppCompatActivity
             return false;
         }
         // Start Text Editor
-        TextEditorActivity.start(this,entry.getId());
+        EditorActivity.start(this, entry.getId(), EditorActivity.TaskNote);
         return true;
     }
+
+    @Override
+    public boolean startCamera(@NonNull DataEntry entry) {
+        if (isRecording) {
+            return false;
+        }
+        // Start Text Editor
+        EditorActivity.start(this, entry.getId(), EditorActivity.TaskCamera);
+        return true;
+    }
+
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to

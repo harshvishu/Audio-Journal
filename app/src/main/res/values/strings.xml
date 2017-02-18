@@ -26,4 +26,8 @@
     <string name="link_dialog_title">http(s)://</string>
     <string name="link_dialog_hint">Insert link</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="flash">flash</string>
+
 </resources>

@@ -5,7 +5,7 @@
         android:duration="@integer/fab_anim_duration"
         android:fromXScale="0.8"
         android:fromYScale="0.8"
-        android:interpolator="@android:anim/linear_interpolator"
+        android:interpolator="@android:anim/overshoot_interpolator"
         android:pivotX="50%"
         android:pivotY="50%"
         android:toXScale="1.0"

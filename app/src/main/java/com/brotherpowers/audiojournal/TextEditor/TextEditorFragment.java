@@ -82,7 +82,6 @@ public class TextEditorFragment extends Fragment {
             note = noteJSON.note;
         }
 
-
     }
 
     @Override
@@ -113,21 +112,31 @@ public class TextEditorFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save_text_note:
-                final Realm realm = Realm.getDefaultInstance();
-
-                TextNoteJSON noteJSON = new TextNoteJSON(_title.getText().toString(), _note.toHtml());
-
-                final DataEntry entry = realm.where(DataEntry.class).equalTo("id", entry_id).findFirst();
-                assert entry != null;
-
-                // Persist the data
-                realm.executeTransaction(r -> entry.text_note = gson.toJson(noteJSON));
-
+//                saveChanges();
                 // Finish the activity
                 getActivity().finish();
                 break;
         }
         return true;
+    }
+
+    @Override
+    public void onStop() {
+        // Save the changes when the fragment stops
+        saveChanges();
+        super.onStop();
+    }
+
+    private void saveChanges() {
+        final Realm realm = Realm.getDefaultInstance();
+
+        TextNoteJSON noteJSON = new TextNoteJSON(_title.getText().toString(), _note.toHtml());
+
+        final DataEntry entry = realm.where(DataEntry.class).equalTo("id", entry_id).findFirst();
+        assert entry != null;
+
+        // Persist the data
+        realm.executeTransaction(r -> entry.text_note = gson.toJson(noteJSON));
     }
 
     @OnClick(R.id.bold)

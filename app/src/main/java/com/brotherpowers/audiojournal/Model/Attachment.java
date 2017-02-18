@@ -31,16 +31,18 @@ public class Attachment extends RealmObject implements RealmDelegate {
         return file_name;
     }
 
-    public void setFileName(String file_name) {
+    public Attachment setFileName(String file_name) {
         this.file_name = file_name;
+        return this;
     }
 
     public String getFile_url() {
         return file_url;
     }
 
-    public void setFile_url(String file_url) {
+    public Attachment setFileUrl(String file_url) {
         this.file_url = file_url;
+        return this;
     }
 
     public FileUtils.Type fileType() {

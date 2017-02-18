@@ -19,9 +19,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 
-import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Model.Attachment;
 import com.brotherpowers.audiojournal.Model.DataEntry;
+import com.brotherpowers.audiojournal.R;
+import com.brotherpowers.audiojournal.Utils.Constants;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
 import com.brotherpowers.audiojournal.View.PermissionRequestFragment;
 import com.brotherpowers.hvprogressview.ProgressView;
@@ -39,7 +40,7 @@ import static com.brotherpowers.audiojournal.Utils.Constants.REQ_REC_PERMISSION;
  * A simple {@link Fragment} subclass.
  */
 public class AudioRecordingFragment extends Fragment implements AudioRecorder.Listener {
-    private static final String FRAGMENT_DIALOG = "dialog";
+
 
     @BindView(R.id.progress_view)
     ProgressView progressView;
@@ -52,9 +53,7 @@ public class AudioRecordingFragment extends Fragment implements AudioRecorder.Li
     }
 
     public static AudioRecordingFragment newInstance() {
-
         Bundle args = new Bundle();
-
         AudioRecordingFragment fragment = new AudioRecordingFragment();
         fragment.setArguments(args);
         return fragment;
@@ -91,8 +90,7 @@ public class AudioRecordingFragment extends Fragment implements AudioRecorder.Li
 
 
         // Set the recording button with recording state
-        buttonRecord.setImageResource(recordingState == AudioRecorder.STATE.RECORDING
-                ? R.drawable.ic_stop : R.drawable.ic_mic);
+        buttonRecord.setImageResource(recordingState == AudioRecorder.STATE.RECORDING ? R.drawable.ic_stop : R.drawable.ic_mic);
 
         buttonRecord.setOnClickListener(v -> {
 
@@ -118,7 +116,7 @@ public class AudioRecordingFragment extends Fragment implements AudioRecorder.Li
                                 new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE},
                                 REQ_REC_PERMISSION,
                                 R.string.record_permission_not_granted)
-                        .show(getChildFragmentManager(), FRAGMENT_DIALOG);
+                        .show(getChildFragmentManager(), Constants.FRAGMENT_DIALOG);
             } else {
                 ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE},
                         REQ_REC_PERMISSION);
@@ -136,9 +134,7 @@ public class AudioRecordingFragment extends Fragment implements AudioRecorder.Li
         // Interface
         interactionListener.onRecordingStateChange(recordingState);
 
-        buttonRecord.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.fab_open));
-        buttonRecord.setImageResource(R.drawable.ic_stop);
-        System.out.println(">>>>>> enable button");
+        changeButtonDrawableWithAnim(R.drawable.ic_stop);
 
         new Handler(Looper.getMainLooper()).post(() -> {
             buttonRecord.setEnabled(true);     // Enable button click
@@ -172,7 +168,6 @@ public class AudioRecordingFragment extends Fragment implements AudioRecorder.Li
         int millSecond = Integer.parseInt(durationStr);
 
         dataEntry.setLength(millSecond);
-
         dataEntry.setAudioFile(attachment);
         realm.executeTransaction(r -> {
             r.copyToRealmOrUpdate(dataEntry);
@@ -181,14 +176,19 @@ public class AudioRecordingFragment extends Fragment implements AudioRecorder.Li
 
 
         this.recordingState = AudioRecorder.STATE.PENDING;
-        buttonRecord.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.fab_open));
-        buttonRecord.setImageResource(R.drawable.ic_mic);
+        changeButtonDrawableWithAnim(R.drawable.ic_mic);
         progressView.reset();
         audioRecorder.reset();
 
         new Handler(Looper.getMainLooper()).post(() -> {
             buttonRecord.setEnabled(true);     // Enable button click
         });
+    }
+
+    private void changeButtonDrawableWithAnim(int drawable) {
+        // TODO: 2/18/17 Use preper animation
+        buttonRecord.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.fab_open));
+        buttonRecord.setImageResource(drawable);
     }
 
     @Override

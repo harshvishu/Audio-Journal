@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
-      tools:context="com.brotherpowers.audiojournal.TextEditor.TextEditorActivity">
+      tools:context="com.brotherpowers.audiojournal.Main.EditorActivity">
     <item
         android:id="@+id/action.save.text_note"
         android:orderInCategory="100"
