@@ -1,15 +1,20 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              tools:context="com.brotherpowers.audiojournal.Camera.CameraFragment">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                tools:context="com.brotherpowers.audiojournal.Camera.CameraFragment">
 
     <com.google.android.cameraview.CameraView
         android:id="@+id/cameraview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/control"
         android:adjustViewBounds="true"/>
 
-    <include layout="@layout/camera_control"/>
-</LinearLayout>
+    <include
+        layout="@layout/camera_control"
+        android:layout_width="match_parent"
+        android:layout_height="96dp"
+        android:layout_alignParentBottom="true"/>
+</RelativeLayout>

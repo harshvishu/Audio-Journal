@@ -221,11 +221,18 @@ public class CameraFragment extends Fragment {
                     // Load the image
 
                     // Set the Image View
+
                     new Handler(Looper.getMainLooper())
-                            .post(() -> Glide.with(getContext())
-                                    .load(attachment.file(getContext()))
-                                    .fitCenter()
-                                    .into(_imageView));
+                            .post(() -> {
+                                final int thumbnailSize = getResources().getDimensionPixelSize(R.dimen.camera_control_size);
+                                Glide.with(getContext())
+                                        .load(attachment.file(getContext()))
+                                        .thumbnail(0.25f)
+                                        .crossFade()
+                                        .centerCrop()
+                                        .override(thumbnailSize, thumbnailSize)
+                                        .into(_imageView);
+                            });
 
 
                     os.close();
