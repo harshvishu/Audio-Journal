@@ -28,7 +28,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.os.ParcelableCompat;
 import android.support.v4.os.ParcelableCompatCreatorCallbacks;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.FrameLayout;
 
 import java.lang.annotation.Retention;
@@ -37,6 +36,11 @@ import java.util.ArrayList;
 import java.util.Set;
 
 public class CameraView extends FrameLayout {
+
+    /**
+     * SharedPreferences Name
+     */
+    public static final String PREF_FILE_NAME = "com.google.android.cameraview";
 
     /**
      * The camera device faces the opposite direction as the device's screen.
@@ -84,6 +88,7 @@ public class CameraView extends FrameLayout {
     /**
      * The mode for for the camera device's flash control
      */
+    @Retention(RetentionPolicy.SOURCE)
     @IntDef({FLASH_OFF, FLASH_ON, FLASH_TORCH, FLASH_AUTO, FLASH_RED_EYE})
     public @interface Flash {
     }
@@ -136,6 +141,11 @@ public class CameraView extends FrameLayout {
             @Override
             public void onDisplayOrientationChanged(int displayOrientation) {
                 mImpl.setDisplayOrientation(displayOrientation);
+            }
+
+            @Override
+            public void onSensorOrientationChanged(int sensorOrientation) {
+                mImpl.setSensorOrientation(sensorOrientation);
             }
         };
     }
@@ -202,6 +212,7 @@ public class CameraView extends FrameLayout {
         int width = getMeasuredWidth();
         int height = getMeasuredHeight();
         AspectRatio ratio = getAspectRatio();
+
         if (mDisplayOrientationDetector.getLastKnownDisplayOrientation() % 180 == 0) {
             ratio = ratio.inverse();
         }
@@ -249,10 +260,11 @@ public class CameraView extends FrameLayout {
      */
     public void start() {
         if (!mImpl.start()) {
-            // TODO: 12/17/16 Rain check on this
-            Log.e("CAMERA 1", "Camera2 uses legacy hardware layer; fall back to Camera1");
+            //store the state ,and restore this state after fall back o Camera1
+            Parcelable state = onSaveInstanceState();
             // Camera2 uses legacy hardware layer; fall back to Camera1
             mImpl = new Camera1(mCallbacks, createPreviewImpl(getContext()));
+            onRestoreInstanceState(state);
             mImpl.start();
         }
     }
@@ -347,7 +359,9 @@ public class CameraView extends FrameLayout {
      * @param ratio The {@link AspectRatio} to be set.
      */
     public void setAspectRatio(@NonNull AspectRatio ratio) {
-        mImpl.setAspectRatio(ratio);
+        if (mImpl.setAspectRatio(ratio)) {
+            requestLayout();
+        }
     }
 
     /**
@@ -403,7 +417,7 @@ public class CameraView extends FrameLayout {
 
     /**
      * Take a picture. The result will be returned to
-     * {@link Callback#onPictureTaken(CameraView, byte[])}.
+     * {@link Callback#onPictureTaken(CameraView, byte[], int, int)}.
      */
     public void takePicture() {
         mImpl.takePicture();
@@ -428,9 +442,13 @@ public class CameraView extends FrameLayout {
 
         @Override
         public void onCameraOpened() {
-            if (mRequestLayoutOnOpen) {
-                mRequestLayoutOnOpen = false;
-                requestLayout();
+            try {
+                if (mRequestLayoutOnOpen) {
+                    mRequestLayoutOnOpen = false;
+                    requestLayout();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             for (Callback callback : mCallbacks) {
                 callback.onCameraOpened(CameraView.this);
@@ -447,7 +465,7 @@ public class CameraView extends FrameLayout {
         @Override
         public void onPictureTaken(byte[] data) {
             for (Callback callback : mCallbacks) {
-                callback.onPictureTaken(CameraView.this, data);
+                callback.onPictureTaken(CameraView.this, data, mDisplayOrientationDetector.getLastSensorOrientation(), mDisplayOrientationDetector.getLastKnownDisplayOrientation());
             }
         }
 
@@ -535,7 +553,7 @@ public class CameraView extends FrameLayout {
          * @param cameraView The associated {@link CameraView}.
          * @param data       JPEG data.
          */
-        public void onPictureTaken(CameraView cameraView, byte[] data) {
+        public void onPictureTaken(CameraView cameraView, byte[] data, int sensorOrientation, int displayOrientation) {
         }
     }
 

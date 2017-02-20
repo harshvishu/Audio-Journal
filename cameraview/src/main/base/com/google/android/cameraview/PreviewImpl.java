@@ -50,7 +50,7 @@ abstract class PreviewImpl {
 
     abstract boolean isReady();
 
-    protected void dispatchSurfaceChanged() {
+    void dispatchSurfaceChanged() {
         mCallback.onSurfaceChanged();
     }
 

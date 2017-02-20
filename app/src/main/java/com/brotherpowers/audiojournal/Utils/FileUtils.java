@@ -65,6 +65,10 @@ public class FileUtils {
         return new File(getRoot(context, fileType), name);
     }
 
+    public File newImageFile(Context context) {
+        return FileUtils.sharedInstance.getFile(FileUtils.Type.IMAGE, String.valueOf(System.currentTimeMillis()), context);
+    }
+
     private File getRoot(Context context, Type fileType) {
         //noinspection ConstantConditions
         File file = new File(context.getExternalFilesDir(null), fileType.path);
@@ -81,7 +85,7 @@ public class FileUtils {
 
 
     @NonNull
-    public File saveImageFile(Context context, File tempFile, @Nullable String newFileName) throws Exception {
+    private File saveImageFile(Context context, File tempFile, @Nullable String newFileName) throws Exception {
         if (TextUtils.isEmpty(newFileName)) {
             newFileName = String.valueOf(System.currentTimeMillis());
         }

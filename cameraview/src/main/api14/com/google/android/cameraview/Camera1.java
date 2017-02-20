@@ -68,6 +68,8 @@ class Camera1 extends CameraViewImpl {
 
     private int mDisplayOrientation;
 
+    private int mSensorOrientation;
+
     Camera1(Callback callback, PreviewImpl preview) {
         super(callback, preview);
         preview.setCallback(new PreviewImpl.Callback() {
@@ -116,6 +118,7 @@ class Camera1 extends CameraViewImpl {
                     mCamera.startPreview();
                 }
             } else {
+
                 mCamera.setPreviewTexture((SurfaceTexture) mPreview.getSurfaceTexture());
             }
         } catch (IOException e) {
@@ -141,7 +144,7 @@ class Camera1 extends CameraViewImpl {
     }
 
     @Override
-    int getFacing() {
+    public int getFacing() {
         return mFacing;
     }
 
@@ -151,10 +154,11 @@ class Camera1 extends CameraViewImpl {
     }
 
     @Override
-    void setAspectRatio(AspectRatio ratio) {
+    boolean setAspectRatio(AspectRatio ratio) {
         if (mAspectRatio == null || !isCameraOpened()) {
             // Handle this later when camera is opened
             mAspectRatio = ratio;
+            return true;
         } else if (!mAspectRatio.equals(ratio)) {
             final Set<Size> sizes = mPreviewSizes.sizes(ratio);
             if (sizes == null) {
@@ -162,8 +166,10 @@ class Camera1 extends CameraViewImpl {
             } else {
                 mAspectRatio = ratio;
                 adjustCameraParameters();
+                return true;
             }
         }
+        return false;
     }
 
     @Override
@@ -225,17 +231,18 @@ class Camera1 extends CameraViewImpl {
     }
 
     void takePictureInternal() {
-        mCamera.takePicture(null, null, new Camera.PictureCallback() {
-            @Override
-            public void onPictureTaken(byte[] data, Camera camera) {
-                try {
+        try {
+            mCamera.takePicture(null, null, new Camera.PictureCallback() {
+                @Override
+                public void onPictureTaken(byte[] data, final Camera camera) {
                     mCallback.onPictureTaken(data);
-                } catch (Exception e) {
-                    Log.e("CAMERA 1", e.getMessage());
+                    camera.cancelAutoFocus();
+                    mCamera.startPreview();
                 }
-                camera.startPreview();
-            }
-        });
+            });
+        } catch (Exception e) {
+            Log.e("CAMERA1", "unable to take picture", e);
+        }
     }
 
     @Override
@@ -244,15 +251,23 @@ class Camera1 extends CameraViewImpl {
             return;
         }
         mDisplayOrientation = displayOrientation;
+
+    }
+
+    @Override
+    void setSensorOrientation(int sensorOrientation) {
+        if (mSensorOrientation == sensorOrientation) {
+            return;
+        }
+        mSensorOrientation = sensorOrientation;
         if (isCameraOpened()) {
-            int cameraRotation = calcCameraRotation(displayOrientation);
+            int cameraRotation = calcCameraRotation(mSensorOrientation);
             mCameraParameters.setRotation(cameraRotation);
             mCamera.setParameters(mCameraParameters);
             final boolean needsToStopPreview = mShowingPreview && Build.VERSION.SDK_INT < 14;
             if (needsToStopPreview) {
                 mCamera.stopPreview();
             }
-            mCamera.setDisplayOrientation(cameraRotation);
             if (needsToStopPreview) {
                 mCamera.startPreview();
             }
@@ -309,7 +324,7 @@ class Camera1 extends CameraViewImpl {
         return r;
     }
 
-    void adjustCameraParameters() {
+    private void adjustCameraParameters() {
         SortedSet<Size> sizes = mPreviewSizes.sizes(mAspectRatio);
         if (sizes == null) { // Not supported
             mAspectRatio = chooseAspectRatio();
@@ -325,7 +340,7 @@ class Camera1 extends CameraViewImpl {
             }
             mCameraParameters.setPreviewSize(size.getWidth(), size.getHeight());
             mCameraParameters.setPictureSize(pictureSize.getWidth(), pictureSize.getHeight());
-            mCameraParameters.setRotation(calcCameraRotation(mDisplayOrientation));
+            mCameraParameters.setRotation(calcCameraRotation(mSensorOrientation));
             setAutoFocusInternal(mAutoFocus);
             setFlashInternal(mFlash);
             mCamera.setParameters(mCameraParameters);
@@ -344,7 +359,7 @@ class Camera1 extends CameraViewImpl {
         int desiredHeight;
         final int surfaceWidth = mPreview.getWidth();
         final int surfaceHeight = mPreview.getHeight();
-        if (mDisplayOrientation == 90 || mDisplayOrientation == 270) {
+        if (mSensorOrientation == 90 || mSensorOrientation == 270) {
             desiredWidth = surfaceHeight;
             desiredHeight = surfaceWidth;
         } else {

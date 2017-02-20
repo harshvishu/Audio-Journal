@@ -26,12 +26,14 @@ import android.view.Surface;
 /**
  * Monitors the value returned from {@link Display#getRotation()}.
  */
-abstract class DisplayOrientationDetector {
+public abstract class DisplayOrientationDetector {
 
     private final OrientationEventListener mOrientationEventListener;
 
-    /** Mapping from Surface.Rotation_n to degrees. */
-    static final SparseIntArray DISPLAY_ORIENTATIONS = new SparseIntArray();
+    /**
+     * Mapping from Surface.Rotation_n to degrees.
+     */
+    private static final SparseIntArray DISPLAY_ORIENTATIONS = new SparseIntArray();
 
     static {
         DISPLAY_ORIENTATIONS.put(Surface.ROTATION_0, 0);
@@ -40,9 +42,9 @@ abstract class DisplayOrientationDetector {
         DISPLAY_ORIENTATIONS.put(Surface.ROTATION_270, 270);
     }
 
-    Display mDisplay;
-
+    private Display mDisplay;
     private int mLastKnownDisplayOrientation = 0;
+    private int mLastKnownSensorOrientation = 0;
 
     public DisplayOrientationDetector(Context context) {
         mOrientationEventListener = new OrientationEventListener(context) {
@@ -52,17 +54,44 @@ abstract class DisplayOrientationDetector {
 
             @Override
             public void onOrientationChanged(int orientation) {
+
+                int sensorOrientation = 90;
+                if (orientation >= 330 || orientation < 30) {
+                    sensorOrientation = 0; // Surface.ROTATION_0;
+
+                } else if (orientation >= 60 && orientation < 120) {
+                    sensorOrientation = 270; //Surface.ROTATION_90;
+
+                } else if (orientation >= 150 && orientation < 210) {
+                    sensorOrientation = 180; //Surface.ROTATION_180;
+
+                } else if (orientation >= 240 && orientation < 300) {
+                    sensorOrientation = 90; //Surface.ROTATION_270;
+                }
+
+
+                if (mLastKnownSensorOrientation != sensorOrientation) {
+                    mLastKnownSensorOrientation = sensorOrientation;
+                    onSensorOrientationChanged(mLastKnownSensorOrientation);
+                }
+
+
                 if (orientation == OrientationEventListener.ORIENTATION_UNKNOWN ||
                         mDisplay == null) {
                     return;
                 }
                 final int rotation = mDisplay.getRotation();
+
                 if (mLastKnownRotation != rotation) {
                     mLastKnownRotation = rotation;
                     dispatchOnDisplayOrientationChanged(DISPLAY_ORIENTATIONS.get(rotation));
                 }
             }
         };
+    }
+
+    public int getLastSensorOrientation() {
+        return mLastKnownSensorOrientation;
     }
 
     public void enable(Display display) {
@@ -92,5 +121,7 @@ abstract class DisplayOrientationDetector {
      * @param displayOrientation One of 0, 90, 180, and 270.
      */
     public abstract void onDisplayOrientationChanged(int displayOrientation);
+
+    public abstract void onSensorOrientationChanged(int sensorOrientation);
 
 }

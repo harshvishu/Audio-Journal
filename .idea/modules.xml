@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Audio-Journal.iml" filepath="$PROJECT_DIR$/Audio-Journal.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cameraview/hvcameraview.iml" filepath="$PROJECT_DIR$/cameraview/hvcameraview.iml" />
       <module fileurl="file://$PROJECT_DIR$/hvprogressview/hvprogressview.iml" filepath="$PROJECT_DIR$/hvprogressview/hvprogressview.iml" />
       <module fileurl="file://$PROJECT_DIR$/hvwaveformview/hvwaveformview.iml" filepath="$PROJECT_DIR$/hvwaveformview/hvwaveformview.iml" />
     </modules>

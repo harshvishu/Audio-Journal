@@ -3,7 +3,6 @@ package com.brotherpowers.audiojournal.Camera;
 
 import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.brotherpowers.audiojournal.Model.Attachment;
 import com.brotherpowers.audiojournal.Model.DataEntry;
@@ -89,8 +87,12 @@ public class CameraFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_camera, container, false);
         ButterKnife.bind(this, view);
+
+        mCameraView.addCallback(mCallback);
+
         return view;
     }
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -149,13 +151,12 @@ public class CameraFragment extends Fragment {
 
     @OnClick(R.id.take_picture)
     void takePicture() {
-        if (mCameraView != null) {
-            mCameraView.takePicture();
-        }
+        System.out.println("take picture");
+        mCameraView.takePicture();
     }
 
     @OnClick(R.id.action_flash)
-    void changeFlash(ImageButton button){
+    void changeFlash(ImageButton button) {
         if (mCameraView != null) {
             mCurrentFlash = (mCurrentFlash + 1) % FLASH_OPTIONS.length;
             button.setImageResource(FLASH_ICONS[mCurrentFlash]);
@@ -183,21 +184,21 @@ public class CameraFragment extends Fragment {
         @Override
         public void onPictureTaken(CameraView cameraView, final byte[] data, final int sensorOrientation, final int displayOrientation) {
 
-            /*
-            * Picture already taken
-            * */
-           /* if (pictureTaken.getAndSet(true)) {
+            System.out.println("..... picture taken .....");
+            /**
+             * Picture already taken
+             *
+             * On Google Pixel onPictureTaken is called Twice
+             * Therefore using an atomic reference to check whether this is already been called
+             * */
+            if (pictureTaken.getAndSet(true)) {
                 return;
-            }*/
-
-            new Handler(Looper.getMainLooper())
-                    .post(() -> progressDialog = ProgressDialog.show(cameraView.getContext(), null, "saving...", true, false));
+            }
 
             getBackgroundHandler().post(() -> {
 
-
                 try {
-                    File file = getFile(getContext());
+                    File file = FileUtils.sharedInstance.newImageFile(getContext());
                     OutputStream os = new FileOutputStream(file);
 
                     os.write(data);
@@ -218,11 +219,13 @@ public class CameraFragment extends Fragment {
                     realm.executeTransactionAsync(r -> r.copyToRealmOrUpdate(attachment));
 
                     // Load the image
-                    Glide.with(getContext())
-                            .load(attachment.file(getContext()))
-                            .fitCenter()
-                            .into(_imageView);
 
+                    // Set the Image View
+                    new Handler(Looper.getMainLooper())
+                            .post(() -> Glide.with(getContext())
+                                    .load(attachment.file(getContext()))
+                                    .fitCenter()
+                                    .into(_imageView));
 
 
                     os.close();
@@ -232,13 +235,6 @@ public class CameraFragment extends Fragment {
                 } finally {
 
                     pictureTaken.set(false);
-                    new Handler(Looper.getMainLooper()).post(() -> {
-                        if (progressDialog != null) {
-                            progressDialog.dismiss();
-                        }
-                        Toast.makeText(getContext(), "Picture Taken", Toast.LENGTH_SHORT).show();
-
-                    });
                 }
             });
         }
@@ -251,11 +247,6 @@ public class CameraFragment extends Fragment {
             mBackgroundHandler = new Handler(thread.getLooper());
         }
         return mBackgroundHandler;
-    }
-
-    // GET the desired file
-    private File getFile(Context context) {
-        return FileUtils.sharedInstance.getFile(FileUtils.Type.IMAGE, String.valueOf(System.currentTimeMillis()), context);
     }
 
 
