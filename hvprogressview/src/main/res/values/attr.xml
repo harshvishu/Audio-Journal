@@ -13,5 +13,9 @@
         <attr name="drawable" format="reference"/>
         <attr name="knobOffset" format="float"/>
         <attr name="knobRadius" format="integer"/>
+        <attr name="cap" format="enum">
+            <enum name="round" value="1"/>
+            <enum name="square" value="2"/>
+        </attr>
     </declare-styleable>
 </resources>

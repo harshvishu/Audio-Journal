@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import com.brotherpowers.audiojournal.AudioRecorder.AudioRecorder;
@@ -23,6 +24,7 @@ import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Records.RecordsFragment;
 import com.brotherpowers.audiojournal.View.AJViewPager;
+import com.viewpagerindicator.CirclePageIndicator;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,6 +46,9 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.tabLayout)
     TabLayout tabLayout;
 
+    @BindView(R.id.viewpager_indicator)
+    CirclePageIndicator circlePageIndicator;
+
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private boolean isRecording;
     private Realm realm;
@@ -61,6 +66,11 @@ public class MainActivity extends AppCompatActivity
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mSectionsPagerAdapter);
         tabLayout.setupWithViewPager(mViewPager);
+        tabLayout.setVisibility(View.GONE);
+
+        circlePageIndicator.setViewPager(mViewPager);
+
+
 
         realm = Realm.getDefaultInstance();
         setupTabLayout(realm);

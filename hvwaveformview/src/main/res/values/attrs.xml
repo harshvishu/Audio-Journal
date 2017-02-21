@@ -5,7 +5,7 @@
             <enum name="RECORDING" value="1" />
             <enum name="PLAYBACK" value="2" />
         </attr>
-        <attr name="strokeWidth" format="float"/>
+        <attr name="waveStrokeWidth" format="float"/>
         <attr name="waveStrokeColor" format="color"/>
         <attr name="waveFillColor" format="color"/>
         <attr name="markerColor" format="color"/>

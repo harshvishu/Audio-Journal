@@ -4,11 +4,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_marginBottom="@dimen/activity_vertical_margin"
+    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+    android:layout_marginRight="@dimen/activity_horizontal_margin"
+    android:layout_marginTop="@dimen/activity_vertical_margin">
 
     <RelativeLayout
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:id="@+id/toolbar_actions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,49 +18,34 @@
         android:orientation="horizontal">
 
         <TextView
-            android:layout_centerVertical="true"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             android:drawableLeft="@drawable/ic_timer"
             android:drawableStart="@drawable/ic_timer"
             android:drawableTint="@color/colorAccent"
             android:text="60 Sec"/>
-
 
     </RelativeLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/data_counter"
         android:layout_below="@+id/toolbar_actions">
 
         <com.brotherpowers.audiojournal.View.SquareLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_margin="@dimen/spacing.16">
-
-            <com.brotherpowers.hvprogressview.ProgressView
-                android:id="@+id/progress_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerInParent="true"
-                android:padding="@dimen/spacing.16"
-                app:drawable="@drawable/ic_knob"
-                app:knobRadius="24"
-                app:progressColor="@color/colorAccent"
-                app:progressWidth="6dp"
-                app:progressWidthMultiplier="0.45"
-                app:textColor="@color/primaryTextDark"
-                app:textSize="12sp"/>
+            android:layout_gravity="center">
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@id/action.capture"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
                 android:layout_gravity="center"
                 android:layout_margin="@dimen/fab_margin"
                 android:tint="@color/buttonDark"
@@ -67,7 +54,91 @@
                 app:pressedTranslationZ="12dp"
                 app:srcCompat="@drawable/ic_mic"/>
 
+            <com.brotherpowers.hvprogressview.ProgressView
+                android:id="@+id/progress_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:padding="@dimen/spacing.16"
+                app:drawable="@drawable/ic_knob"
+                app:endAngle="275"
+                app:knobRadius="24"
+                app:progressColor="@color/colorAccent"
+                app:progressWidth="10dp"
+                app:backgroundColor="@color/viewpager_inactive"
+                app:progressWidthMultiplier="0.33"
+                app:startAngle="-225"
+                app:textColor="@color/primaryTextDark"
+                app:textSize="12sp"/>
+
         </com.brotherpowers.audiojournal.View.SquareLayout>
     </FrameLayout>
 
+    <android.support.v7.widget.CardView
+        android:id="@+id/data_counter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:baselineAligned="false"
+        app:cardBackgroundColor="#252A2F"
+        app:cardCornerRadius="5dp"
+        app:cardUseCompatPadding="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Total Duration"/>
+
+                <TextView
+                    style="@style/Heading3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="12:23:35"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="1dip"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/spacing.16"
+                android:layout_marginTop="@dimen/spacing.16"
+                android:background="@color/viewpager_inactive"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Total Records"/>
+
+                <TextView
+                    style="@style/Heading3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="14"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
 </RelativeLayout>

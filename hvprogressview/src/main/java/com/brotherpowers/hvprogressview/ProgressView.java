@@ -44,6 +44,7 @@ public class ProgressView extends View {
     private TextPaint mTextPaint;
     private Paint mProgressPaint;
     private Paint mBackgroundPaint;
+    private Paint mMeterPaint;
     private RectF bounds;
 
     private float progressWith;
@@ -98,21 +99,20 @@ public class ProgressView extends View {
 
         mProgressPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mProgressPaint.setStyle(Paint.Style.STROKE);
-        mProgressPaint.setStrokeCap(Paint.Cap.ROUND);
-//        mProgressPaint.setColor(progressColor);
+        mProgressPaint.setStrokeCap(Paint.Cap.SQUARE);
         mProgressPaint.setStrokeWidth(progressWith);
-
-        int[] colors = {Color.parseColor("#DC592F"), Color.parseColor("#D74265")};
-        float[] positions = {0, 1};
-        SweepGradient gradient = new SweepGradient(100, 100, colors, positions);
-        mProgressPaint.setShader(gradient);
 
         mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mBackgroundPaint.setStyle(Paint.Style.STROKE);
-        mBackgroundPaint.setStrokeCap(Paint.Cap.ROUND);
+        mBackgroundPaint.setStrokeCap(Paint.Cap.SQUARE);
         mBackgroundPaint.setColor(backgroundColor);
         mBackgroundPaint.setStrokeWidth(progressWith * progressWidthMultiplier);
         mBackgroundPaint.setShadowLayer(2.0f, 0.0f, 0.0f, backgroundColor);
+
+        mMeterPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mMeterPaint.setStyle(Paint.Style.STROKE);
+        mMeterPaint.setColor(backgroundColor);
+        mMeterPaint.setStrokeWidth(0.33f);
 
         bounds = new RectF();
 
@@ -152,6 +152,7 @@ public class ProgressView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         bounds.set(getPaddingLeft(), getPaddingTop(), w - getPaddingRight(), h - getPaddingBottom());
+        mProgressPaint.setShader(new SweepGradient(bounds.centerX(), bounds.centerY(), Color.parseColor("#DC592F"), Color.parseColor("#D74265")));
     }
 
 
@@ -162,12 +163,34 @@ public class ProgressView extends View {
         double angle = ((startAngle + sweepAngle) * (Math.PI / 180)); // Angle
         float radius = (bounds.width() / 2) - knobOffset; // Radius
 
+
+        drawMeteredLines(canvas, radius);
+
         drawCurves(canvas);
 
         drawKnob(canvas, angle, radius);
 
         drawText(canvas, angle, radius);
 
+    }
+
+    private void drawMeteredLines(Canvas canvas, float radius) {
+        float r1 = radius;
+        float r2 = r1 - progressWith;
+
+        for (float degree = startAngle; degree < startAngle + endAngle; degree += mMeterPaint.getStrokeWidth()) {
+
+            double angle = (degree * (Math.PI / 180));
+
+            float x1 = (float) (r1 * Math.cos(angle) + (bounds.centerX()));
+            float y1 = (float) (r1 * Math.sin(angle) + (bounds.centerY()));
+
+            float x2 = (float) (r2 * Math.cos(angle) + (bounds.centerX()));
+            float y2 = (float) (r2 * Math.sin(angle) + (bounds.centerY()));
+
+            canvas.drawLine(x1, y1, x2, y2, mMeterPaint);
+
+        }
     }
 
     /**
@@ -177,7 +200,8 @@ public class ProgressView extends View {
 //        canvas.drawArc(bounds, startAngle, endAngle, false, mBackgroundPaint);
         // draw
 
-        canvas.drawOval(bounds, mBackgroundPaint);
+//        canvas.drawOval(bounds, mBackgroundPaint);
+        canvas.drawArc(bounds, startAngle, endAngle, false, mBackgroundPaint);
         canvas.drawArc(bounds, startAngle, sweepAngle, false, mProgressPaint);
     }
 
