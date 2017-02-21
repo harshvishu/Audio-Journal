@@ -31,7 +31,6 @@
                 android:resource="@xml/file_paths"/>
         </provider>
 
-
         <receiver
             android:name=".Reminder.Reminder"
             android:enabled="true"
