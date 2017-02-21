@@ -8,6 +8,7 @@
         <attr name="endAngle" format="float"/>
         <attr name="sweepAngle" format="float"/>
         <attr name="progressWidth" format="dimension"/>
+        <attr name="progressWidthMultiplier" format="float"/>
         <attr name="textSize" format="dimension"/>
         <attr name="drawable" format="reference"/>
         <attr name="knobOffset" format="float"/>

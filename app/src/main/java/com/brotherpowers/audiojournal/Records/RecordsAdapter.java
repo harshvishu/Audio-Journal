@@ -125,7 +125,7 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
 
                     mmr.setDataSource(context, uri);
                     int duration = Integer.valueOf(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-                    ((VHAudioRecord) holder).waveformView.setSampleRate(AudioRecorder.SAMPLE_RATE);
+                    ((VHAudioRecord) holder).waveformView.setSampleRate(AudioRecorder.SAMPLING_RATE);
                     ((VHAudioRecord) holder).waveformView.setChannels(1);
                     ((VHAudioRecord) holder).waveformView.setSamples(samples);
 

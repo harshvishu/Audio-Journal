@@ -189,7 +189,7 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
     public void playbackProgress(float progress, long id, int position) {
         RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(position);
         if (holder instanceof RecordsAdapter.VHAudioRecord) {
-            ((RecordsAdapter.VHAudioRecord) holder).waveformView.setMarkerPosition((int) (progress * 1000) / AudioRecorder.SAMPLE_RATE);
+            ((RecordsAdapter.VHAudioRecord) holder).waveformView.setMarkerPosition((int) (progress * 1000) / AudioRecorder.SAMPLING_RATE);
         }
     }
 

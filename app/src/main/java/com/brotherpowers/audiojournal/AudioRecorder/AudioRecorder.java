@@ -17,13 +17,14 @@ import java.util.Locale;
  */
 
 public class AudioRecorder {
-    public static final int MAX_AUDIO_LENGTH = 60_000 * 5; // 1 Minute
-    public static final int SAMPLE_RATE = 44100; // 1 Minute
+    public static final int MAX_AUDIO_LENGTH = 60_000 / 2; // 1 Minute
+    private static final int BIT_RATE = 128000; // Audio encoding bit rate in bits per second.
+    public static final int SAMPLING_RATE = 44100; // Audio sampling rate 441.Khz
 
     private final File file;
     private STATE recordingState;
     private MediaRecorder mediaRecorder;
-    private final int sampleRate;
+//    private final int sampleRate;
     private final int maxDuration;
 
     @Nullable
@@ -39,7 +40,7 @@ public class AudioRecorder {
      */
     AudioRecorder(Context context, int duration) {
         file = FileUtils.sharedInstance.getFile(FileUtils.Type.AUDIO, String.valueOf(System.currentTimeMillis()), context);
-        sampleRate = 44100;
+//        sampleRate = 44100;
         maxDuration = duration;
         recordingState = STATE.PENDING;
     }
@@ -63,11 +64,12 @@ public class AudioRecorder {
 
         mediaRecorder = null;
         mediaRecorder = new MediaRecorder();
-        mediaRecorder.setAudioSamplingRate(sampleRate);
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        mediaRecorder.setOutputFile(file.getPath());
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        mediaRecorder.setAudioSamplingRate(SAMPLING_RATE);
+        mediaRecorder.setAudioEncodingBitRate(BIT_RATE);
+        mediaRecorder.setOutputFile(file.getPath());
         mediaRecorder.setMaxDuration(maxDuration); // ONE MINUTE
         mediaRecorder.setAudioChannels(1);
 

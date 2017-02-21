@@ -3,8 +3,10 @@ package com.brotherpowers.hvprogressview;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.SweepGradient;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -13,6 +15,8 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.HONEYCOMB;
 import static com.brotherpowers.hvprogressview.Utils.Defaults.TEXT;
 
 /**
@@ -57,9 +61,10 @@ public class ProgressView extends View {
 
     private void init(Context context, AttributeSet attrs, int defStyle) {
         TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.ProgressView, defStyle, 0);
-        int progressColor = array.getColor(R.styleable.ProgressView_progressColor, ContextCompat.getColor(context, R.color.progressColor));
-        int backgroundColor = array.getColor(R.styleable.ProgressView_backgroundColor, ContextCompat.getColor(context, R.color.backgroundColor));
-        int textColor = array.getColor(R.styleable.ProgressView_textColor, ContextCompat.getColor(context, R.color.textColor));
+        final int progressColor = array.getColor(R.styleable.ProgressView_progressColor, ContextCompat.getColor(context, R.color.progressColor));
+        final int backgroundColor = array.getColor(R.styleable.ProgressView_backgroundColor, ContextCompat.getColor(context, R.color.backgroundColor));
+        final int textColor = array.getColor(R.styleable.ProgressView_textColor, ContextCompat.getColor(context, R.color.textColor));
+        final float progressWidthMultiplier = array.getFloat(R.styleable.ProgressView_progressWidthMultiplier, 1.0f);
 
         drawableKnob = array.getDrawable(R.styleable.ProgressView_drawable);
         if (drawableKnob == null) {
@@ -94,17 +99,26 @@ public class ProgressView extends View {
         mProgressPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mProgressPaint.setStyle(Paint.Style.STROKE);
         mProgressPaint.setStrokeCap(Paint.Cap.ROUND);
-        mProgressPaint.setColor(progressColor);
+//        mProgressPaint.setColor(progressColor);
         mProgressPaint.setStrokeWidth(progressWith);
+
+        int[] colors = {Color.parseColor("#DC592F"), Color.parseColor("#D74265")};
+        float[] positions = {0, 1};
+        SweepGradient gradient = new SweepGradient(100, 100, colors, positions);
+        mProgressPaint.setShader(gradient);
 
         mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mBackgroundPaint.setStyle(Paint.Style.STROKE);
         mBackgroundPaint.setStrokeCap(Paint.Cap.ROUND);
         mBackgroundPaint.setColor(backgroundColor);
-        mBackgroundPaint.setStrokeWidth(progressWith);
+        mBackgroundPaint.setStrokeWidth(progressWith * progressWidthMultiplier);
+        mBackgroundPaint.setShadowLayer(2.0f, 0.0f, 0.0f, backgroundColor);
 
         bounds = new RectF();
 
+        if (SDK_INT >= HONEYCOMB) {
+            setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        }
     }
 
     @Override
@@ -161,6 +175,8 @@ public class ProgressView extends View {
      */
     private void drawCurves(Canvas canvas) {
 //        canvas.drawArc(bounds, startAngle, endAngle, false, mBackgroundPaint);
+        // draw
+
         canvas.drawOval(bounds, mBackgroundPaint);
         canvas.drawArc(bounds, startAngle, sweepAngle, false, mProgressPaint);
     }
@@ -190,7 +206,6 @@ public class ProgressView extends View {
         this.text = text;
         requestLayout();
     }
-
 
 
     public void setMax(int max) {

@@ -1,18 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#4CAF50</color>
-    <color name="colorPrimaryDark">#388E3C</color>
-    <color name="colorAccent">#8BC34A</color>
-    <color name="colorLightPrimary">#C8E6C9</color>
+    <!--<color name="colorPrimary">#4CAF50</color>-->
+    <!--<color name="colorPrimaryDark">#388E3C</color>-->
+    <!--<color name="colorAccent">#8BC34A</color>-->
+    <!--<color name="colorLightPrimary">#C8E6C9</color>-->
+
+    <color name="colorPrimary">#2C3239</color>
+    <color name="colorPrimaryDark">#22262B</color>
+    <color name="colorAccent">#FF696A</color>
+    <color name="colorAccentSecondary">#F5EBE2</color>
 
     <!--<color name="hashGreen">#8BC34A</color>-->
     <!--<color name="limeGreen">#CDDC39</color>-->
-    <color name="selection_gray">#F2F2F1</color>
-    <color name="edit_buttons">#BDBDBD</color>
-    <color name="card_color_alpha">#efff</color>
+    <color name="cardBackgroundDark">#2C3239</color>
+    <color name="cardBackgroundLight">#F4FAFA</color>
 
-    <color name="colorPrimary40">#404CAF50</color>
+    <color name="colorPrimary40">#20A59850</color>
 
-    <color name="colorSwipeLeft">#D32F2F</color>
-    <color name="colorSwipeRight">#388E3C</color>
+    <color name="windowBackgroundDark">#1E2327</color>
+    <color name="windowBackgroundLight">#F4FAFA</color>
+
+    <color name="primaryTextDark">#F4FAFA</color>
+    <color name="primaryTextLight">#2C3239</color>
+
+    <color name="secondaryTextDark">#F4FAFA</color>
+    <color name="secondaryTextLight">#2C3239</color>
+
+    <color name="buttonDark">#F4FAFA</color>
+    <color name="buttonLight">#404346</color>
 </resources>

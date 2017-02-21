@@ -6,7 +6,7 @@
     android:layout_height="72dp"
     android:layout_marginLeft="@dimen/spacing.8"
     android:layout_marginRight="@dimen/spacing.8"
-    app:cardBackgroundColor="@color/card_color_alpha"
+    app:cardBackgroundColor="@color/cardBackgroundDark"
     app:cardCornerRadius="4dp"
     app:cardUseCompatPadding="true">
 

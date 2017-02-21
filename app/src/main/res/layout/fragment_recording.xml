@@ -6,9 +6,41 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <RelativeLayout
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:id="@+id/toolbar_actions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_centerVertical="true"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_timer"
+            android:drawableStart="@drawable/ic_timer"
+            android:drawableTint="@color/colorAccent"
+            android:text="60 Sec"/>
+
+        <ImageButton
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:tint="@color/colorAccent"
+            app:srcCompat="@drawable/ic_settings"/>
+
+    </RelativeLayout>
+
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar_actions">
 
         <com.brotherpowers.audiojournal.View.SquareLayout
             android:layout_width="match_parent"
@@ -24,8 +56,10 @@
                 android:padding="@dimen/spacing.16"
                 app:drawable="@drawable/ic_knob"
                 app:knobRadius="24"
-                app:progressColor="@color/colorPrimary"
+                app:progressColor="@color/colorAccent"
                 app:progressWidth="6dp"
+                app:progressWidthMultiplier="0.45"
+                app:textColor="@color/primaryTextDark"
                 app:textSize="12sp"/>
 
             <android.support.design.widget.FloatingActionButton
@@ -36,22 +70,13 @@
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center"
                 android:layout_margin="@dimen/fab_margin"
-                app:fabSize="normal"
-                android:tint="#fff"
-                app:backgroundTint="@color/colorPrimary"
+                android:tint="@color/buttonDark"
                 app:elevation="6dp"
+                app:fabSize="normal"
                 app:pressedTranslationZ="12dp"
                 app:srcCompat="@drawable/ic_mic"/>
 
         </com.brotherpowers.audiojournal.View.SquareLayout>
     </FrameLayout>
-
-    <!-- <include
-         android:id="@+id/data.counter"
-         layout="@layout/data_counters"
-         android:layout_width="match_parent"
-         android:layout_height="wrap_content"
-         android:layout_alignParentBottom="true"/>-->
-
 
 </RelativeLayout>
