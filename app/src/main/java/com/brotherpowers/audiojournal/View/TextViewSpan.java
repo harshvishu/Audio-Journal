@@ -2,7 +2,6 @@ package com.brotherpowers.audiojournal.View;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
@@ -19,6 +18,8 @@ import java.util.regex.Pattern;
  */
 
 public class TextViewSpan extends AppCompatEditText {
+    private static final Spannable.Factory spannableFactory = Spannable.Factory.getInstance();
+
     public TextViewSpan(Context context) {
         super(context);
     }
@@ -30,16 +31,6 @@ public class TextViewSpan extends AppCompatEditText {
     public TextViewSpan(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
-
-    private static final Spannable.Factory spannableFactory = Spannable.Factory.getInstance();
-
-
-    @Override
-    public void setText(CharSequence text, BufferType type) {
-        final Spannable spannable = getTextWithImages(getContext(), text, getLineHeight(), getCurrentTextColor());
-        super.setText(spannable, BufferType.SPANNABLE);
-    }
-
 
     private static Spannable getTextWithImages(Context context, CharSequence text, int lineHeight, int color) {
         Spannable spannable = spannableFactory.newSpannable(text);
@@ -83,12 +74,6 @@ public class TextViewSpan extends AppCompatEditText {
         return hasChanges;
     }
 
-    @Override
-    protected void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
-
-        super.onTextChanged(text, start, lengthBefore, lengthAfter);
-    }
-
     /**
      * Create an ImageSpan for the given icon drawable. This also sets the image size and colour.
      * Works best with a white, square icon because of the colouring and resizing.
@@ -106,5 +91,17 @@ public class TextViewSpan extends AppCompatEditText {
         drawable.setColorFilter(color, PorterDuff.Mode.MULTIPLY);
         drawable.setBounds(0, 0, size, size);
         return new ImageSpan(drawable, ImageSpan.ALIGN_BOTTOM);
+    }
+
+    @Override
+    public void setText(CharSequence text, BufferType type) {
+        final Spannable spannable = getTextWithImages(getContext(), text, getLineHeight(), getCurrentTextColor());
+        super.setText(spannable, BufferType.SPANNABLE);
+    }
+
+    @Override
+    protected void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
+
+        super.onTextChanged(text, start, lengthBefore, lengthAfter);
     }
 }

@@ -31,7 +31,10 @@ import io.realm.RealmResults;
  */
 public class PhotosFragment extends Fragment {
 
+    @BindView(R.id.recycler_view)
+    RecyclerView recyclerView;
     private OnFragmentInteractionListener mListener;
+    private PhotosAdapter photosAdapter;
 
     public PhotosFragment() {
         // Required empty public constructor
@@ -47,12 +50,6 @@ public class PhotosFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
-    @BindView(R.id.recycler_view)
-    RecyclerView recyclerView;
-
-
-    private PhotosAdapter photosAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

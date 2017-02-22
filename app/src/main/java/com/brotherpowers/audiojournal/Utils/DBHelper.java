@@ -31,6 +31,6 @@ public final class DBHelper {
     }
 
     public static RealmQuery<Attachment> filterFilesForType(FileUtils.Type type, RealmQuery<Attachment> query) {
-        return query.equalTo("fileType",type.value);
+        return query.equalTo("fileType", type.value);
     }
 }

@@ -20,10 +20,10 @@ import android.support.v4.content.WakefulBroadcastReceiver;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
-import com.brotherpowers.audiojournal.R;
+import com.brotherpowers.audiojournal.AudioRecorder.AudioPlayer;
 import com.brotherpowers.audiojournal.Model.Attachment;
 import com.brotherpowers.audiojournal.Model.DataEntry;
-import com.brotherpowers.audiojournal.AudioRecorder.AudioPlayer;
+import com.brotherpowers.audiojournal.R;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -43,13 +43,6 @@ public class ReminderNotification extends Service {
     private static final String ACTION_PLAY = "com.brotherpowers.audiojournal.Reminder.action.PLAY";
     private static final String EXTRA_JSON = "com.brotherpowers.audiojournal.Reminder.extra.JSON";
 
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
     /**
      * Starts this service to perform action Foo with the given parameters. If
      * the service is already performing a task this action will be queued.
@@ -61,6 +54,12 @@ public class ReminderNotification extends Service {
         intent.setAction(ACTION_PLAY);
         intent.putExtra(EXTRA_JSON, json);
         context.startService(intent);
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 
     @Override
@@ -109,7 +108,7 @@ public class ReminderNotification extends Service {
                 DataEntry dataEntry = Realm.getDefaultInstance().where(DataEntry.class)
                         .equalTo("id", id).findFirst();
 
-                assert dataEntry!= null;
+                assert dataEntry != null;
 
                 // Remove the reminder time
                 Realm realm = Realm.getDefaultInstance();

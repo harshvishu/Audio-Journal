@@ -59,140 +59,16 @@ public class CameraFragment extends Fragment {
             R.drawable.ic_flash_off,
             R.drawable.ic_flash_on,
     };
-
-    public CameraFragment() {
-        // Required empty public constructor
-    }
-
-    public static CameraFragment newInstance(long entry_id) {
-        Bundle args = new Bundle();
-        args.putLong(Constants.KEYS.entry_id, entry_id);
-        CameraFragment fragment = new CameraFragment();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @BindView(R.id.cameraView)
     CameraView mCameraView;
-
     @BindView(R.id.imageView)
     ImageView _imageView;
-
     private Handler mBackgroundHandler;
     private int mCurrentFlash;
     private long entry_id;
     private PhotosAdapter photosAdapter;
-
     // Interaction with the parent activity
     private OnFragmentInteractionListener mListener;
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_camera, container, false);
-        ButterKnife.bind(this, view);
-
-        mCameraView.addCallback(mCallback);
-
-        final Realm realm = Realm.getDefaultInstance();
-        final DataEntry entry = DBHelper.findEntryForId(entry_id, realm).findFirst();        // Sync
-        Attachment attachment = DBHelper.images(entry).findFirst();       // Async
-        if (attachment != null) {
-            loadImage(attachment);
-        }
-
-        return view;
-    }
-
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-        setRetainInstance(true);
-        entry_id = getArguments().getLong(Constants.KEYS.entry_id, -1);
-    }
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
-                == PackageManager.PERMISSION_GRANTED) {
-
-            mCameraView.start();
-            mCameraView.setAutoFocus(true);
-            mCameraView.setFlash(CameraView.FLASH_AUTO);
-
-        } else if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                Manifest.permission.CAMERA)) {
-            PermissionRequestFragment
-                    .newInstance(R.string.camera_permission_confirmation,
-                            new String[]{Manifest.permission.CAMERA},
-                            Constants.REQUEST_CAMERA_PERMISSION,
-                            R.string.camera_permission_not_granted)
-                    .show(getChildFragmentManager(), Constants.FRAGMENT_DIALOG);
-        } else {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA},
-                    Constants.REQUEST_CAMERA_PERMISSION);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        mCameraView.stop();
-        super.onPause();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (mListener!=null){
-            mListener.hideActionBar(false);
-        }
-    }
-
-    @Override
-    public void onStop() {
-       if (mListener!=null){
-           mListener.hideActionBar(false);
-       }
-        super.onStop();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        mCameraView.removeCallback(mCallback);
-
-        if (mBackgroundHandler != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                mBackgroundHandler.getLooper().quitSafely();
-            } else {
-                mBackgroundHandler.getLooper().quit();
-            }
-            mBackgroundHandler = null;
-        }
-    }
-
-    @OnClick(R.id.take_picture)
-    void takePicture() {
-        System.out.println("take picture");
-        mCameraView.takePicture();
-    }
-
-    @OnClick(R.id.action_flash)
-    void changeFlash(ImageButton button) {
-        if (mCameraView != null) {
-            mCurrentFlash = (mCurrentFlash + 1) % FLASH_OPTIONS.length;
-            button.setImageResource(FLASH_ICONS[mCurrentFlash]);
-            mCameraView.setFlash(FLASH_OPTIONS[mCurrentFlash]);
-        }
-    }
-
-
     private CameraView.Callback mCallback
             = new CameraView.Callback() {
 
@@ -266,6 +142,122 @@ public class CameraFragment extends Fragment {
             });
         }
     };
+
+    public CameraFragment() {
+        // Required empty public constructor
+    }
+
+    public static CameraFragment newInstance(long entry_id) {
+        Bundle args = new Bundle();
+        args.putLong(Constants.KEYS.entry_id, entry_id);
+        CameraFragment fragment = new CameraFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_camera, container, false);
+        ButterKnife.bind(this, view);
+
+        mCameraView.addCallback(mCallback);
+
+        final Realm realm = Realm.getDefaultInstance();
+        final DataEntry entry = DBHelper.findEntryForId(entry_id, realm).findFirst();        // Sync
+        Attachment attachment = DBHelper.images(entry).findFirst();       // Async
+        if (attachment != null) {
+            loadImage(attachment);
+        }
+
+        return view;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        setRetainInstance(true);
+        entry_id = getArguments().getLong(Constants.KEYS.entry_id, -1);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED) {
+
+            mCameraView.start();
+            mCameraView.setAutoFocus(true);
+            mCameraView.setFlash(CameraView.FLASH_AUTO);
+
+        } else if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                Manifest.permission.CAMERA)) {
+            PermissionRequestFragment
+                    .newInstance(R.string.camera_permission_confirmation,
+                            new String[]{Manifest.permission.CAMERA},
+                            Constants.REQUEST_CAMERA_PERMISSION,
+                            R.string.camera_permission_not_granted)
+                    .show(getChildFragmentManager(), Constants.FRAGMENT_DIALOG);
+        } else {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA},
+                    Constants.REQUEST_CAMERA_PERMISSION);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        mCameraView.stop();
+        super.onPause();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (mListener != null) {
+            mListener.hideActionBar(false);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        if (mListener != null) {
+            mListener.hideActionBar(false);
+        }
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        mCameraView.removeCallback(mCallback);
+
+        if (mBackgroundHandler != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                mBackgroundHandler.getLooper().quitSafely();
+            } else {
+                mBackgroundHandler.getLooper().quit();
+            }
+            mBackgroundHandler = null;
+        }
+    }
+
+    @OnClick(R.id.take_picture)
+    void takePicture() {
+        System.out.println("take picture");
+        mCameraView.takePicture();
+    }
+
+    @OnClick(R.id.action_flash)
+    void changeFlash(ImageButton button) {
+        if (mCameraView != null) {
+            mCurrentFlash = (mCurrentFlash + 1) % FLASH_OPTIONS.length;
+            button.setImageResource(FLASH_ICONS[mCurrentFlash]);
+            mCameraView.setFlash(FLASH_OPTIONS[mCurrentFlash]);
+        }
+    }
 
     private Handler getBackgroundHandler() {
         if (mBackgroundHandler == null) {

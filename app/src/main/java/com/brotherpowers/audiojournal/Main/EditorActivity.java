@@ -27,6 +27,20 @@ public class EditorActivity extends AppCompatActivity
 
     long entry_id;
 
+    public static void start(Activity parentActivity, long entry_id, int task_id) {
+        Intent intent = new Intent(parentActivity, EditorActivity.class);
+        intent.putExtra(Constants.KEYS.entry_id, entry_id);
+        intent.putExtra(Constants.KEYS.task_id, task_id);
+        parentActivity.startActivity(intent);
+    }
+
+    public static void start(Activity parentActivity, long entry_id, long attachment_id, int task_id) {
+        Intent intent = new Intent(parentActivity, EditorActivity.class);
+        intent.putExtra(Constants.KEYS.entry_id, entry_id);
+        intent.putExtra(Constants.KEYS.task_id, task_id);
+        parentActivity.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,20 +79,6 @@ public class EditorActivity extends AppCompatActivity
                 throw new RuntimeException("Wrong task started");
             }
         }
-    }
-
-    public static void start(Activity parentActivity, long entry_id, int task_id) {
-        Intent intent = new Intent(parentActivity, EditorActivity.class);
-        intent.putExtra(Constants.KEYS.entry_id, entry_id);
-        intent.putExtra(Constants.KEYS.task_id, task_id);
-        parentActivity.startActivity(intent);
-    }
-
-    public static void start(Activity parentActivity, long entry_id, long attachment_id, int task_id) {
-        Intent intent = new Intent(parentActivity, EditorActivity.class);
-        intent.putExtra(Constants.KEYS.entry_id, entry_id);
-        intent.putExtra(Constants.KEYS.task_id, task_id);
-        parentActivity.startActivity(intent);
     }
 
     @Override

@@ -78,10 +78,6 @@ public class AutoFitTextureView extends TextureView {
         }
     }
 
-    interface TouchHandler {
-        boolean onTextureViewTouch(MotionEvent event);
-    }
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (touchHandler != null) {
@@ -92,5 +88,9 @@ public class AutoFitTextureView extends TextureView {
 
     public void setTouchHandler(TouchHandler touchHandler) {
         this.touchHandler = touchHandler;
+    }
+
+    interface TouchHandler {
+        boolean onTextureViewTouch(MotionEvent event);
     }
 }

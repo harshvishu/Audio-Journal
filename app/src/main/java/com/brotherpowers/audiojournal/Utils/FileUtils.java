@@ -31,31 +31,31 @@ import java.security.NoSuchAlgorithmException;
 public class FileUtils {
     public static FileUtils sharedInstance = new FileUtils();
 
-    public enum Type {
-        UNKNOWN(0, "file", ""), IMAGE(1, "img", "image"), AUDIO(2, "rec", "audio");
-
-        public final int value;
-        public final String extension;
-        public final String path;
-
-        Type(int value, String extension, String path) {
-            this.value = value;
-            this.extension = extension;
-            this.path = path;
+    public static short[] getAudioSamples(File file) throws IOException {
+        InputStream is = new FileInputStream(file);
+        byte[] data;
+        try {
+            data = IOUtils.toByteArray(is);
+        } finally {
+            is.close();
         }
 
-        private static final SparseArray<Type> ARRAY = new SparseArray<>(values().length);
+        ShortBuffer sb = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
+        short[] samples = new short[sb.limit()];
+        sb.get(samples);
+        return samples;
+    }
 
-        static {
-            for (Type type : values()) {
-                ARRAY.append(type.value, type);
-            }
+    public static byte[] getAudioSampleBytes(File file) throws IOException {
+        InputStream is = new FileInputStream(file);
+        byte[] data;
+        try {
+            data = IOUtils.toByteArray(is);
+        } finally {
+            is.close();
         }
 
-        public static Type valueOf(int value) {
-            return ARRAY.get(value);
-        }
-
+        return data;
     }
 
     public File getFile(@NonNull Type fileType, @Nullable String name, Context context) {
@@ -82,7 +82,6 @@ public class FileUtils {
     public File saveImageFile(Context context, File tempFile) throws Exception {
         return saveImageFile(context, tempFile, null);
     }
-
 
     @NonNull
     private File saveImageFile(Context context, File tempFile, @Nullable String newFileName) throws Exception {
@@ -140,30 +139,30 @@ public class FileUtils {
 
     }
 
-    public static short[] getAudioSamples(File file) throws IOException {
-        InputStream is = new FileInputStream(file);
-        byte[] data;
-        try {
-            data = IOUtils.toByteArray(is);
-        } finally {
-            is.close();
+    public enum Type {
+        UNKNOWN(0, "file", ""), IMAGE(1, "img", "image"), AUDIO(2, "rec", "audio");
+
+        private static final SparseArray<Type> ARRAY = new SparseArray<>(values().length);
+
+        static {
+            for (Type type : values()) {
+                ARRAY.append(type.value, type);
+            }
         }
 
-        ShortBuffer sb = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
-        short[] samples = new short[sb.limit()];
-        sb.get(samples);
-        return samples;
-    }
+        public final int value;
+        public final String extension;
+        public final String path;
 
-    public static byte[] getAudioSampleBytes(File file) throws IOException {
-        InputStream is = new FileInputStream(file);
-        byte[] data;
-        try {
-            data = IOUtils.toByteArray(is);
-        } finally {
-            is.close();
+        Type(int value, String extension, String path) {
+            this.value = value;
+            this.extension = extension;
+            this.path = path;
         }
 
-        return data;
+        public static Type valueOf(int value) {
+            return ARRAY.get(value);
+        }
+
     }
 }

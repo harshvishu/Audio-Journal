@@ -45,6 +45,21 @@ import static com.brotherpowers.audiojournal.Utils.Constants.REQ_REC_PERMISSION;
 public class AudioRecordingFragment extends Fragment implements AudioRecorder.Listener {
 
 
+    private static AudioRecorder audioRecorder;
+    @BindView(R.id.progress_view)
+    ProgressView progressView;
+    @BindView(R.id.action_capture)
+    FloatingActionButton buttonRecord;
+    @BindView(R.id.label_max_recording_duration)
+    TextView labelMaxDuration;
+    @BindView(R.id.label_total_recording_duration)
+    TextView labelTotalRecordingDuration;
+    @BindView(R.id.label_total_records)
+    TextView labelTotalRecords;
+    private AudioRecorder.STATE recordingState;
+    private OnFragmentInteractionListener interactionListener;
+    private AudioJournalPreferences preferences;
+    private Realm realm;
     public AudioRecordingFragment() {
         // Required empty public constructor
     }
@@ -55,27 +70,6 @@ public class AudioRecordingFragment extends Fragment implements AudioRecorder.Li
         fragment.setArguments(args);
         return fragment;
     }
-
-    @BindView(R.id.progress_view)
-    ProgressView progressView;
-
-    @BindView(R.id.action_capture)
-    FloatingActionButton buttonRecord;
-
-    @BindView(R.id.label_max_recording_duration)
-    TextView labelMaxDuration;
-
-    @BindView(R.id.label_total_recording_duration)
-    TextView labelTotalRecordingDuration;
-
-    @BindView(R.id.label_total_records)
-    TextView labelTotalRecords;
-
-    private static AudioRecorder audioRecorder;
-    private AudioRecorder.STATE recordingState;
-    private OnFragmentInteractionListener interactionListener;
-    private AudioJournalPreferences preferences;
-    private Realm realm;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

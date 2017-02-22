@@ -36,21 +36,18 @@ import io.realm.Realm;
 public class TextEditorFragment extends Fragment {
 
 
-    public TextEditorFragment() {
-        // Required empty public constructor
-    }
-
     private final Gson gson = new Gson();
-
+    @BindView(R.id.input_title)
+    TextView _title;
+    @BindView(R.id.input_note)
+    KnifeText _note;
     private long entry_id;
     private String title;
     private String note;
 
-    @BindView(R.id.input_title)
-    TextView _title;
-
-    @BindView(R.id.input_note)
-    KnifeText _note;
+    public TextEditorFragment() {
+        // Required empty public constructor
+    }
 
     /**
      * @param entry_id {@link DataEntry#id}

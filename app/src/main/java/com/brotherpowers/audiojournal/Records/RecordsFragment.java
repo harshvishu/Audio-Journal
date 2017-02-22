@@ -40,6 +40,11 @@ import io.realm.Sort;
 public class RecordsFragment extends Fragment implements RecordsAdapter.Callback, AudioPlayer.PlaybackListener {
 
 
+    @BindView(R.id.recycler_view)
+    RecyclerView recyclerView;
+    private RecordsAdapter recordsAdapter;
+    private Realm realm;
+    private OnFragmentInteractionListener interactionListener;
     public RecordsFragment() {
         // Required empty public constructor
     }
@@ -52,13 +57,6 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
         fragment.setArguments(args);
         return fragment;
     }
-
-    @BindView(R.id.recycler_view)
-    RecyclerView recyclerView;
-
-    private RecordsAdapter recordsAdapter;
-    private Realm realm;
-    private OnFragmentInteractionListener interactionListener;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

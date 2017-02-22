@@ -10,6 +10,11 @@ import android.view.MotionEvent;
  */
 
 public class AJViewPager extends ViewPager {
+    /**
+     * Enable disable scrolling of pages
+     */
+    public boolean isPagingEnabled = true;
+
     public AJViewPager(Context context) {
         super(context);
     }
@@ -17,11 +22,6 @@ public class AJViewPager extends ViewPager {
     public AJViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
-
-    /**
-     * Enable disable scrolling of pages
-     */
-    public boolean isPagingEnabled = true;
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {

@@ -13,10 +13,10 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.brotherpowers.audiojournal.R;
-import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.brotherpowers.audiojournal.AudioRecorder.AudioPlayer;
 import com.brotherpowers.audiojournal.AudioRecorder.AudioRecorder;
+import com.brotherpowers.audiojournal.Model.DataEntry;
+import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Utils.Extensions;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
 import com.brotherpowers.audiojournal.View.ALViewHolder;
@@ -33,12 +33,11 @@ import io.realm.RealmRecyclerViewAdapter;
  */
 
 class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
+    final LongSparseArray<short[]> cachedSamples;
     private final int VIEW_PLACEHOLDER = 0;
     private final int VIEW_ITEM = 1;
-
-    private Callback callback;
     private final LongSparseArray<PhotosAdapter> attachmentAdapter;
-    final LongSparseArray<short[]> cachedSamples;
+    private Callback callback;
 
 
     RecordsAdapter(@NonNull Context context, Callback callback, @Nullable OrderedRealmCollection<DataEntry> data) {
@@ -162,6 +161,18 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
     }
 
 
+    public interface Callback {
+        void actionDelete(int position);
+
+        void actionCamera(int position);
+
+        void addReminder(int position);
+
+        void actionPlay(int position);
+
+        void actionTextEditor(int position);
+    }
+
     static class VHAudioRecord extends ALViewHolder implements View.OnClickListener {
         @BindView(R.id.label_title)
         TextView labelTitle;
@@ -198,23 +209,10 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
         }
     }
 
-
     static class VHPlaceHolder extends ALViewHolder {
 
         VHPlaceHolder(View itemView, VhClick vhClick) {
             super(itemView, vhClick);
         }
-    }
-
-    public interface Callback {
-        void actionDelete(int position);
-
-        void actionCamera(int position);
-
-        void addReminder(int position);
-
-        void actionPlay(int position);
-
-        void actionTextEditor(int position);
     }
 }

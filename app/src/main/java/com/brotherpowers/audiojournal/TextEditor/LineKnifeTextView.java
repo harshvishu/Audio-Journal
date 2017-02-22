@@ -13,6 +13,9 @@ import io.github.mthli.knife.KnifeText;
  */
 
 public class LineKnifeTextView extends KnifeText {
+    private Rect _rect;
+    private Paint _paint;
+
     public LineKnifeTextView(Context context) {
         super(context);
         init();
@@ -39,9 +42,6 @@ public class LineKnifeTextView extends KnifeText {
         _paint.setStyle(Paint.Style.STROKE);
         _paint.setColor(getCurrentHintTextColor());
     }
-
-    private Rect _rect;
-    private Paint _paint;
 
     @Override
     public void draw(Canvas canvas) {

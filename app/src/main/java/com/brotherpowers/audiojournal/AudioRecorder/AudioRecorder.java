@@ -18,14 +18,12 @@ import java.io.IOException;
 
 public class AudioRecorder {
     public static final int DEFAULT_MAX_AUDIO_LENGTH = (int) (60_000 * 0.25); // 1 Minute
-    private static final int BIT_RATE = 128000; // Audio encoding bit rate in bits per second.
     public static final int SAMPLING_RATE = 44100; // Audio sampling rate 441.Khz
-
+    private static final int BIT_RATE = 128000; // Audio encoding bit rate in bits per second.
     private final File file;
+    private final int maxDuration;
     private STATE recordingState;
     private MediaRecorder mediaRecorder;
-    private final int maxDuration;
-
     @Nullable
     private Listener listener;
 
@@ -124,7 +122,6 @@ public class AudioRecorder {
             }
         };
     }
-
 
 
     /**

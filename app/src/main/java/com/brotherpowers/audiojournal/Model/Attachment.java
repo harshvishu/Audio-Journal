@@ -64,7 +64,6 @@ public class Attachment extends RealmObject implements RealmDelegate {
     }
 
 
-
     public File file(Context context) {
         if (TextUtils.isEmpty(file_name)) {
             return null;
@@ -86,7 +85,7 @@ public class Attachment extends RealmObject implements RealmDelegate {
     }
 
     @Override
-    public Attachment generateId(Realm realm){
+    public Attachment generateId(Realm realm) {
         setId(nexID(realm));
         return this;
     }
