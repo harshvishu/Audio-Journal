@@ -21,12 +21,16 @@ public final class DBHelper {
                 .equalTo("fileType", FileUtils.Type.IMAGE.value);
     }
 
-    public static RealmQuery<DataEntry> findEntryForId(long id, Realm realm){
-        return RealmQuery.createQuery(realm,DataEntry.class)
+    public static RealmQuery<DataEntry> findEntryForId(long id, Realm realm) {
+        return RealmQuery.createQuery(realm, DataEntry.class)
                 .equalTo("id", id);
     }
 
-    public static RealmQuery<Attachment> filterFilesForType(FileUtils.Type type, RealmQuery<Attachment> query){
-        return query.equalTo("fileType", FileUtils.Type.IMAGE.value);
+    public static RealmQuery<Attachment> findAttachment(Realm realm) {
+        return RealmQuery.createQuery(realm, Attachment.class);
+    }
+
+    public static RealmQuery<Attachment> filterFilesForType(FileUtils.Type type, RealmQuery<Attachment> query) {
+        return query.equalTo("fileType",type.value);
     }
 }

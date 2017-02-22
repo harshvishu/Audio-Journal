@@ -8,6 +8,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.SparseArray;
 
 import com.brotherpowers.audiojournal.AudioRecorder.AudioRecordingFragment;
+import com.brotherpowers.audiojournal.Camera.PhotosFragment;
 import com.brotherpowers.audiojournal.Records.RecordsFragment;
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Model.DataEntry;
@@ -27,7 +28,7 @@ public enum FragmentSections {
 
     recorder(0, R.drawable.ic_recording, AudioRecordingFragment.newInstance(), AudioRecordingFragment.class),
     records(1, R.drawable.ic_equalizer_white, RecordsFragment.newInstance(), RecordsFragment.class),
-    pictures(2, R.drawable.ic_photo_library_white, RecordsFragment.newInstance(), RecordsFragment.class),
+    pictures(2, R.drawable.ic_photo_library_white, PhotosFragment.newInstance(null), PhotosFragment.class),
     reminders(3, R.drawable.ic_alarm_white, RecordsFragment.newInstance(), RecordsFragment.class);
 
     private static final SparseArray<FragmentSections> ARRAY = new SparseArray<>();

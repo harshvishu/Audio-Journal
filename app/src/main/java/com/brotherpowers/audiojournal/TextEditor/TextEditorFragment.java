@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.brotherpowers.audiojournal.Model.TextNoteJSON;
 import com.brotherpowers.audiojournal.R;
+import com.brotherpowers.audiojournal.Utils.Constants;
 import com.google.gson.Gson;
 
 import butterknife.BindView;
@@ -57,7 +58,7 @@ public class TextEditorFragment extends Fragment {
     public static TextEditorFragment newInstance(long entry_id) {
         TextEditorFragment fragment = new TextEditorFragment();
         Bundle args = new Bundle();
-        args.putLong("id", entry_id);
+        args.putLong(Constants.KEYS.entry_id, entry_id);
 
         fragment.setArguments(args);
         return fragment;
@@ -68,7 +69,7 @@ public class TextEditorFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        entry_id = getArguments().getLong("id", -1);
+        entry_id = getArguments().getLong(Constants.KEYS.entry_id, -1);
 
         final Realm realm = Realm.getDefaultInstance();
 

@@ -38,10 +38,15 @@ public class PhotosAdapter extends RealmRecyclerViewAdapter<Attachment, PhotosAd
     @Override
     public void onBindViewHolder(ViewHolderImage holder, int position) {
         Attachment attachment = getData().get(position);
-        Glide.with(context)
-                .load(attachment.file(context))
-                .fitCenter()
-                .into(holder.imageView);
+        if (attachment != null) {
+            Glide.with(context)
+                    .load(attachment.file(context))
+                    .centerCrop()
+//                .fitCenter()
+                    .into(holder.imageView);
+        }else {
+            holder.imageView.setImageResource(R.drawable.ic_menu_gallery);
+        }
     }
 
 

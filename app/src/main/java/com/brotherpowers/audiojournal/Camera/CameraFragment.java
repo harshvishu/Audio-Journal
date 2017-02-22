@@ -2,6 +2,7 @@ package com.brotherpowers.audiojournal.Camera;
 
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.brotherpowers.audiojournal.Model.Attachment;
 import com.brotherpowers.audiojournal.Model.DataEntry;
@@ -66,7 +66,7 @@ public class CameraFragment extends Fragment {
 
     public static CameraFragment newInstance(long entry_id) {
         Bundle args = new Bundle();
-        args.putLong("id", entry_id);
+        args.putLong(Constants.KEYS.entry_id, entry_id);
         CameraFragment fragment = new CameraFragment();
         fragment.setArguments(args);
         return fragment;
@@ -82,6 +82,9 @@ public class CameraFragment extends Fragment {
     private int mCurrentFlash;
     private long entry_id;
     private PhotosAdapter photosAdapter;
+
+    // Interaction with the parent activity
+    private OnFragmentInteractionListener mListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -108,7 +111,7 @@ public class CameraFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         setRetainInstance(true);
-        entry_id = getArguments().getLong("id", -1);
+        entry_id = getArguments().getLong(Constants.KEYS.entry_id, -1);
     }
 
 
@@ -140,6 +143,22 @@ public class CameraFragment extends Fragment {
     public void onPause() {
         mCameraView.stop();
         super.onPause();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (mListener!=null){
+            mListener.hideActionBar(false);
+        }
+    }
+
+    @Override
+    public void onStop() {
+       if (mListener!=null){
+           mListener.hideActionBar(false);
+       }
+        super.onStop();
     }
 
     @Override
@@ -276,9 +295,26 @@ public class CameraFragment extends Fragment {
         final Realm realm = Realm.getDefaultInstance();
         final DataEntry entry = DBHelper.findEntryForId(entry_id, realm).findFirst();        // Sync
 
-        if (DBHelper.images(entry).count() > 0) {
-            // TODO: 2/22/17 Start another fragment with image gallery
-            Toast.makeText(getContext(), "Start gallery here", Toast.LENGTH_SHORT).show();
+        if (DBHelper.images(entry).count() > 0 && mListener != null) {
+            mListener.openGalleryForDataEntry(entry_id);
         }
+    }
+
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    public interface OnFragmentInteractionListener {
+        void openGalleryForDataEntry(long entry_id);
+
+        void hideActionBar(boolean hide);
     }
 }

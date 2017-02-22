@@ -15,4 +15,9 @@ public final class Constants {
     public static final String FRAGMENT_DIALOG = "dialog";
 
     public static final String TEXT_NOTE_DEFAULT_JSON = "{\"title\":\"\",\"note\":\"\"}";
+
+    public static final class KEYS {
+        public static final String entry_id = "entry_id";
+        public static final String task_id = "task_id";
+    }
 }

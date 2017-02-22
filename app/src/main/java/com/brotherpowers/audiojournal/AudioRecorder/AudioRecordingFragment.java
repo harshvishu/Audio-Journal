@@ -208,7 +208,7 @@ public class AudioRecordingFragment extends Fragment implements AudioRecorder.Li
         dataEntry.setAudioFile(attachment);
         realm.executeTransaction(r -> {
             r.copyToRealmOrUpdate(dataEntry);
-            r.copyToRealmOrUpdate(attachment);
+//            r.copyToRealmOrUpdate(attachment);
         });
 
 
