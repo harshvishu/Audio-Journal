@@ -18,11 +18,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.TextView;
 
+import com.brotherpowers.audiojournal.Main.FragmentSections;
 import com.brotherpowers.audiojournal.Model.Attachment;
 import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.brotherpowers.audiojournal.R;
+import com.brotherpowers.audiojournal.Utils.AudioJournalPreferences;
 import com.brotherpowers.audiojournal.Utils.Constants;
+import com.brotherpowers.audiojournal.Utils.Extensions;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
 import com.brotherpowers.audiojournal.View.PermissionRequestFragment;
 import com.brotherpowers.hvprogressview.ProgressView;
@@ -33,7 +37,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
 
-import static com.brotherpowers.audiojournal.AudioRecorder.AudioRecorder.MAX_AUDIO_LENGTH;
 import static com.brotherpowers.audiojournal.Utils.Constants.REQ_REC_PERMISSION;
 
 /**
@@ -41,12 +44,6 @@ import static com.brotherpowers.audiojournal.Utils.Constants.REQ_REC_PERMISSION;
  */
 public class AudioRecordingFragment extends Fragment implements AudioRecorder.Listener {
 
-
-    @BindView(R.id.progress_view)
-    ProgressView progressView;
-
-    @BindView(R.id.action_capture)
-    FloatingActionButton buttonRecord;
 
     public AudioRecordingFragment() {
         // Required empty public constructor
@@ -59,19 +56,42 @@ public class AudioRecordingFragment extends Fragment implements AudioRecorder.Li
         return fragment;
     }
 
+    @BindView(R.id.progress_view)
+    ProgressView progressView;
+
+    @BindView(R.id.action_capture)
+    FloatingActionButton buttonRecord;
+
+    @BindView(R.id.label_max_recording_duration)
+    TextView labelMaxDuration;
+
+    @BindView(R.id.label_total_recording_duration)
+    TextView labelTotalRecordingDuration;
+
+    @BindView(R.id.label_total_records)
+    TextView labelTotalRecords;
 
     private static AudioRecorder audioRecorder;
     private AudioRecorder.STATE recordingState;
     private OnFragmentInteractionListener interactionListener;
+    private AudioJournalPreferences preferences;
+    private Realm realm;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
-        audioRecorder = new AudioRecorder(getContext(), MAX_AUDIO_LENGTH);
+        // Initialize the preferences
+        preferences = new AudioJournalPreferences(getContext());
+
+        // Initialize Realm
+        realm = Realm.getDefaultInstance();
+
+        audioRecorder = new AudioRecorder(getContext(), preferences.getMaxRecordingDuration());
         audioRecorder.setListener(this);
         recordingState = audioRecorder.getRecordingState();
+
     }
 
     @Override
@@ -123,7 +143,24 @@ public class AudioRecordingFragment extends Fragment implements AudioRecorder.Li
             }
 
         });
+
+
+        setLabelMaxDuration();
+
+        setInfoLabels();
+
         return view;
+    }
+
+    private void setInfoLabels() {
+        labelTotalRecordingDuration.setText(FragmentSections.recorder.title(realm));
+        labelTotalRecords.setText(FragmentSections.records.title(realm));
+    }
+
+    // TODO: 2/22/17 replace with databinding
+    private void setLabelMaxDuration() {
+        int maxduration = preferences.getMaxRecordingDuration();
+        labelMaxDuration.setText(Extensions.millisToMS(maxduration));
     }
 
 
@@ -202,10 +239,20 @@ public class AudioRecordingFragment extends Fragment implements AudioRecorder.Li
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        realm.addChangeListener(element -> {
+            labelTotalRecordingDuration.setText(FragmentSections.recorder.title(realm));
+            labelTotalRecords.setText(FragmentSections.records.title(realm));
+        });
+    }
+
+    @Override
     public void onStop() {
         if (audioRecorder.getRecordingState() == AudioRecorder.STATE.RECORDING) {
             audioRecorder.stop();
         }
+        realm.removeAllChangeListeners();
         super.onStop();
     }
 

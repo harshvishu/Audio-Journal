@@ -17,24 +17,20 @@
         android:layout_alignParentTop="true"
         android:orientation="horizontal">
 
-        <TextView
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        <include
+            layout="@layout/max_duration_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:drawableLeft="@drawable/ic_timer"
-            android:drawableStart="@drawable/ic_timer"
-            android:drawableTint="@color/colorAccent"
-            android:text="60 Sec"/>
-
+            android:layout_centerVertical="true"/>
     </RelativeLayout>
 
     <FrameLayout
+        android:layout_margin="@dimen/spacing.16"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/data_counter"
+        android:layout_above="@+id/info_labels"
         android:layout_below="@+id/toolbar_actions">
 
         <com.brotherpowers.audiojournal.View.SquareLayout
@@ -60,12 +56,12 @@
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
                 android:padding="@dimen/spacing.16"
+                app:backgroundColor="@color/viewpager_inactive"
                 app:drawable="@drawable/ic_knob"
                 app:endAngle="275"
                 app:knobRadius="24"
                 app:progressColor="@color/colorAccent"
                 app:progressWidth="10dp"
-                app:backgroundColor="@color/viewpager_inactive"
                 app:progressWidthMultiplier="0.33"
                 app:startAngle="-225"
                 app:textColor="@color/primaryTextDark"
@@ -74,71 +70,11 @@
         </com.brotherpowers.audiojournal.View.SquareLayout>
     </FrameLayout>
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/data_counter"
+    <include
+        android:id="@+id/info_labels"
+        layout="@layout/recording_info_labels"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:baselineAligned="false"
-        app:cardBackgroundColor="#252A2F"
-        app:cardCornerRadius="5dp"
-        app:cardUseCompatPadding="true">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    style="@style/Caption"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Total Duration"/>
-
-                <TextView
-                    style="@style/Heading3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="12:23:35"/>
-            </LinearLayout>
-
-            <View
-                android:layout_width="1dip"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="@dimen/spacing.16"
-                android:layout_marginTop="@dimen/spacing.16"
-                android:background="@color/viewpager_inactive"/>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    style="@style/Caption"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Total Records"/>
-
-                <TextView
-                    style="@style/Heading3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="14"/>
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </android.support.v7.widget.CardView>
+        android:baselineAligned="false"/>
 </RelativeLayout>

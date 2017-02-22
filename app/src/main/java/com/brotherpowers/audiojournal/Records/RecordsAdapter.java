@@ -7,8 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.support.v4.util.LongSparseArray;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +14,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.brotherpowers.audiojournal.R;
-import com.brotherpowers.audiojournal.Model.Attachment;
 import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.brotherpowers.audiojournal.AudioRecorder.AudioPlayer;
 import com.brotherpowers.audiojournal.AudioRecorder.AudioRecorder;
@@ -30,7 +27,6 @@ import java.io.File;
 import butterknife.BindView;
 import io.realm.OrderedRealmCollection;
 import io.realm.RealmRecyclerViewAdapter;
-import io.realm.RealmResults;
 
 /**
  * Created by harsh_v on 11/4/16.
@@ -41,7 +37,7 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
     private final int VIEW_ITEM = 1;
 
     private Callback callback;
-    private final LongSparseArray<AttachmentAdapter> attachmentAdapter;
+    private final LongSparseArray<PhotosAdapter> attachmentAdapter;
     final LongSparseArray<short[]> cachedSamples;
 
 
@@ -133,28 +129,6 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
                     e.printStackTrace();
                 }
             }
-
-            RealmResults<Attachment> images = entry.getAttachments()
-                    .where()
-                    .equalTo("fileType", FileUtils.Type.IMAGE.value)
-                    .findAll();
-
-            if (images.isEmpty()) {
-                ((VHAudioRecord) holder).recyclerViewInternal.setVisibility(View.GONE);
-            } else {
-                final AttachmentAdapter attachmentAdapter;
-                if (this.attachmentAdapter.get(entry.getId()) == null) {
-                    attachmentAdapter = new AttachmentAdapter(context, images);
-                    this.attachmentAdapter.append(entry.getId(), attachmentAdapter);
-                } else {
-                    attachmentAdapter = this.attachmentAdapter.get(entry.getId());
-                    attachmentAdapter.updateData(images);
-                }
-
-                ((VHAudioRecord) holder).recyclerViewInternal.setVisibility(View.VISIBLE);
-                ((VHAudioRecord) holder).recyclerViewInternal.setAdapter(attachmentAdapter);
-                ((VHAudioRecord) holder).recyclerViewInternal.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-            }
         }
 
     }
@@ -189,7 +163,7 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
 
 
     static class VHAudioRecord extends ALViewHolder implements View.OnClickListener {
-        @BindView(R.id.label_text)
+        @BindView(R.id.label_title)
         TextView labelTitle;
 
         @BindView(R.id.action_play)
@@ -207,8 +181,6 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
         @BindView(R.id.wave_view)
         WaveformView waveformView;
 
-        @BindView(R.id.recycler_view_internal)
-        RecyclerView recyclerViewInternal;
 
         VHAudioRecord(View itemView, VhClick vhClick) {
             super(itemView, vhClick);

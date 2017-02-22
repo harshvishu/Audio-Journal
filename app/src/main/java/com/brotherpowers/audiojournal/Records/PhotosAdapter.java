@@ -21,8 +21,8 @@ import io.realm.RealmRecyclerViewAdapter;
  * Created by harsh_v on 2/18/17.
  */
 
-class AttachmentAdapter extends RealmRecyclerViewAdapter<Attachment, AttachmentAdapter.ViewHolderImage> {
-    AttachmentAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<Attachment> data) {
+public class PhotosAdapter extends RealmRecyclerViewAdapter<Attachment, PhotosAdapter.ViewHolderImage> {
+    public PhotosAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<Attachment> data) {
         super(context, data, true);
     }
 

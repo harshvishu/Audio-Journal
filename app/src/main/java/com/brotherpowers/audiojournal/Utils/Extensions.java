@@ -86,16 +86,35 @@ public final class Extensions {
         return Color.argb(alpha, red, green, blue);
     }
 
-    public static String getFormattedAudioTime(long length) {
+    public static String millisToHMS(long length) {
         String s;
         int hours = (int) ((length / (1000 * 60 * 60)) % 24);
         int min = (int) ((length / (1000 * 60)) % 60);
         int sec = (int) (length / 1000) % 100;
         if (hours == 0) {
-            s = String.format(Locale.getDefault(), "%02d:%02d", min, sec);
+            s = String.format(Locale.getDefault(), "%2d Min, %2d Sec", min, sec);
         } else {
-            s = String.format(Locale.getDefault(), "%02d:%02d", hours, min);
+            s = String.format(Locale.getDefault(), "%2d Hrs, %2d Min", hours, min);
         }
         return s;
+    }
+
+    public static String millisToMSm(float millis) {
+        int min = (int) (millis / (1000 * 60)) % 60;
+        int sec = (int) (millis / 1000) % 60;
+        int mil = (int) (millis % 100);
+
+        return String.format(Locale.getDefault(), "%02d:%02d:%02d", min, sec, mil);
+    }
+
+    public static String millisToMS(float millis) {
+        int min = (int) (millis / (1000 * 60)) % 60;
+        int sec = (int) (millis / 1000) % 60;
+        if (min > 0 && sec > 0) {
+            return String.format(Locale.getDefault(), "%2d Min, %2d Sec", min, sec);
+        } else if (min > 0 && sec == 0) {
+            return String.format(Locale.getDefault(), "%2d Min", min);
+        }
+        return String.format(Locale.getDefault(), "%2d Sec", sec);
     }
 }

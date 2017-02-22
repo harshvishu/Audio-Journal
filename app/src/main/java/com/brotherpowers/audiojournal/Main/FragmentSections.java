@@ -61,7 +61,7 @@ public enum FragmentSections {
         switch (this) {
             case recorder: {
                 long length = realm.where(DataEntry.class).sum("length").longValue();
-                s = Extensions.getFormattedAudioTime(length);
+                s = Extensions.millisToHMS(length);
                 break;
             }
             case records: {

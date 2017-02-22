@@ -2,7 +2,6 @@ package com.brotherpowers.audiojournal.Camera;
 
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,11 +18,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.brotherpowers.audiojournal.Model.Attachment;
 import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.brotherpowers.audiojournal.R;
+import com.brotherpowers.audiojournal.Records.PhotosAdapter;
 import com.brotherpowers.audiojournal.Utils.Constants;
+import com.brotherpowers.audiojournal.Utils.DBHelper;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
 import com.brotherpowers.audiojournal.View.PermissionRequestFragment;
 import com.bumptech.glide.Glide;
@@ -70,16 +72,16 @@ public class CameraFragment extends Fragment {
         return fragment;
     }
 
-    @BindView(R.id.cameraview)
+    @BindView(R.id.cameraView)
     CameraView mCameraView;
 
-    @BindView(R.id.imageview)
+    @BindView(R.id.imageView)
     ImageView _imageView;
 
     private Handler mBackgroundHandler;
     private int mCurrentFlash;
-    private ProgressDialog progressDialog;
     private long entry_id;
+    private PhotosAdapter photosAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -90,6 +92,13 @@ public class CameraFragment extends Fragment {
 
         mCameraView.addCallback(mCallback);
 
+        final Realm realm = Realm.getDefaultInstance();
+        final DataEntry entry = DBHelper.findEntryForId(entry_id, realm).findFirst();        // Sync
+        Attachment attachment = DBHelper.images(entry).findFirst();       // Async
+        if (attachment != null) {
+            loadImage(attachment);
+        }
+
         return view;
     }
 
@@ -99,9 +108,9 @@ public class CameraFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         setRetainInstance(true);
-
         entry_id = getArguments().getLong("id", -1);
     }
+
 
     @Override
     public void onResume() {
@@ -207,33 +216,25 @@ public class CameraFragment extends Fragment {
 
 
                     final Realm realm = Realm.getDefaultInstance();
-                    final DataEntry entry = realm.where(DataEntry.class).equalTo("id", entry_id).findFirst();
-                    assert entry != null;
 
                     Attachment attachment = new Attachment();
                     attachment.generateId(realm)
                             .setFileName(file.getName())
                             .setFileType(FileUtils.Type.IMAGE);
 
-                    // Persist to disk Async
-                    realm.executeTransactionAsync(r -> r.copyToRealmOrUpdate(attachment));
+
+                    realm.executeTransactionAsync(r -> {
+                        final DataEntry entry = DBHelper.findEntryForId(entry_id, r).findFirst();
+                        assert entry != null; // TODO: 2/22/17 remove
+
+                        entry.getAttachments().add(attachment);
+//                        r.copyToRealmOrUpdate(attachment);
+                    });
 
                     // Load the image
-
                     // Set the Image View
-
                     new Handler(Looper.getMainLooper())
-                            .post(() -> {
-                                final int thumbnailSize = getResources().getDimensionPixelSize(R.dimen.camera_control_size);
-                                Glide.with(getContext())
-                                        .load(attachment.file(getContext()))
-                                        .thumbnail(0.25f)
-                                        .crossFade()
-                                        .centerCrop()
-                                        .override(thumbnailSize, thumbnailSize)
-                                        .into(_imageView);
-                            });
-
+                            .post(() -> loadImage(attachment));
 
                     os.close();
 
@@ -256,5 +257,28 @@ public class CameraFragment extends Fragment {
         return mBackgroundHandler;
     }
 
+    /**
+     * Load image from attachment into imageView
+     */
+    private void loadImage(Attachment attachment) {
+        final int thumbnailSize = getResources().getDimensionPixelSize(R.dimen.camera_control_size);
+        Glide.with(getContext())
+                .load(attachment.file(getContext()))
+                .thumbnail(0.25f)
+                .crossFade()
+                .centerCrop()
+                .override(thumbnailSize, thumbnailSize)
+                .into(_imageView);
+    }
 
+    @OnClick(R.id.imageView)
+    void onImageClick() {
+        final Realm realm = Realm.getDefaultInstance();
+        final DataEntry entry = DBHelper.findEntryForId(entry_id, realm).findFirst();        // Sync
+
+        if (DBHelper.images(entry).count() > 0) {
+            // TODO: 2/22/17 Start another fragment with image gallery
+            Toast.makeText(getContext(), "Start gallery here", Toast.LENGTH_SHORT).show();
+        }
+    }
 }

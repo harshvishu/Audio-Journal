@@ -61,12 +61,18 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
     private OnFragmentInteractionListener interactionListener;
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+
+        realm = Realm.getDefaultInstance();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_list_recordings, container, false);
         ButterKnife.bind(this, view);
-
-        realm = Realm.getDefaultInstance();
 
         return view;
     }

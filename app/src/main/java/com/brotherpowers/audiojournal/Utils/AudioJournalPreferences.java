@@ -5,29 +5,33 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.brotherpowers.audiojournal.AudioRecorder.AudioRecorder;
+
 /**
  * Created by harsh_v on 10/13/16.
  */
-public class SessionManager {
+public class AudioJournalPreferences {
     private static final String prefToken = "token";
     private static final String prefUserId = "userId";
     private static final String prefUserId_old = "userId_old";
-    private static final String ACTION_LOGOUT = "SessionManager.logout";
+    private static final String ACTION_LOGOUT = "AudioJournalPreferences.logout";
 
-    private static SessionManager INSTANCE = null;
+    private static final String prefMaxRecordingDuration = "max_recording_duration";
+
+    private static AudioJournalPreferences INSTANCE = null;
     private SharedPreferences sharedPreferences;
 
     // private constructor to avoid ambiguity
-    private SessionManager(Context context) {
+    public AudioJournalPreferences(Context context) {
         sharedPreferences = context.getSharedPreferences("preferences_session_manager", Context.MODE_PRIVATE);
     }
 
-    public static SessionManager singleton(Context context) {
+   /* public static AudioJournalPreferences shared(Context context) {
         if (INSTANCE == null) {
-            INSTANCE = new SessionManager(context);
+            INSTANCE = new AudioJournalPreferences(context);
         }
         return INSTANCE;
-    }
+    }*/
 
     public void didLogin(String token, String userId) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -53,7 +57,6 @@ public class SessionManager {
         return sharedPreferences.contains(prefToken);
     }
 
-
     public String getUserToken() {
         return sharedPreferences.getString(prefToken, "");
     }
@@ -64,5 +67,14 @@ public class SessionManager {
 
     public String getLastUserId() {
         return sharedPreferences.getString(prefUserId_old, null);
+    }
+
+    public int getMaxRecordingDuration() {
+        return sharedPreferences.getInt(prefMaxRecordingDuration, AudioRecorder.DEFAULT_MAX_AUDIO_LENGTH);
+    }
+
+    public AudioJournalPreferences setMaxRecordingDuration(int duration) {
+        sharedPreferences.edit().putInt(prefMaxRecordingDuration, duration).apply();
+        return this;
     }
 }

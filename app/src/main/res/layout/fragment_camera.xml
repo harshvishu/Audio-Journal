@@ -6,7 +6,7 @@
                 tools:context="com.brotherpowers.audiojournal.Camera.CameraFragment">
 
     <com.google.android.cameraview.CameraView
-        android:id="@+id/cameraview"
+        android:id="@+id/cameraView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/control"

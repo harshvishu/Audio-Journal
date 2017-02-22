@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.SweepGradient;
@@ -152,7 +153,12 @@ public class ProgressView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         bounds.set(getPaddingLeft(), getPaddingTop(), w - getPaddingRight(), h - getPaddingBottom());
-        mProgressPaint.setShader(new SweepGradient(bounds.centerX(), bounds.centerY(), Color.parseColor("#DC592F"), Color.parseColor("#D74265")));
+
+        SweepGradient sweepGradient = new SweepGradient(bounds.centerX(), bounds.centerY(), Color.parseColor("#DC592F"), Color.parseColor("#D74265"));
+        Matrix matrix = new Matrix();
+        matrix.postRotate(startAngle - endAngle);
+        sweepGradient.setLocalMatrix(matrix);
+        mProgressPaint.setShader(sweepGradient);
     }
 
 

@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -43,15 +44,11 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.container)
     AJViewPager mViewPager;
 
-    @BindView(R.id.tabLayout)
-    TabLayout tabLayout;
-
     @BindView(R.id.viewpager_indicator)
     CirclePageIndicator circlePageIndicator;
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private boolean isRecording;
-    private Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,19 +58,17 @@ public class MainActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        tabLayout.setupWithViewPager(mViewPager);
-        tabLayout.setVisibility(View.GONE);
 
+        // Set Page indicator
         circlePageIndicator.setViewPager(mViewPager);
+        circlePageIndicator.setOnTouchListener((v, event) -> isRecording);
 
 
-
-        realm = Realm.getDefaultInstance();
-        setupTabLayout(realm);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -85,13 +80,6 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    private void setupTabLayout(Realm realm) {
-        // set up the tabs
-        for (int i = 0; i < tabLayout.getTabCount(); i++) {
-            tabLayout.getTabAt(i).setIcon(FragmentSections.at(i).drawable);
-            tabLayout.getTabAt(i).setText(FragmentSections.at(i).title(realm));
-        }
-    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -131,14 +119,6 @@ public class MainActivity extends AppCompatActivity
     public void onRecordingStateChange(AudioRecorder.STATE state) {
         isRecording = state == AudioRecorder.STATE.RECORDING;
         mViewPager.isPagingEnabled = !isRecording;
-        tabLayout.setClickable(!isRecording);
-        tabLayout.setEnabled(!isRecording);
-
-        LinearLayout tabStrip = ((LinearLayout) tabLayout.getChildAt(0));
-        tabStrip.setEnabled(false);
-        for (int i = 0; i < tabStrip.getChildCount(); i++) {
-            tabStrip.getChildAt(i).setClickable(!isRecording);
-        }
     }
 
     /*
@@ -188,16 +168,4 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    protected void onStop() {
-        realm.removeAllChangeListeners();
-        super.onStop();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // Add change listeners to for tablayout
-        realm.addChangeListener(element -> setupTabLayout(realm));
-    }
 }

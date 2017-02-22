@@ -6,25 +6,24 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.brotherpowers.audiojournal.Utils.Extensions;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Locale;
 
 /**
  * Created by harsh_v on 11/23/16.
  */
 
 public class AudioRecorder {
-    public static final int MAX_AUDIO_LENGTH = 60_000 / 2; // 1 Minute
+    public static final int DEFAULT_MAX_AUDIO_LENGTH = (int) (60_000 * 0.25); // 1 Minute
     private static final int BIT_RATE = 128000; // Audio encoding bit rate in bits per second.
     public static final int SAMPLING_RATE = 44100; // Audio sampling rate 441.Khz
 
     private final File file;
     private STATE recordingState;
     private MediaRecorder mediaRecorder;
-//    private final int sampleRate;
     private final int maxDuration;
 
     @Nullable
@@ -40,7 +39,6 @@ public class AudioRecorder {
      */
     AudioRecorder(Context context, int duration) {
         file = FileUtils.sharedInstance.getFile(FileUtils.Type.AUDIO, String.valueOf(System.currentTimeMillis()), context);
-//        sampleRate = 44100;
         maxDuration = duration;
         recordingState = STATE.PENDING;
     }
@@ -108,13 +106,10 @@ public class AudioRecorder {
                 while (recordingState == STATE.RECORDING) {
 
                     float elapsedTime = (float) (System.currentTimeMillis() - startTime);
-                    int min = (int) (elapsedTime / (1000 * 60)) % 60;
-                    int sec = (int) (elapsedTime / 1000) % 60;
-                    int mil = (int) (elapsedTime % 100);
 
-                    String s = String.format(Locale.getDefault(), "%02d:%02d:%02d", min, sec, mil);
+                    String s = Extensions.millisToMSm(elapsedTime);
 
-                    float progress = 100 * (elapsedTime / MAX_AUDIO_LENGTH);
+                    float progress = 100 * (elapsedTime / DEFAULT_MAX_AUDIO_LENGTH);
 
                     if (listener != null) {
                         listener.onProgress(progress, s);
@@ -129,6 +124,8 @@ public class AudioRecorder {
             }
         };
     }
+
+
 
     /**
      * Stop  recording
