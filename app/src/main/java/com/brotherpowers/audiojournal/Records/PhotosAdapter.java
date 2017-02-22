@@ -45,7 +45,7 @@ public class PhotosAdapter extends RealmRecyclerViewAdapter<Attachment, PhotosAd
 //                .fitCenter()
                     .into(holder.imageView);
         } else {
-            holder.imageView.setImageResource(R.drawable.ic_menu_gallery);
+            holder.imageView.setImageResource(R.drawable.ic_photo);
         }
     }
 
