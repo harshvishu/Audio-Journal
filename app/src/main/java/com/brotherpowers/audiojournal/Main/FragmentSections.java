@@ -13,6 +13,7 @@ import com.brotherpowers.audiojournal.Model.Attachment;
 import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Records.RecordsFragment;
+import com.brotherpowers.audiojournal.Reminder.ReminderListFragment;
 import com.brotherpowers.audiojournal.Utils.Extensions;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
 
@@ -29,7 +30,7 @@ public enum FragmentSections {
     recorder(0, R.drawable.ic_recording, AudioRecordingFragment.newInstance(), AudioRecordingFragment.class),
     records(1, R.drawable.ic_equalizer_white, RecordsFragment.newInstance(), RecordsFragment.class),
     pictures(2, R.drawable.ic_photo_library_white, PhotosFragment.newInstance(null), PhotosFragment.class),
-    reminders(3, R.drawable.ic_alarm_white, RecordsFragment.newInstance(), RecordsFragment.class);
+    reminders(3, R.drawable.ic_alarm_white, ReminderListFragment.newInstance(), ReminderListFragment.class);
 
     private static final SparseArray<FragmentSections> ARRAY = new SparseArray<>();
 

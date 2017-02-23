@@ -17,14 +17,15 @@ public class DataEntry extends RealmObject implements RealmDelegate {
 
 
     public String text_note = Constants.TEXT_NOTE_DEFAULT_JSON;    // Default JSON for text_note
+
     @PrimaryKey
     private long id;
     private Attachment audioFile;
     private String title;
     private long length;
-    private Long remind_at;
     private RealmList<Attachment> attachments;
     private Date created_at = new Date();
+    private Reminder reminder = new Reminder();
 
     public long getId() {
         return id;
@@ -76,12 +77,16 @@ public class DataEntry extends RealmObject implements RealmDelegate {
         return this;
     }
 
-    public Long getRemindAt() {
-        return remind_at;
+    public Reminder getRemindAt() {
+        return reminder;
     }
 
+    /**
+     * set reminder time & Activate
+     */
     public void setRemindAt(Long remind_at) {
-        this.remind_at = remind_at;
+        this.reminder.setRemindAt(remind_at)
+                .set(true);
     }
 
     @Override

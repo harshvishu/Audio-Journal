@@ -32,7 +32,7 @@
         </provider>
 
         <receiver
-            android:name=".Reminder.Reminder"
+            android:name=".Reminder.ReminderBroadcastReceiver"
             android:enabled="true"
             android:exported="false"
             android:process=":remote">

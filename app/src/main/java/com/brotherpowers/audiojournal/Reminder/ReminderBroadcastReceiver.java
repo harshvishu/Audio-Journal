@@ -4,10 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.WakefulBroadcastReceiver;
 
-public class Reminder extends WakefulBroadcastReceiver {
+public class ReminderBroadcastReceiver extends WakefulBroadcastReceiver {
     private static final String TAG = "REMINDER";
 
-    public Reminder() {
+    public ReminderBroadcastReceiver() {
     }
 
     @Override

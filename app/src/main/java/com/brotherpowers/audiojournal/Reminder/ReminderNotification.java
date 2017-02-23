@@ -40,8 +40,8 @@ import io.realm.Realm;
  * helper methods.
  */
 public class ReminderNotification extends Service {
-    private static final String ACTION_PLAY = "com.brotherpowers.audiojournal.Reminder.action.PLAY";
-    private static final String EXTRA_JSON = "com.brotherpowers.audiojournal.Reminder.extra.JSON";
+    private static final String ACTION_PLAY = "com.brotherpowers.audiojournal.ReminderBroadcastReceiver.action.PLAY";
+    private static final String EXTRA_JSON = "com.brotherpowers.audiojournal.ReminderBroadcastReceiver.extra.JSON";
 
     /**
      * Starts this service to perform action Foo with the given parameters. If

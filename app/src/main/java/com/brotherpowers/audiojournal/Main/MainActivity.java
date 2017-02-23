@@ -1,5 +1,6 @@
 package com.brotherpowers.audiojournal.Main;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -21,6 +22,7 @@ import com.brotherpowers.audiojournal.Camera.PhotosFragment;
 import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Records.RecordsFragment;
+import com.brotherpowers.audiojournal.Reminder.ReminderListFragment;
 import com.brotherpowers.audiojournal.View.AJViewPager;
 import com.viewpagerindicator.CirclePageIndicator;
 
@@ -32,7 +34,8 @@ public class MainActivity extends AppCompatActivity
         implements AudioRecordingFragment.OnFragmentInteractionListener,
         RecordsFragment.OnFragmentInteractionListener,
         NavigationView.OnNavigationItemSelectedListener,
-        PhotosFragment.OnFragmentInteractionListener {
+        PhotosFragment.OnFragmentInteractionListener,
+        ReminderListFragment.OnFragmentInteractionListener {
 
 
     /**
@@ -144,9 +147,18 @@ public class MainActivity extends AppCompatActivity
      * {@link PhotosFragment}
      ************************************************/
 
+
     @Override
     public void openDetailedImageGallery(long entry_id, long attachment_id) {
         EditorActivity.start(this, entry_id, attachment_id, EditorActivity.TaskGallery);
+    }
+
+    /************************************************
+     * {@link ReminderListFragment}
+     ************************************************/
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 
 

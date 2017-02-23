@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:padding="@dimen/spacing.16">
+
+    <TextView
+        android:id="@+id/label_reminder_time"
+        style="@style/Heading3.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/_12_01_sup_am_sup"/>
+
+    <TextView
+        android:id="@+id/label_reminder_subscript"
+        style="@style/Caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="AM"/>
+</LinearLayout>

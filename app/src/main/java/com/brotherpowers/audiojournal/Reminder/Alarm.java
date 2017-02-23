@@ -8,6 +8,7 @@ import android.os.Build;
 import android.util.Log;
 
 import com.brotherpowers.audiojournal.Model.DataEntry;
+import com.brotherpowers.audiojournal.Model.Reminder;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -29,7 +30,8 @@ public class Alarm {
      * @param context {@link Context}
      */
     public static void set(Context context, DataEntry dataEntry) {
-        Long remind_at = dataEntry.getRemindAt();
+        Reminder reminder = dataEntry.getRemindAt();
+        Long remind_at = reminder.getRemindAt();
         if (remind_at == null) {
             return;
         }
@@ -41,7 +43,7 @@ public class Alarm {
         }
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, Reminder.class);
+        Intent intent = new Intent(context, ReminderBroadcastReceiver.class);
 
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("id", dataEntry.getId());

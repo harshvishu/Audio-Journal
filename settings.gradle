@@ -1,2 +1,1 @@
-include ':app', ':hvwaveformview', ':hvprogressview', ':hvcameraview'
-project(':hvcameraview').projectDir = new File('cameraview')
+include ':app', ':hvwaveformview', ':hvprogressview', ':cameraview'
