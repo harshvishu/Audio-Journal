@@ -1,44 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    android:id="@+id/control"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?attr/colorPrimary"
-    android:orientation="horizontal">
+<LinearLayout android:id="@+id/control"
+              xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical">
 
-    <ImageButton
-        android:id="@id/action.flash"
-        style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        android:layout_margin="@dimen/spacing.20"
-        android:contentDescription="@string/flash"
-        app:srcCompat="@drawable/ic_flash_auto"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <ImageButton
-        android:id="@+id/take_picture"
-        style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_gravity="center"
-        android:tint="#FFF"
-        app:srcCompat="@drawable/ic_camera"/>
+        <ImageButton
+            android:id="@id/action.flash"
+            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="@dimen/spacing.20"
+            android:contentDescription="@string/flash"
+            app:srcCompat="@drawable/ic_flash_auto"/>
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_margin="@dimen/spacing.20"
-        android:contentDescription="@string/picture"/>
+        <ImageButton
+            android:id="@+id/take_picture"
+            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:tint="#FFF"
+            app:srcCompat="@drawable/ic_camera"/>
 
-</RelativeLayout>
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="@dimen/spacing.20"
+            android:contentDescription="@string/picture"/>
+
+    </RelativeLayout>
+
+    <com.wefika.horizontalpicker.HorizontalPicker
+        android:background="@color/colorAccent"
+        android:id="@+id/color_mode_picker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:marqueeRepeatLimit="2"
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp"
+        android:textColor="@color/primaryTextDark"
+        android:textSize="16sp"
+        app:sideItems="1"/>
+</LinearLayout>

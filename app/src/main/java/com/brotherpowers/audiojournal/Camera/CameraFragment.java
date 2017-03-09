@@ -14,6 +14,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,12 +25,14 @@ import com.brotherpowers.audiojournal.Model.Attachment;
 import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Records.PhotosAdapter;
+import com.brotherpowers.audiojournal.Utils.CircleTransform;
 import com.brotherpowers.audiojournal.Utils.Constants;
 import com.brotherpowers.audiojournal.Utils.DBHelper;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
 import com.brotherpowers.audiojournal.View.PermissionRequestFragment;
+import com.brotherpowers.cameraview.CameraView;
 import com.bumptech.glide.Glide;
-import com.google.android.cameraview.CameraView;
+import com.wefika.horizontalpicker.HorizontalPicker;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -59,10 +62,16 @@ public class CameraFragment extends Fragment {
             R.drawable.ic_flash_off,
             R.drawable.ic_flash_on,
     };
+
     @BindView(R.id.cameraView)
-    CameraView mCameraView;
+    CameraView _cameraView;
+
     @BindView(R.id.imageView)
     ImageView _imageView;
+
+    @BindView(R.id.color_mode_picker)
+    HorizontalPicker _colorModePicker;
+
     private Handler mBackgroundHandler;
     private int mCurrentFlash;
     private long entry_id;
@@ -162,7 +171,7 @@ public class CameraFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_camera, container, false);
         ButterKnife.bind(this, view);
 
-        mCameraView.addCallback(mCallback);
+        _cameraView.addCallback(mCallback);
 
         final Realm realm = Realm.getDefaultInstance();
         final DataEntry entry = DBHelper.findEntryForId(entry_id, realm).findFirst();        // Sync
@@ -185,12 +194,22 @@ public class CameraFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        if (mListener != null) {
+            mListener.hideActionBar(false);
+        }
+
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
 
-            mCameraView.start();
-            mCameraView.setAutoFocus(true);
-            mCameraView.setFlash(CameraView.FLASH_AUTO);
+            _cameraView.start();
+            _cameraView.setAutoFocus(true);
+            _cameraView.setFlash(CameraView.FLASH_AUTO);
+
+            _colorModePicker.setValues(new CharSequence[]{"NONE"});
+            _colorModePicker.setValues(toArray(_cameraView.getSupportedColorEffects()));
+            // Change color mode
+            _colorModePicker.setOnItemSelectedListener(index -> _cameraView.setColorEffect(index));
 
         } else if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                 Manifest.permission.CAMERA)) {
@@ -208,31 +227,18 @@ public class CameraFragment extends Fragment {
 
     @Override
     public void onPause() {
-        mCameraView.stop();
+        _cameraView.stop();
+        if (mListener != null) {
+            mListener.hideActionBar(false);
+        }
         super.onPause();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (mListener != null) {
-            mListener.hideActionBar(false);
-        }
-    }
-
-    @Override
-    public void onStop() {
-        if (mListener != null) {
-            mListener.hideActionBar(false);
-        }
-        super.onStop();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
 
-        mCameraView.removeCallback(mCallback);
+        _cameraView.removeCallback(mCallback);
 
         if (mBackgroundHandler != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
@@ -247,15 +253,15 @@ public class CameraFragment extends Fragment {
     @OnClick(R.id.take_picture)
     void takePicture() {
         System.out.println("take picture");
-        mCameraView.takePicture();
+        _cameraView.takePicture();
     }
 
     @OnClick(R.id.action_flash)
     void changeFlash(ImageButton button) {
-        if (mCameraView != null) {
+        if (_cameraView != null) {
             mCurrentFlash = (mCurrentFlash + 1) % FLASH_OPTIONS.length;
             button.setImageResource(FLASH_ICONS[mCurrentFlash]);
-            mCameraView.setFlash(FLASH_OPTIONS[mCurrentFlash]);
+            _cameraView.setFlash(FLASH_OPTIONS[mCurrentFlash]);
         }
     }
 
@@ -268,6 +274,7 @@ public class CameraFragment extends Fragment {
         return mBackgroundHandler;
     }
 
+
     /**
      * Load image from attachment into imageView
      */
@@ -278,6 +285,7 @@ public class CameraFragment extends Fragment {
                 .thumbnail(0.25f)
                 .crossFade()
                 .centerCrop()
+                .bitmapTransform(new CircleTransform(getContext()))
                 .override(thumbnailSize, thumbnailSize)
                 .into(_imageView);
     }
@@ -308,5 +316,16 @@ public class CameraFragment extends Fragment {
         void openGalleryForDataEntry(long entry_id);
 
         void hideActionBar(boolean hide);
+    }
+
+    private static String[] toArray(SparseArray<String> sparseArray) {
+        if (sparseArray == null) {
+            return new String[]{};
+        }
+        String s[] = new String[sparseArray.size()];
+
+        for (int i = 0; i < sparseArray.size(); i++)
+            s[i] = sparseArray.valueAt(i);
+        return s;
     }
 }

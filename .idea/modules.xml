@@ -3,8 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Audio-Journal.iml" filepath="$PROJECT_DIR$/Audio-Journal.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ajcamera/ajcamera.iml" filepath="$PROJECT_DIR$/ajcamera/ajcamera.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/cameraview/cameraview.iml" filepath="$PROJECT_DIR$/cameraview/cameraview.iml" />
       <module fileurl="file://$PROJECT_DIR$/hvprogressview/hvprogressview.iml" filepath="$PROJECT_DIR$/hvprogressview/hvprogressview.iml" />
       <module fileurl="file://$PROJECT_DIR$/hvwaveformview/hvwaveformview.iml" filepath="$PROJECT_DIR$/hvwaveformview/hvwaveformview.iml" />
     </modules>

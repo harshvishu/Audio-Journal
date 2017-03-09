@@ -56,10 +56,11 @@
         </activity>
         <activity
             android:name=".Main.EditorActivity"
+            android:configChanges="keyboardHidden|screenSize"
             android:launchMode="singleTop"
             android:parentActivityName=".Main.MainActivity"
             android:screenOrientation="sensorPortrait"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/AppTheme.FullScreen"
             android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
