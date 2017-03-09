@@ -236,8 +236,7 @@ public class CameraFragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
-
+        // Remove callback
         _cameraView.removeCallback(mCallback);
 
         if (mBackgroundHandler != null) {
@@ -248,6 +247,7 @@ public class CameraFragment extends Fragment {
             }
             mBackgroundHandler = null;
         }
+        super.onDestroy();
     }
 
     @OnClick(R.id.take_picture)
