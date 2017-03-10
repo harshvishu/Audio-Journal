@@ -4,18 +4,22 @@ package com.brotherpowers.audiojournal.Camera;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Animatable;
+import android.graphics.drawable.AnimatedVectorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -68,6 +72,9 @@ public class CameraFragment extends Fragment {
 
     @BindView(R.id.imageView)
     ImageView _imageView;
+
+    @BindView(R.id.take_picture)
+    ImageButton _imageButton;
 
     @BindView(R.id.color_mode_picker)
     HorizontalPicker _colorModePicker;
@@ -180,6 +187,44 @@ public class CameraFragment extends Fragment {
             loadImage(attachment);
         }
 
+        _imageButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN: {
+                        final Animatable animatable;
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                            final AnimatedVectorDrawable animatedDrawable = (AnimatedVectorDrawable) getContext().getDrawable(R.drawable.camera_expanded_animated_vector);
+                            _imageButton.setImageDrawable(animatedDrawable);
+                            animatable = animatedDrawable;
+                        } else {
+                            final AnimatedVectorDrawableCompat drawableCompat = AnimatedVectorDrawableCompat.create(getContext(), R.drawable.camera_expanded_animated_vector);
+                            _imageButton.setImageDrawable(drawableCompat);
+                            animatable = drawableCompat;
+                        }
+
+                        animatable.start();
+                    }
+                    break;
+                    case MotionEvent.ACTION_UP: {
+                        final Animatable animatable;
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                            final AnimatedVectorDrawable animatedDrawable = (AnimatedVectorDrawable) getContext().getDrawable(R.drawable.camera_shrink_aimation);
+                            _imageButton.setImageDrawable(animatedDrawable);
+                            animatable = animatedDrawable;
+                        } else {
+                            final AnimatedVectorDrawableCompat drawableCompat = AnimatedVectorDrawableCompat.create(getContext(), R.drawable.camera_shrink_aimation);
+                            _imageButton.setImageDrawable(drawableCompat);
+                            animatable = drawableCompat;
+                        }
+                        animatable.start();
+                    }
+                    break;
+                }
+                return false;
+            }
+        });
+
         return view;
     }
 
@@ -251,7 +296,7 @@ public class CameraFragment extends Fragment {
     }
 
     @OnClick(R.id.take_picture)
-    void takePicture() {
+    void takePicture(ImageButton button) {
         System.out.println("take picture");
         _cameraView.takePicture();
     }

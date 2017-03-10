@@ -31,7 +31,7 @@
             android:layout_centerVertical="true"
             android:layout_gravity="center"
             android:tint="#FFF"
-            app:srcCompat="@drawable/ic_camera"/>
+            app:srcCompat="@drawable/camera_default"/>
 
         <ImageView
             android:id="@+id/imageView"
