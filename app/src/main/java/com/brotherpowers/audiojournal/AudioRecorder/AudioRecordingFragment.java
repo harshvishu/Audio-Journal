@@ -217,14 +217,14 @@ public class AudioRecordingFragment extends Fragment implements AudioRecorder.Li
     }
 
     private void changeButtonDrawableWithAnim(int drawable) {
-        // TODO: 2/18/17 Use preper animation
+        // TODO: 2/18/17 Use proper animation
         buttonRecord.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.fab_open));
         buttonRecord.setImageResource(drawable);
     }
 
     @Override
     public void onProgress(float progress, String text) {
-        progressView.setProgress(progress, text);
+        progressView.set(progress, text);
     }
 
     @Override

@@ -272,7 +272,9 @@ public class CameraFragment extends Fragment {
 
     @Override
     public void onPause() {
-        _cameraView.stop();
+        if (_cameraView.isCameraOpened()) {
+            _cameraView.stop();
+        }
         if (mListener != null) {
             mListener.hideActionBar(false);
         }

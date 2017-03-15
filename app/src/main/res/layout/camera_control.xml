@@ -30,7 +30,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
-            android:tint="#FFF"
+            android:background="?attr/selectableItemBackgroundBorderless"
             app:srcCompat="@drawable/camera_default"/>
 
         <ImageView

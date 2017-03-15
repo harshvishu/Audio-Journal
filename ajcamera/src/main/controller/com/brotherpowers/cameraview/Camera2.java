@@ -278,9 +278,10 @@ public class Camera2 extends CameraViewImpl {
                         } else {
                             runPrecaptureSequence();
                         }
-                    }else {
-                        runPrecaptureSequence();
                     }
+                   /* else {
+                        runPrecaptureSequence();
+                    }*/
                     break;
                 }
                 case STATE_WAITING_PRECAPTURE: {

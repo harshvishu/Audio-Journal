@@ -3,13 +3,13 @@
     <declare-styleable name="ProgressView">
         <attr name="progressColor" format="color"/>
         <attr name="backgroundColor" format="color"/>
-        <attr name="textColor" format="color"/>
+        <attr name="android:textColor"/>
+        <attr name="android:textSize"/>
         <attr name="startAngle" format="float"/>
         <attr name="endAngle" format="float"/>
         <attr name="sweepAngle" format="float"/>
         <attr name="progressWidth" format="dimension"/>
         <attr name="progressWidthMultiplier" format="float"/>
-        <attr name="textSize" format="dimension"/>
         <attr name="drawable" format="reference"/>
         <attr name="knobOffset" format="float"/>
         <attr name="knobRadius" format="integer"/>
@@ -18,4 +18,6 @@
             <enum name="square" value="2"/>
         </attr>
     </declare-styleable>
+
+    <attr name="ProgressViewStyle" format="reference"/>
 </resources>

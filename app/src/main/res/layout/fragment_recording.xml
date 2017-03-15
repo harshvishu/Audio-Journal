@@ -27,47 +27,13 @@
     </RelativeLayout>
 
     <FrameLayout
-        android:layout_margin="@dimen/spacing.16"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/info_labels"
-        android:layout_below="@+id/toolbar_actions">
+        android:layout_below="@+id/toolbar_actions"
+        android:layout_margin="@dimen/spacing.16">
 
-        <com.brotherpowers.audiojournal.View.SquareLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center">
-
-            <android.support.design.widget.FloatingActionButton
-                android:id="@id/action.capture"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="@dimen/fab_margin"
-                android:tint="@color/buttonDark"
-                app:elevation="6dp"
-                app:fabSize="normal"
-                app:pressedTranslationZ="12dp"
-                app:srcCompat="@drawable/ic_mic"/>
-
-            <com.brotherpowers.hvprogressview.ProgressView
-                android:id="@+id/progress_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerInParent="true"
-                android:padding="@dimen/spacing.16"
-                app:backgroundColor="@color/viewpager_inactive"
-                app:drawable="@drawable/ic_knob"
-                app:endAngle="275"
-                app:knobRadius="24"
-                app:progressColor="@color/colorAccent"
-                app:progressWidth="10dp"
-                app:progressWidthMultiplier="0.33"
-                app:startAngle="-225"
-                app:textColor="@color/primaryTextDark"
-                app:textSize="12sp"/>
-
-        </com.brotherpowers.audiojournal.View.SquareLayout>
+        <include layout="@layout/main_recording_panel"/>
     </FrameLayout>
 
     <include

@@ -23,6 +23,7 @@ import butterknife.ButterKnife;
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -62,12 +63,12 @@ public class PhotosFragment extends Fragment {
 
         if (entry_id > 0) {
             final DataEntry entry = DBHelper.findEntryForId(entry_id, realm).findFirst();        // Sync
-            attachments = DBHelper.images(entry).findAllAsync();       // Async
+            attachments = DBHelper.images(entry).findAllSortedAsync("created_at", Sort.DESCENDING);       // Async
         } else {
 
             attachments = DBHelper.filterFilesForType(FileUtils.Type.IMAGE,
                     RealmQuery.createQuery(realm, Attachment.class))
-                    .findAllAsync();
+                    .findAllSortedAsync("created_at", Sort.DESCENDING);
         }
 
         photosAdapter = new PhotosAdapter(getContext(), attachments);

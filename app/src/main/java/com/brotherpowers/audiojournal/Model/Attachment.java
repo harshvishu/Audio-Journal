@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
 
 import java.io.File;
+import java.util.Date;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
@@ -26,6 +27,8 @@ public class Attachment extends RealmObject implements RealmDelegate {
 
     // Enum to support FileType
     private int fileType;
+
+    private Date created_at = new Date();
 
     public String getFileName() {
         return file_name;
@@ -69,6 +72,10 @@ public class Attachment extends RealmObject implements RealmDelegate {
             return null;
         }
         return FileUtils.sharedInstance.getFile(fileType(), file_name, context);
+    }
+
+    public Date getCreatedAt() {
+        return created_at;
     }
 
     @Override

@@ -29,8 +29,8 @@
 
 
     <style name="DataCounterTextAppearance" parent="TextAppearance.AppCompat.Caption">
-        <item name="textSize">18sp</item>
-        <item name="textColor">#fff</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">#fff</item>
         <item name="android:gravity">center</item>
         <item name="android:textStyle">bold</item>
     </style>
