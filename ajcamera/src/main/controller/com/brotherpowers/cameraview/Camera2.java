@@ -111,6 +111,7 @@ public class Camera2 extends CameraViewImpl {
      */
     private Semaphore mCameraOpenCloseLock = new Semaphore(1);
 
+    private int mState = STATE_PREVIEW;
 
     Camera2(Callback callback, PreviewImpl preview, Context context) {
         super(callback, preview);
@@ -224,130 +225,76 @@ public class Camera2 extends CameraViewImpl {
         }
     };
 
-    private PictureCaptureCallback mCaptureCallback = new PictureCaptureCallback() {
+    /**
+     * A {@link CameraCaptureSession.CaptureCallback} that handles events related to JPEG capture.
+     */
+    private CameraCaptureSession.CaptureCallback mCaptureCallback
+            = new CameraCaptureSession.CaptureCallback() {
 
-        @Override
-        public void onPrecaptureRequired() {
-            mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
-                    CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
-            setState(STATE_PRECAPTURE);
-            try {
-                mCaptureSession.capture(mPreviewRequestBuilder.build(), this, null);
-                mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
-                        CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_IDLE);
-            } catch (CameraAccessException e) {
-                Log.e(TAG, "Failed to run precapture sequence.", e);
+        private void process(CaptureResult result) {
+            switch (mState) {
+                case STATE_PREVIEW: {
+                    // We have nothing to do when the camera preview is working normally.
+                    break;
+                }
+                case STATE_WAITING_LOCK: {
+                    Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
+                    if (afState == null) {
+                        captureStillPicture();
+                    } else if (CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED == afState ||
+                            CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED == afState ||
+                            CaptureResult.CONTROL_AF_STATE_INACTIVE == afState) {
+                        // CONTROL_AE_STATE can be null on some devices
+                        Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
+                        if (aeState == null ||
+                                aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED) {
+                            mState = STATE_PICTURE_TAKEN;
+                            captureStillPicture();
+                        } else {
+                            runPrecaptureSequence();
+                        }
+                    } else {
+                        runPrecaptureSequence();
+                    }
+                    break;
+                }
+                case STATE_WAITING_PRECAPTURE: {
+                    // CONTROL_AE_STATE can be null on some devices
+                    Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
+                    if (aeState == null ||
+                            aeState == CaptureResult.CONTROL_AE_STATE_PRECAPTURE ||
+                            aeState == CaptureRequest.CONTROL_AE_STATE_FLASH_REQUIRED) {
+                        mState = STATE_WAITING_NON_PRECAPTURE;
+                    }
+                    break;
+                }
+                case STATE_WAITING_NON_PRECAPTURE: {
+                    // CONTROL_AE_STATE can be null on some devices
+                    Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
+                    if (aeState == null || aeState != CaptureResult.CONTROL_AE_STATE_PRECAPTURE) {
+                        mState = STATE_PICTURE_TAKEN;
+                        captureStillPicture();
+                    }
+                    break;
+                }
             }
         }
 
         @Override
-        public void onReady() {
-            System.out.println(">>>>>> READY ");
-            captureStillPicture();
-        }
-
-    };
-
-    /**
-     * A {@link CameraCaptureSession.CaptureCallback} for capturing a still picture.
-     */
-    private static abstract class PictureCaptureCallback
-            extends CameraCaptureSession.CaptureCallback {
-
-        static final int STATE_PREVIEW = 0;
-        static final int STATE_LOCKING = 1;
-        static final int STATE_LOCKED = 2;
-        static final int STATE_PRECAPTURE = 3;
-        static final int STATE_WAITING = 4;
-        static final int STATE_CAPTURING = 5;
-
-        private int mState;
-
-        PictureCaptureCallback() {
-        }
-
-        void setState(int state) {
-            mState = state;
-        }
-
-        @Override
         public void onCaptureProgressed(@NonNull CameraCaptureSession session,
-                                        @NonNull CaptureRequest request, @NonNull CaptureResult partialResult) {
+                                        @NonNull CaptureRequest request,
+                                        @NonNull CaptureResult partialResult) {
             process(partialResult);
         }
 
         @Override
         public void onCaptureCompleted(@NonNull CameraCaptureSession session,
-                                       @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
+                                       @NonNull CaptureRequest request,
+                                       @NonNull TotalCaptureResult result) {
             process(result);
         }
 
-        private void process(@NonNull CaptureResult result) {
-            switch (mState) {
-                case STATE_LOCKING: {
-                    System.out.println(">>>>>> STATE LOCKING ");
-                    Integer af = result.get(CaptureResult.CONTROL_AF_STATE);
-                    if (af == null) {
-                        System.out.println(">>>>>> AF STATE NULL");
-                        onReady();
-
-                    } else if (af == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED ||
-                            af == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED ||
-                            af == CaptureResult.CONTROL_AF_STATE_INACTIVE) {
-
-                        System.out.println(">>>>>> AF STATE VALID");
-
-                        Integer ae = result.get(CaptureResult.CONTROL_AE_STATE);
-                        if (ae == null || ae == CaptureResult.CONTROL_AE_STATE_CONVERGED) {
-                            System.out.println(">>>>>> AF CALLED READY");
-                            setState(STATE_CAPTURING);
-                            onReady();
-
-                        } else {
-                            System.out.println(">>>>>> AF PRECAPTURE");
-                            setState(STATE_LOCKED);
-                            onPrecaptureRequired();
-                        }
-                    }
-
-                    System.out.println(">>>>> AF STATE: " + af);
-                    break;
-                }
-                case STATE_PRECAPTURE: {
-
-                    System.out.println(">>>>>> STATE PRECAPTURE");
-                    Integer ae = result.get(CaptureResult.CONTROL_AE_STATE);
-                    if (ae == null || ae == CaptureResult.CONTROL_AE_STATE_PRECAPTURE ||
-                            ae == CaptureRequest.CONTROL_AE_STATE_FLASH_REQUIRED ||
-                            ae == CaptureResult.CONTROL_AE_STATE_CONVERGED) {
-                        setState(STATE_WAITING);
-                    }
-                    break;
-                }
-                case STATE_WAITING: {
-                    System.out.println(">>>>>> STATE WAITING ");
-
-                    Integer ae = result.get(CaptureResult.CONTROL_AE_STATE);
-                    if (ae == null || ae != CaptureResult.CONTROL_AE_STATE_PRECAPTURE) {
-                        setState(STATE_CAPTURING);
-                        onReady();
-                    }
-                    break;
-                }
-            }
-        }
-
-        /**
-         * Called when it is ready to take a still picture.
-         */
-        public abstract void onReady();
-
-        /**
-         * Called when it is necessary to run the precapture sequence.
-         */
-        public abstract void onPrecaptureRequired();
-
-    }
+    };
 
     private void captureStillPicture() {
         System.out.println(">>>>>>> CAPTURE STILL PICTURE ");
@@ -415,6 +362,19 @@ public class Camera2 extends CameraViewImpl {
         }
     }
 
+    private void runPrecaptureSequence() {
+        try {
+            // This is how to tell the camera to trigger.
+            mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
+                    CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
+            // Tell #mCaptureCallback to wait for the precapture sequence to be set.
+            mState = STATE_WAITING_PRECAPTURE;
+            mCaptureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
+                    mBackgroundHandler);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Unlock the focus. This method should be called when still image capture sequence is
@@ -425,14 +385,14 @@ public class Camera2 extends CameraViewImpl {
         mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
                 CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
         try {
+            updateAutoFocus();
+            updateFlash();
             mCaptureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
                     mBackgroundHandler);
-            updateFlash();
-            updateAutoFocus();
             // After this, the camera will go back to the normal state of preview.
+            mState = STATE_PREVIEW;
             mCaptureSession.setRepeatingRequest(mPreviewRequest, mCaptureCallback,
                     mBackgroundHandler);
-            mCaptureCallback.setState(PictureCaptureCallback.STATE_PREVIEW);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -446,7 +406,7 @@ public class Camera2 extends CameraViewImpl {
                 CameraMetadata.CONTROL_AF_TRIGGER_START);
         try {
             // Tell #mCaptureCallback to wait for the lock.
-            mCaptureCallback.setState(PictureCaptureCallback.STATE_LOCKING);
+            mState = STATE_WAITING_LOCK;
             mCaptureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
                     mBackgroundHandler);
         } catch (CameraAccessException e) {
