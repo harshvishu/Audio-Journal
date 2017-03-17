@@ -12,6 +12,7 @@ import android.view.SurfaceHolder;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by harsh_v on 3/1/17.
@@ -56,6 +57,9 @@ public class Camera1 extends CameraViewImpl {
     private int mDisplayOrientation;
 
     private int mSensorOrientation;
+
+    private final AtomicBoolean isPictureCaptureInProgress = new AtomicBoolean(false);
+
 
     Camera1(Callback callback, PreviewImpl preview) {
         super(callback, preview);
@@ -213,18 +217,20 @@ public class Camera1 extends CameraViewImpl {
     }
 
     private void takePictureInternal() {
-        try {
-            mCamera.takePicture(null, null, new Camera.PictureCallback() {
-                @Override
-                public void onPictureTaken(byte[] data, final Camera camera) {
-                    mCallback.onPictureTaken(data);
-                    camera.cancelAutoFocus();
-                    mCamera.startPreview();
-                    mCamera.setParameters(mCameraParameters);
-                }
-            });
-        } catch (Exception e) {
-            Log.e("CAMERA1", "unable to take picture", e);
+        if (!isPictureCaptureInProgress.getAndSet(true)) {
+            try {
+                mCamera.takePicture(null, null, new Camera.PictureCallback() {
+                    @Override
+                    public void onPictureTaken(byte[] data, final Camera camera) {
+                        isPictureCaptureInProgress.set(false);
+                        mCallback.onPictureTaken(data);
+                        camera.cancelAutoFocus();
+                        mCamera.startPreview();
+                    }
+                });
+            } catch (Exception e) {
+                Log.e("CAMERA1", "unable to take picture", e);
+            }
         }
     }
 
@@ -399,9 +405,9 @@ public class Camera1 extends CameraViewImpl {
 
     /**
      * Set the preview display rotation based on Device Orientation
-     *
+     * <p>
      * NOTE: We are using only portrait in our app
-     * */
+     */
     private int calcCameraPreviewRotation(int rotation) {
         if (mCameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
             return (360 - (mCameraInfo.orientation + rotation) % 360) % 360;
@@ -412,9 +418,9 @@ public class Camera1 extends CameraViewImpl {
 
     /**
      * sets orientation of images based on Motion Sensor
-     *
+     * <p>
      * NOTE: App must be in portrait position unless it won't give correct result
-     * */
+     */
     private int calcCameraImageRotation(int rotation) {
         // Ignore the passed value
         rotation = mSensorOrientation;

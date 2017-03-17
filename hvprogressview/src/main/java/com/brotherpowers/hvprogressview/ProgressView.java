@@ -1,18 +1,13 @@
 package com.brotherpowers.hvprogressview;
 
-import android.animation.Animator;
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.SweepGradient;
 import android.graphics.drawable.Drawable;
@@ -29,7 +24,8 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.animation.LinearInterpolator;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import java.lang.ref.WeakReference;
 
@@ -313,7 +309,6 @@ public class ProgressView extends View {
 
         RectF rectF = new RectF(x1, y1 - 4, x1, y1 + 4);
         canvas.drawRect(rectF, mTextPaint);
-
 
         canvas.restoreToCount(saveCount);
     }

@@ -19,15 +19,19 @@ import android.view.MenuItem;
 import com.brotherpowers.audiojournal.AudioRecorder.AudioRecorder;
 import com.brotherpowers.audiojournal.AudioRecorder.AudioRecordingFragment;
 import com.brotherpowers.audiojournal.Camera.PhotosFragment;
+import com.brotherpowers.audiojournal.Model.Attachment;
 import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Records.RecordsFragment;
 import com.brotherpowers.audiojournal.Reminder.ReminderListFragment;
+import com.brotherpowers.audiojournal.Utils.DBHelper;
+import com.brotherpowers.audiojournal.Utils.FileUtils;
 import com.brotherpowers.audiojournal.View.AJViewPager;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 
 
 public class MainActivity extends AppCompatActivity
@@ -77,6 +81,12 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+        // TODO: 3/16/17 TEMPORARY CODE
+
+        System.out.println(">>>> IMAGE COUNT <<< : " + DBHelper.filterFilesForType(FileUtils.Type.IMAGE, Realm.getDefaultInstance().where(Attachment.class)).count());
+
     }
 
 

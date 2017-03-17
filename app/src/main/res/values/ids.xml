@@ -12,4 +12,5 @@
     <item name="action.flash" type="id"/>
     <item name="action_more" type="id"/>
     <item name="label_title" type="id"/>
+    <item name="action.switch_camera" type="id"/>
 </resources>

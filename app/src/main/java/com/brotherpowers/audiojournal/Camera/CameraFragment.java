@@ -312,6 +312,16 @@ public class CameraFragment extends Fragment {
         }
     }
 
+    @SuppressWarnings("WrongConstant")
+    @OnClick(R.id.action_switch_camera)
+    void switchCamera() {
+        if (_cameraView.isCameraOpened()) {
+            int facing = 1 - _cameraView.getFacing();
+
+            _cameraView.setFacing(facing);
+        }
+    }
+
     private Handler getBackgroundHandler() {
         if (mBackgroundHandler == null) {
             HandlerThread thread = new HandlerThread("background");

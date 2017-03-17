@@ -1,6 +1,9 @@
 package com.brotherpowers.audiojournal.Records;
 
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -8,6 +11,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,15 +19,21 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
+import android.widget.TimePicker;
 
 import com.brotherpowers.audiojournal.AudioRecorder.AudioPlayer;
 import com.brotherpowers.audiojournal.AudioRecorder.AudioRecorder;
 import com.brotherpowers.audiojournal.Model.DataEntry;
+import com.brotherpowers.audiojournal.Model.Reminder;
 import com.brotherpowers.audiojournal.R;
-import com.brotherpowers.audiojournal.Reminder.Alarm;
+import com.brotherpowers.audiojournal.Utils.Constants;
 import com.brotherpowers.audiojournal.View.RecyclerViewDecorator;
 
 import java.io.File;
+import java.text.MessageFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
@@ -45,6 +55,7 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
     private RecordsAdapter recordsAdapter;
     private Realm realm;
     private OnFragmentInteractionListener interactionListener;
+
     public RecordsFragment() {
         // Required empty public constructor
     }
@@ -145,10 +156,13 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
         DataEntry entry = recordsAdapter.getItem(position);
         assert entry != null;
 
-        realm.executeTransaction(r -> {
+        DialogFragment fragment = ReminderDatePickerFragment.newInstance(entry.getId());
+        fragment.show(getChildFragmentManager(), "DialogFragment");
+
+        /*realm.executeTransaction(r -> {
             entry.setRemindAt(System.currentTimeMillis() + 2000);
         });
-        Alarm.set(getContext(), entry);
+        Alarm.set(getContext(), entry);*/
     }
 
     @Override
@@ -201,5 +215,85 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
         boolean startTextEditor(@NonNull DataEntry entry);
 
         boolean startCamera(@NonNull DataEntry entry);
+    }
+
+
+    public final static class ReminderDatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+        public static ReminderDatePickerFragment newInstance(long entry_id) {
+
+            Bundle args = new Bundle();
+            args.putLong(Constants.KEYS.entry_id, entry_id);
+
+            ReminderDatePickerFragment fragment = new ReminderDatePickerFragment();
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        // Realm Instance
+        private final Realm realm = Realm.getDefaultInstance();
+
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            final DataEntry entry = realm.where(DataEntry.class).equalTo(Constants.KEYS.id, getArguments().getLong(Constants.KEYS.entry_id)).findFirst();
+            final Reminder reminder = entry.getRemindAt();
+
+            Calendar calendar = Calendar.getInstance();
+
+            final Long timeInMillis = reminder.getRemindAt();
+            if (null != timeInMillis) {
+                final Date date = new Date(timeInMillis);
+                calendar.setTime(date);
+            }
+
+            final int year = calendar.get(Calendar.YEAR);
+            final int month = calendar.get(Calendar.MONTH);
+            final int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+            DatePickerDialog dialog = new DatePickerDialog(getContext(), this, year, month, day);
+            dialog.getDatePicker().setMinDate(System.currentTimeMillis());
+            return dialog;
+        }
+
+        @Override
+        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+            System.out.println(MessageFormat.format("year {0}, month {1}, day {2}", year, month, dayOfMonth));
+
+            DialogFragment timeFragment = ReminderTimePickerDialog.newInstance(getArguments().getLong(Constants.KEYS.entry_id));
+            timeFragment.show(getChildFragmentManager(), "DialogFragment");
+        }
+    }
+
+    public static final class ReminderTimePickerDialog extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
+        public static ReminderTimePickerDialog newInstance(long entry_id) {
+
+            Bundle args = new Bundle();
+            args.putLong(Constants.KEYS.entry_id, entry_id);
+            args.putSerializable("date", Calendar.getInstance());
+
+            ReminderTimePickerDialog fragment = new ReminderTimePickerDialog();
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            Calendar calendar = Calendar.getInstance();
+
+            TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), this,
+                    calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false);
+
+
+            return timePickerDialog;
+
+        }
+
+        @Override
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+
+        }
     }
 }

@@ -19,5 +19,6 @@ public final class Constants {
     public static final class KEYS {
         public static final String entry_id = "entry_id";
         public static final String task_id = "task_id";
+        public static final String id = "id";
     }
 }

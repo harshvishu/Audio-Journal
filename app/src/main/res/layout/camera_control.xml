@@ -45,17 +45,32 @@
 
     </RelativeLayout>
 
-    <com.wefika.horizontalpicker.HorizontalPicker
-        android:id="@+id/color_mode_picker"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ellipsize="marquee"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:marqueeRepeatLimit="2"
-        android:paddingBottom="16dp"
-        android:paddingTop="16dp"
-        android:textColor="@color/primaryTextDark"
-        android:textSize="16sp"
-        app:sideItems="1"/>
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@id/action.switch_camera"
+            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/flash"
+            app:srcCompat="@drawable/ic_switch_camera"/>
+
+        <com.wefika.horizontalpicker.HorizontalPicker
+            android:id="@+id/color_mode_picker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:marqueeRepeatLimit="2"
+            android:paddingBottom="16dp"
+            android:paddingTop="16dp"
+            android:textColor="@color/primaryTextDark"
+            android:textSize="16sp"
+            app:sideItems="1"/>
+    </LinearLayout>
+
 </LinearLayout>
