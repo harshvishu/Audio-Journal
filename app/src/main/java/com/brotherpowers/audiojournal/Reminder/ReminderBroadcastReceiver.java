@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.WakefulBroadcastReceiver;
 
+import com.brotherpowers.audiojournal.Utils.Constants;
+
 public class ReminderBroadcastReceiver extends WakefulBroadcastReceiver {
-    private static final String TAG = "REMINDER";
+    private static final String TAG = "ReminderBroadcastReceiver";
 
     public ReminderBroadcastReceiver() {
     }
@@ -13,7 +15,9 @@ public class ReminderBroadcastReceiver extends WakefulBroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        String s = intent.getStringExtra("data");
+        System.out.println(">>>>>> REMINDER BROADCAST RECEIVED");
+
+        String s = intent.getStringExtra(Constants.KEYS.data);
 
         ReminderNotification.startActionPlay(context, s);
 

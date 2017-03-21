@@ -24,6 +24,7 @@ import com.brotherpowers.audiojournal.AudioRecorder.AudioPlayer;
 import com.brotherpowers.audiojournal.Model.Attachment;
 import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.brotherpowers.audiojournal.R;
+import com.brotherpowers.audiojournal.Utils.Constants;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -102,17 +103,17 @@ public class ReminderNotification extends Service {
         try {
             Gson gson = new Gson();
             JsonObject json = gson.fromJson(data, JsonObject.class);
-            if (json.has("id")) {
-                long id = json.get("id").getAsLong();
+            if (json.has(Constants.KEYS.id)) {
+                long id = json.get(Constants.KEYS.id).getAsLong();
 
                 DataEntry dataEntry = Realm.getDefaultInstance().where(DataEntry.class)
-                        .equalTo("id", id).findFirst();
+                        .equalTo(Constants.KEYS.id, id).findFirst();
 
                 assert dataEntry != null;
 
                 // Remove the reminder time
                 Realm realm = Realm.getDefaultInstance();
-                realm.executeTransaction(r -> dataEntry.setRemindAt(null));
+                realm.executeTransaction(r -> dataEntry.remindAt(null));
 
                 Attachment attachment = dataEntry.audioFile();
                 File file = attachment.file(context);
@@ -136,7 +137,6 @@ public class ReminderNotification extends Service {
                         .setAutoCancel(false);
 
                 Notification notification = builder.build();
-
 
                 AudioPlayer.sharedInstance.play(file, new AudioPlayer.PlaybackListener() {
                     @Override

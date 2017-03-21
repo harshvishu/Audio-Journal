@@ -1,5 +1,20 @@
 package com.brotherpowers.audiojournal.Model;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
+import android.util.Log;
+
+import com.brotherpowers.audiojournal.Reminder.ReminderBroadcastReceiver;
+import com.brotherpowers.audiojournal.Utils.Constants;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import java.util.Date;
+
+import io.realm.Realm;
 import io.realm.RealmObject;
 
 /**
@@ -7,6 +22,8 @@ import io.realm.RealmObject;
  */
 
 public class Reminder extends RealmObject {
+    private static final String TAG = "REMINDER";
+
     private Long remind_at = null;
     private boolean is_set = false;
 
@@ -19,7 +36,7 @@ public class Reminder extends RealmObject {
         return this;
     }
 
-    public boolean is_set() {
+    public boolean isSet() {
         return is_set;
     }
 

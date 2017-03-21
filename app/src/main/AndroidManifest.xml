@@ -66,6 +66,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.brotherpowers.audiojournal.Main.MainActivity"/>
         </activity>
+
+        <receiver
+            android:name=".Reminder.BroadcastRebootReceiver"
+            android:enabled="true"
+            android:exported="false">
+        </receiver>
     </application>
 
 </manifest>

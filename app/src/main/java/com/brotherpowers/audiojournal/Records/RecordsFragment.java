@@ -1,10 +1,9 @@
 package com.brotherpowers.audiojournal.Records;
 
 
-import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,14 +12,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.DatePicker;
-import android.widget.TimePicker;
+import android.view.WindowManager;
 
 import com.brotherpowers.audiojournal.AudioRecorder.AudioPlayer;
 import com.brotherpowers.audiojournal.AudioRecorder.AudioRecorder;
@@ -28,11 +28,10 @@ import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.brotherpowers.audiojournal.Model.Reminder;
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Utils.Constants;
+import com.brotherpowers.audiojournal.View.DateTimePicker;
 import com.brotherpowers.audiojournal.View.RecyclerViewDecorator;
 
 import java.io.File;
-import java.text.MessageFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -160,7 +159,7 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
         fragment.show(getChildFragmentManager(), "DialogFragment");
 
         /*realm.executeTransaction(r -> {
-            entry.setRemindAt(System.currentTimeMillis() + 2000);
+            entry.remindAt(System.currentTimeMillis() + 2000);
         });
         Alarm.set(getContext(), entry);*/
     }
@@ -218,7 +217,7 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
     }
 
 
-    public final static class ReminderDatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+    public final static class ReminderDatePickerFragment extends DialogFragment {
         public static ReminderDatePickerFragment newInstance(long entry_id) {
 
             Bundle args = new Bundle();
@@ -231,7 +230,7 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
 
         // Realm Instance
         private final Realm realm = Realm.getDefaultInstance();
-
+        private DateTimePicker dateTimePicker;
 
         @NonNull
         @Override
@@ -240,60 +239,95 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
             final DataEntry entry = realm.where(DataEntry.class).equalTo(Constants.KEYS.id, getArguments().getLong(Constants.KEYS.entry_id)).findFirst();
             final Reminder reminder = entry.getRemindAt();
 
-            Calendar calendar = Calendar.getInstance();
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setPositiveButton(android.R.string.ok, null)
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .setNeutralButton(android.R.string.cancel, null);
+            builder.create();
+
+            dateTimePicker = (DateTimePicker) LayoutInflater.from(getContext()).inflate(R.layout.date_time_picker, null);
+            builder.setView(dateTimePicker);
 
             final Long timeInMillis = reminder.getRemindAt();
-            if (null != timeInMillis) {
+            final long currentTime = System.currentTimeMillis();
+            dateTimePicker.setMinDate(currentTime);
+
+            if (null != timeInMillis && timeInMillis > currentTime) {
                 final Date date = new Date(timeInMillis);
-                calendar.setTime(date);
+                dateTimePicker.setDate(date);
+
+                // If we have a valid reminder then we can also cancel it
+                builder.setNeutralButton(R.string.Remove, null);
             }
 
-            final int year = calendar.get(Calendar.YEAR);
-            final int month = calendar.get(Calendar.MONTH);
-            final int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-            DatePickerDialog dialog = new DatePickerDialog(getContext(), this, year, month, day);
-            dialog.getDatePicker().setMinDate(System.currentTimeMillis());
-            return dialog;
-        }
-
-        @Override
-        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-            System.out.println(MessageFormat.format("year {0}, month {1}, day {2}", year, month, dayOfMonth));
-
-            DialogFragment timeFragment = ReminderTimePickerDialog.newInstance(getArguments().getLong(Constants.KEYS.entry_id));
-            timeFragment.show(getChildFragmentManager(), "DialogFragment");
-        }
-    }
-
-    public static final class ReminderTimePickerDialog extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
-        public static ReminderTimePickerDialog newInstance(long entry_id) {
-
-            Bundle args = new Bundle();
-            args.putLong(Constants.KEYS.entry_id, entry_id);
-            args.putSerializable("date", Calendar.getInstance());
-
-            ReminderTimePickerDialog fragment = new ReminderTimePickerDialog();
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @NonNull
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            Calendar calendar = Calendar.getInstance();
-
-            TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), this,
-                    calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false);
-
-
-            return timePickerDialog;
+            return builder.create();
 
         }
 
         @Override
-        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+        public void onResume() {
+            super.onResume();
 
+            AlertDialog dialog = (AlertDialog) getDialog();
+            if (dialog != null) {
+                dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(v -> {
+
+                    switch (dateTimePicker.getPicker()) {
+                        case DateTimePicker.PICKER_DATE_PICKER:
+                            dateTimePicker.showTimePicker();
+                            break;
+                        case DateTimePicker.PICKER_TIME_PICKER:
+
+                            final DataEntry entry = realm.where(DataEntry.class)
+                                    .equalTo(Constants.KEYS.id, getArguments().getLong(Constants.KEYS.entry_id))
+                                    .findFirst();
+
+                            //
+                            System.out.println(">>>> DATE PICKER DATA: " + DateUtils.formatDateTime(getContext(), dateTimePicker.getTime().getTime(), DateUtils.FORMAT_NUMERIC_DATE));
+
+                            // Enable reminder
+                            entry.enableReminder(getContext());
+                            // Persist
+                            realm.executeTransaction(r -> entry.remindAt(dateTimePicker.getTime().getTime()));
+
+                            dialog.dismiss();
+                            break;
+                    }
+                });
+
+                // Dismiss on Cancel click
+                dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener(v -> dialog.dismiss());
+
+                dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setOnClickListener(v -> {
+                    final DataEntry entry = realm.where(DataEntry.class)
+                            .equalTo(Constants.KEYS.id, getArguments().getLong(Constants.KEYS.entry_id))
+                            .findFirst();
+
+                    // Cancel the existing reminder
+                    entry.disableReminder(getContext());
+                    // Remove the existing reminder
+                    realm.executeTransaction(r -> entry.remindAt(null));
+
+
+                });
+
+            }
+        }
+
+        @SuppressWarnings("ConstantConditions")
+        @Override
+        public void onStart() {
+            try {
+                Dialog dialog = getDialog();
+                if (dialog != null) {
+                    dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+                    dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                    dialog.setCanceledOnTouchOutside(false);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            super.onStart();
         }
     }
 }

@@ -31,7 +31,7 @@
             android:layout_centerVertical="true"
             android:layout_gravity="center"
             android:background="?attr/selectableItemBackgroundBorderless"
-            app:srcCompat="@drawable/camera_default"/>
+            app:srcCompat="@drawable/camera_s2l_anim"/>
 
         <ImageView
             android:id="@+id/imageView"

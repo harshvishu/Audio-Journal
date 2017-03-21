@@ -60,6 +60,10 @@ public class Camera1 extends CameraViewImpl {
 
     private final AtomicBoolean isPictureCaptureInProgress = new AtomicBoolean(false);
 
+    private String mColorEffect = Camera.Parameters.EFFECT_NONE;
+
+    private boolean hdr = false;
+
 
     Camera1(Callback callback, PreviewImpl preview) {
         super(callback, preview);
@@ -267,7 +271,10 @@ public class Camera1 extends CameraViewImpl {
 
     @Override
     void setColorEffect(int position) {
-
+        if (isCameraOpened()) {
+            mColorEffect = getSupportedColorEffects().valueAt(position);
+            mCameraParameters.setColorEffect(mColorEffect);
+        }
     }
 
     @Override
@@ -322,6 +329,12 @@ public class Camera1 extends CameraViewImpl {
         if (mAspectRatio == null) {
             mAspectRatio = Constants.DEFAULT_ASPECT_RATIO;
         }
+        // Color Effect
+        mCameraParameters.setColorEffect(mColorEffect);
+
+        // HDR MODE
+        // TODO: 3/17/17 PENDING
+
         adjustCameraParameters();
         mCamera.setDisplayOrientation(calcCameraPreviewRotation(mDisplayOrientation));
         mCallback.onCameraOpened();
@@ -426,7 +439,7 @@ public class Camera1 extends CameraViewImpl {
         rotation = mSensorOrientation;
 
         if (mCameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-            int calculation = (360 - (mCameraInfo.orientation + rotation + (rotation % 180 == 0 ? 180 : 0)) % 360) % 360;
+            final int calculation = (360 - (mCameraInfo.orientation + rotation + (rotation % 180 == 0 ? 180 : 0)) % 360) % 360;
             return calculation;
         } else {  // back-facing
             return (mCameraInfo.orientation - rotation + 360) % 360;

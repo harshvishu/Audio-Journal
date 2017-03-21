@@ -194,30 +194,33 @@ public class CameraFragment extends Fragment {
                     case MotionEvent.ACTION_DOWN: {
                         final Animatable animatable;
                         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                            final AnimatedVectorDrawable animatedDrawable = (AnimatedVectorDrawable) getContext().getDrawable(R.drawable.camera_expanded_animated_vector);
-                            _imageButton.setImageDrawable(animatedDrawable);
+                            final AnimatedVectorDrawable animatedDrawable = (AnimatedVectorDrawable) getContext().getDrawable(R.drawable.camera_s2l_anim);
                             animatable = animatedDrawable;
+                            animatable.start();
+                            _imageButton.setImageDrawable(animatedDrawable);
                         } else {
-                            final AnimatedVectorDrawableCompat drawableCompat = AnimatedVectorDrawableCompat.create(getContext(), R.drawable.camera_expanded_animated_vector);
-                            _imageButton.setImageDrawable(drawableCompat);
+                            final AnimatedVectorDrawableCompat drawableCompat = AnimatedVectorDrawableCompat.create(getContext(), R.drawable.camera_s2l_anim);
                             animatable = drawableCompat;
+                            animatable.start();
+                            _imageButton.setImageDrawable(drawableCompat);
                         }
 
-                        animatable.start();
                     }
                     break;
                     case MotionEvent.ACTION_UP: {
                         final Animatable animatable;
                         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                            final AnimatedVectorDrawable animatedDrawable = (AnimatedVectorDrawable) getContext().getDrawable(R.drawable.camera_shrink_aimation);
-                            _imageButton.setImageDrawable(animatedDrawable);
+                            final AnimatedVectorDrawable animatedDrawable = (AnimatedVectorDrawable) getContext().getDrawable(R.drawable.camera_l2s_anim);
                             animatable = animatedDrawable;
+                            animatable.start();
+                            _imageButton.setImageDrawable(animatedDrawable);
                         } else {
-                            final AnimatedVectorDrawableCompat drawableCompat = AnimatedVectorDrawableCompat.create(getContext(), R.drawable.camera_shrink_aimation);
-                            _imageButton.setImageDrawable(drawableCompat);
+                            final AnimatedVectorDrawableCompat drawableCompat = AnimatedVectorDrawableCompat.create(getContext(), R.drawable.camera_l2s_anim);
                             animatable = drawableCompat;
+                            animatable.start();
+                            _imageButton.setImageDrawable(drawableCompat);
                         }
-                        animatable.start();
+//                        animatable.start();
                     }
                     break;
                 }

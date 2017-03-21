@@ -163,6 +163,8 @@ public class Camera2 extends CameraViewImpl {
         if (!isCameraOpened() || !mPreview.isReady() || mImageReader == null) {
             return;
         }
+        System.out.println(">>>> CALL CAPTURE SESSION CREATE  <<<<");
+
         Size previewSize = chooseOptimalSize();
         mPreview.setBufferSize(previewSize.getWidth(), previewSize.getHeight());
         Surface surface = mPreview.getSurface();
@@ -187,12 +189,19 @@ public class Camera2 extends CameraViewImpl {
 
     private CameraCaptureSession.StateCallback mSessionCallback = new CameraCaptureSession.StateCallback() {
 
+
         @Override
         public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
             // The camera is already closed
             if (null == mCamera) {
                 return;
             }
+            /*
+            // TODO: 3/17/17 try luck
+            if (mCaptureSession != null) {
+                mCaptureSession.close();
+                mCaptureSession = null;
+            }*/
 
             // When the session is ready, we start displaying the preview.
             mCaptureSession = cameraCaptureSession;
@@ -208,6 +217,10 @@ public class Camera2 extends CameraViewImpl {
                         mCaptureCallback, mBackgroundHandler);
             } catch (CameraAccessException e) {
                 e.printStackTrace();
+            }catch (IllegalStateException e){
+                Log.e(TAG, "onConfigured: capture session closed", e);
+                // TODO: 3/17/17 hit & trial
+                openCamera();
             }
         }
 
@@ -411,6 +424,9 @@ public class Camera2 extends CameraViewImpl {
                     mBackgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
+        } catch (IllegalStateException e) {
+            Log.e(TAG, "lockFocus: capture session closed", e);
+            openCamera();
         }
     }
 
