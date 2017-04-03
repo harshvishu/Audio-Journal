@@ -80,12 +80,15 @@ public class AudioPlayer {
             });
 
             // Send progress details in an interval of second/3
-            Disposable disposable = Observable.interval(1000 / 3, TimeUnit.MILLISECONDS, Schedulers.io())
+            Disposable disposable = Observable.interval(1000 / 30, TimeUnit.MILLISECONDS, Schedulers.io())
                     .subscribeWith(new DisposableObserver<Long>() {
                         @Override
                         public void onNext(Long value) {
                             if (mediaPlayer != null && playbackListener != null) {
-                                playbackListener.playbackProgress(mediaPlayer.getCurrentPosition(), id, position);
+
+                                System.out.println(" Duration : " + mediaPlayer.getDuration() + " total : " + mediaPlayer.getCurrentPosition() + " result : " + (float) mediaPlayer.getCurrentPosition() / (float) mediaPlayer.getDuration());
+
+                                playbackListener.playbackProgress((float) mediaPlayer.getCurrentPosition() / (float) mediaPlayer.getDuration(), id, position);
                             }
                         }
 

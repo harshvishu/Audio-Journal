@@ -1,5 +1,8 @@
 package com.brotherpowers.waveformview;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -11,6 +14,8 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
@@ -52,7 +57,7 @@ public class WaveformView extends View {
 
     private int mMode;
     private int mAudioLength;
-    private int mMarkerPosition;
+    private float markerPosition;
     private int mSampleRate;
     private int mChannels;
     private short[] mSamples;
@@ -72,6 +77,8 @@ public class WaveformView extends View {
     private int height;
     private float xStep;
     private float centerY;
+
+    private ObjectAnimator animator;
 
     private void init(Context context, AttributeSet attrs, int defStyle) {
         final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.WaveformView, defStyle, 0);
@@ -138,10 +145,10 @@ public class WaveformView extends View {
             canvas.drawLine(0, centerY, width, centerY, mWaveFillPaint);
             canvas.drawPath(waveformPath, mWaveFillPaint);
             // Marker
-            if (mMarkerPosition > -1 && mMarkerPosition <= width && playbackCanvas != null) {
-                playbackCanvas.drawLine(0, centerY, xStep * mMarkerPosition, centerY, mWaveFillPaint);
+            if (markerPosition > -1 && markerPosition <= width && playbackCanvas != null) {
+                playbackCanvas.drawLine(0, centerY, /*xStep **/ markerPosition, centerY, mWaveFillPaint);
                 playbackCanvas.drawPath(waveformPath, mWaveFillPaint);
-                playbackCanvas.drawRect(drawRect.left, 0, xStep * mMarkerPosition, height, mProgressPaint);
+                playbackCanvas.drawRect(drawRect.left, 0, /*xStep **/ markerPosition, height, mProgressPaint);
                 canvas.drawBitmap(playbackBitmap, 0, 0, mMarkerPaint);
             }
         }
@@ -167,13 +174,68 @@ public class WaveformView extends View {
         return this;
     }
 
-    public int getMarkerPosition() {
-        return mMarkerPosition;
+    public float getMarkerPosition() {
+        return markerPosition;
     }
 
-    public void setMarkerPosition(int position) {
-        this.mMarkerPosition = position;
-        postInvalidate();
+    private Handler handler = new Handler(Looper.getMainLooper());
+
+    // Progress between 0.0f to 1.0f
+    public void setProgress(final float progress) {
+        final float position = width * progress;
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                setMarkerPosition(position);
+                postInvalidate();
+            }
+        });
+
+
+       /* handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (animator != null && animator.isRunning()) {
+                    animator.cancel();
+                }
+
+                animator = ObjectAnimator.ofFloat(this, "markerPosition", markerPosition, position);
+                animator.setDuration(1000 / 3);
+                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        postInvalidate();
+                    }
+                });
+                animator.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        setMarkerPosition(position);
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+
+                    }
+                });
+                animator.start();
+            }
+        });*/
+    }
+
+
+    public void setMarkerPosition(float markerPosition) {
+        this.markerPosition = markerPosition;
     }
 
     public int getAudioLength() {
@@ -227,7 +289,7 @@ public class WaveformView extends View {
             mHistoricalData = temp;
             postInvalidate();
         } else if (mMode == MODE_PLAYBACK) {
-            mMarkerPosition = -1;
+            markerPosition = Long.MIN_VALUE;
             xStep = width / (mAudioLength * 1.0f);
             createPlaybackWaveform();
         }
@@ -350,7 +412,10 @@ public class WaveformView extends View {
     }
 
     public void reset() {
-        mMarkerPosition = -1;
+        if (animator != null && animator.isRunning()) {
+            animator.cancel();
+        }
+        markerPosition = -1f;
         playbackBitmap = null;
         playbackCanvas = null;
         onSamplesChanged();

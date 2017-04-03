@@ -91,11 +91,8 @@ public class ReminderNotification extends Service {
         Handler handler = new Handler(Looper.getMainLooper());
         handler.post(() -> Toast.makeText(this, "Alarm " + json, Toast.LENGTH_SHORT).show());
 
-
         //// TODO: 11/29/16 temp
         playSound(json, intent, this);
-
-
     }
 
     private Uri playSound(String data, Intent intent, Context context) {

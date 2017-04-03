@@ -22,8 +22,6 @@ import io.realm.RealmObject;
  */
 
 public class Reminder extends RealmObject {
-    private static final String TAG = "REMINDER";
-
     private Long remind_at = null;
     private boolean is_set = false;
 
@@ -31,8 +29,11 @@ public class Reminder extends RealmObject {
         return remind_at;
     }
 
-    public Reminder setRemindAt(Long remind_at) {
+    Reminder setRemindAt(Long remind_at) {
         this.remind_at = remind_at;
+
+        // If remind_at in NULL then disable alarm otherwise new reminder is set the it is enabled by default
+        is_set = remind_at != null;
         return this;
     }
 
@@ -40,8 +41,9 @@ public class Reminder extends RealmObject {
         return is_set;
     }
 
-    public Reminder set(boolean is_set) {
-        this.is_set = is_set;
-        return this;
+    public boolean enable(boolean enable) {
+        is_set = enable && remind_at != null;
+        return is_set;
     }
+
 }

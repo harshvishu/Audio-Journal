@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.text.format.DateUtils;
 import android.util.Log;
 
 import com.brotherpowers.audiojournal.Reminder.ReminderBroadcastReceiver;
@@ -95,8 +96,7 @@ public class DataEntry extends RealmObject implements RealmDelegate {
      * set reminder time & Activate
      */
     public void remindAt(Long remind_at) {
-        this.reminder.setRemindAt(remind_at)
-                .set(true);
+        this.reminder.setRemindAt(remind_at);
     }
 
     @Override
@@ -121,6 +121,7 @@ public class DataEntry extends RealmObject implements RealmDelegate {
     /**
      * Set a pending alarm
      */
+    // TODO: 3/25/17 FIXME : IMPROVE,  Merge reminder into one function
     public void enableReminder(Context context) {
         final String TAG = "REMINDER";
 
@@ -169,12 +170,13 @@ public class DataEntry extends RealmObject implements RealmDelegate {
         }
 
 
-        Log.v(TAG, ">>> Alarm set : " + new Date(time).toString() + "current time: " + new Date(System.currentTimeMillis()).toString());
+        Log.v(TAG, ">>> Alarm set : " + DateUtils.formatDateTime(context, remind_at, DateUtils.FORMAT_NUMERIC_DATE) + "current time: " + new Date(System.currentTimeMillis()).toString());
     }
 
     /**
      * Cancel the existing alarm
      */
+    // TODO: 3/25/17 FIXME : IMPROVE, Merge reminder into one function
     public void disableReminder(Context context) {
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);

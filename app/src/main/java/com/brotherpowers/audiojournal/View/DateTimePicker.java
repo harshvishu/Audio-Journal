@@ -31,7 +31,6 @@ public class DateTimePicker extends RelativeLayout implements DatePicker.OnDateC
     public static final int PICKER_TIME_PICKER = 1;
 
 
-
     @IntDef({PICKER_DATE_PICKER, PICKER_TIME_PICKER})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Picker {
@@ -147,12 +146,13 @@ public class DateTimePicker extends RelativeLayout implements DatePicker.OnDateC
 
     @Override
     public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-
+        calendar.set(year, monthOfYear, dayOfMonth);
     }
 
     @Override
     public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-
+        calendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
+        calendar.set(Calendar.MINUTE,minute);
     }
 
 }

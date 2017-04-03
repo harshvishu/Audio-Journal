@@ -205,8 +205,10 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
     @Override
     public void playbackProgress(float progress, long id, int position) {
         RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(position);
+        System.out.println(">>>>> progress " + progress);
+
         if (holder instanceof RecordsAdapter.VHAudioRecord) {
-            ((RecordsAdapter.VHAudioRecord) holder).waveformView.setMarkerPosition((int) (progress * 1000) / AudioRecorder.SAMPLING_RATE);
+            ((RecordsAdapter.VHAudioRecord) holder).waveformView.setProgress(progress);
         }
     }
 
@@ -241,9 +243,7 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setPositiveButton(android.R.string.ok, null)
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .setNeutralButton(android.R.string.cancel, null);
-            builder.create();
+                    .setNegativeButton(android.R.string.cancel, null);
 
             dateTimePicker = (DateTimePicker) LayoutInflater.from(getContext()).inflate(R.layout.date_time_picker, null);
             builder.setView(dateTimePicker);
@@ -308,7 +308,7 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
                     // Remove the existing reminder
                     realm.executeTransaction(r -> entry.remindAt(null));
 
-
+                    dialog.dismiss();
                 });
 
             }

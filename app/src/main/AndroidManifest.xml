@@ -72,6 +72,14 @@
             android:enabled="true"
             android:exported="false">
         </receiver>
+        <receiver
+            android:name=".Reminder.TimeChangeReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_TIME_TICK"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

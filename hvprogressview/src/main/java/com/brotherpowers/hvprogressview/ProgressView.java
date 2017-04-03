@@ -1,6 +1,5 @@
 package com.brotherpowers.hvprogressview;
 
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
@@ -11,12 +10,10 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.SweepGradient;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.text.BoringLayout;
 import android.text.Layout;
@@ -24,8 +21,6 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageButton;
 
 import java.lang.ref.WeakReference;
 
@@ -62,8 +57,8 @@ public class ProgressView extends View {
     private RectF bounds;
 
     private float progressWith;
-    private float startAngle;
-    private float endAngle;
+    private float startAngle = -90;
+    private float endAngle = 360;
     private float sweepAngle;           // Current angle from progress
     private float knobOffset;           // Offset for Knob
     private int knobRadius;
@@ -104,11 +99,11 @@ public class ProgressView extends View {
         int defaultWidth = context.getResources().getDimensionPixelSize(R.dimen.defaultProgressWidth);
         progressWith = array.getDimensionPixelSize(R.styleable.ProgressView_progressWidth, defaultWidth);
 
-        float startOffset = context.getResources().getInteger(R.integer.startAngle);
-        startAngle = array.getFloat(R.styleable.ProgressView_startAngle, startOffset);
+//        float startOffset = context.getResources().getInteger(R.integer.startAngle);
+        startAngle = array.getFloat(R.styleable.ProgressView_startAngle, startAngle);
 
-        float endOffset = context.getResources().getInteger(R.integer.endAngle);
-        endAngle = array.getFloat(R.styleable.ProgressView_endAngle, endOffset);
+//        float endOffset = context.getResources().getInteger(R.integer.endAngle);
+        endAngle = array.getFloat(R.styleable.ProgressView_endAngle, endAngle);
 
         initialSweepAngle = array.getFloat(R.styleable.ProgressView_sweepAngle, initialSweepAngle);
         sweepAngle = initialSweepAngle;
@@ -259,6 +254,8 @@ public class ProgressView extends View {
         drawKnob(canvas, angle, radius);
 
 
+        drawRect(bounds, mTextPaint, canvas, startAngle, 20, 4);
+        drawRect(bounds, mTextPaint, canvas, startAngle + endAngle, 20, 4);
     }
 
     private void drawMeteredLines(Canvas canvas, float radius) {
@@ -284,10 +281,6 @@ public class ProgressView extends View {
      * Draw Arc for progress & background
      */
     private void drawCurves(Canvas canvas) {
-//        canvas.drawArc(bounds, startAngle, endAngle, false, mBackgroundPaint);
-        // draw
-
-//        canvas.drawOval(bounds, mBackgroundPaint);
         canvas.drawArc(bounds, startAngle, endAngle, false, mBackgroundPaint);
         canvas.drawArc(bounds, startAngle, sweepAngle, false, mProgressPaint);
     }
@@ -299,17 +292,25 @@ public class ProgressView extends View {
         int x1 = (int) (radius * Math.cos(angle) + bounds.centerX());
         int y1 = (int) (radius * Math.sin(angle) + bounds.centerY());
 
+        drawableKnob.setBounds(x1 - knobRadius, y1 - knobRadius, x1 + knobRadius, y1 + knobRadius);
+
+    }
+
+    /**
+     * Draw custom rect
+     */
+    private void drawRect(RectF bounds, Paint paint, Canvas canvas, float angleInDegrees, int width, int height) {
+        double angle = angleInRad(angleInDegrees); // Angle
+        float radius = (bounds.width() / 2); // Radius
+
+        int x1 = (int) (radius * Math.cos(angle) + bounds.centerX());
+        int y1 = (int) (radius * Math.sin(angle) + bounds.centerY());
+
         int saveCount = canvas.getSaveCount();
         canvas.save();
-
-
-        drawableKnob.setBounds(x1 - knobRadius, y1 - knobRadius, x1 + knobRadius, y1 + knobRadius);
-        canvas.rotate(startAngle + sweepAngle, x1, y1);
-//        drawableKnob.draw(canvas);
-
-        RectF rectF = new RectF(x1, y1 - 4, x1, y1 + 4);
-        canvas.drawRect(rectF, mTextPaint);
-
+        canvas.rotate(angleInDegrees, x1, y1);
+        RectF rectF = new RectF(x1 - width, y1 - height, x1 + width, y1 + height);
+        canvas.drawRect(rectF, paint);
         canvas.restoreToCount(saveCount);
     }
 
@@ -350,58 +351,17 @@ public class ProgressView extends View {
         this.max = max;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     void setProgress(final float progress, @Nullable String text) {
         if (!TextUtils.isEmpty(text)) {
             this.text = text;
         }
         this.sweepAngle = calculateAngle(progress);
         uiListener.update();
-//        postInvalidate();
-
-        /*if (progressAnimator != null && progressAnimator.isRunning()) {
-            progressAnimator.cancel();
-        }
-
-        progressAnimator = ObjectAnimator.ofFloat(this, "sweepAngle", sweepAngle, calculateAngle(progress));
-//        progressAnimator.setFloatValues(calculateAngle(progress));
-        progressAnimator.setInterpolator(new LinearInterpolator());
-        progressAnimator.setDuration(1000 / 30);
-        progressAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                uiListener.update();
-            }
-        });
-
-        progressAnimator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                sweepAngle = calculateAngle(progress);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
-        progressAnimator.start();*/
     }
 
     void setSweepAngle(float sweepAngle) {
         this.sweepAngle = sweepAngle;
     }
-
-    private ObjectAnimator progressAnimator;
 
     /**
      * @param progress current progress between 0 to max
@@ -418,5 +378,9 @@ public class ProgressView extends View {
 
     public void set(final float progress, @Nullable String text) {
         uiListener.changeProgress(text, progress);
+    }
+
+    private double angleInRad(float angleInDegrees) {
+        return ((angleInDegrees) * (Math.PI / 180));
     }
 }

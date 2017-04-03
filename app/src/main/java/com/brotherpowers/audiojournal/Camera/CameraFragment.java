@@ -42,6 +42,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import butterknife.BindView;
@@ -255,6 +256,9 @@ public class CameraFragment extends Fragment {
             _cameraView.setFlash(CameraView.FLASH_AUTO);
 
             _colorModePicker.setValues(new CharSequence[]{"NONE"});
+
+            System.out.println(">>> ARRAY " + Arrays.toString(toArray(_cameraView.getSupportedColorEffects())));
+
             _colorModePicker.setValues(toArray(_cameraView.getSupportedColorEffects()));
             // Change color mode
             _colorModePicker.setOnItemSelectedListener(index -> _cameraView.setColorEffect(index));
