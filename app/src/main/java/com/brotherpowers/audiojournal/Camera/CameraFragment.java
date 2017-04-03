@@ -83,10 +83,10 @@ public class CameraFragment extends Fragment {
     private Handler mBackgroundHandler;
     private int mCurrentFlash;
     private long entry_id;
-    private PhotosAdapter photosAdapter;
+
     // Interaction with the parent activity
     private OnFragmentInteractionListener mListener;
-    private CameraView.Callback mCallback
+    private CameraView.Callback cameraCallback
             = new CameraView.Callback() {
 
         // Wil allow to take only one picture for this activity
@@ -145,8 +145,7 @@ public class CameraFragment extends Fragment {
 
                     // Load the image
                     // Set the Image View
-                    new Handler(Looper.getMainLooper())
-                            .post(() -> loadImage(attachment));
+                    uiHandler.post(() -> loadImage(attachment));
 
                     os.close();
 
@@ -158,7 +157,14 @@ public class CameraFragment extends Fragment {
                 }
             });
         }
+
+        @Override
+        public void supportedCameraModes(CameraView cameraView, SparseArray<String> modes) {
+            uiHandler.post(() -> _colorModePicker.setValues(toArray(modes)));
+        }
     };
+
+    private Handler uiHandler = new Handler(Looper.getMainLooper());
 
     public CameraFragment() {
         // Required empty public constructor
@@ -179,7 +185,7 @@ public class CameraFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_camera, container, false);
         ButterKnife.bind(this, view);
 
-        _cameraView.addCallback(mCallback);
+        _cameraView.addCallback(cameraCallback);
 
         final Realm realm = Realm.getDefaultInstance();
         final DataEntry entry = DBHelper.findEntryForId(entry_id, realm).findFirst();        // Sync
@@ -248,20 +254,15 @@ public class CameraFragment extends Fragment {
             mListener.hideActionBar(false);
         }
 
+        // Change camera color mode
+        _colorModePicker.setOnItemSelectedListener(index -> _cameraView.setColorEffect(index));
+
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
 
             _cameraView.start();
             _cameraView.setAutoFocus(true);
             _cameraView.setFlash(CameraView.FLASH_AUTO);
-
-            _colorModePicker.setValues(new CharSequence[]{"NONE"});
-
-            System.out.println(">>> ARRAY " + Arrays.toString(toArray(_cameraView.getSupportedColorEffects())));
-
-            _colorModePicker.setValues(toArray(_cameraView.getSupportedColorEffects()));
-            // Change color mode
-            _colorModePicker.setOnItemSelectedListener(index -> _cameraView.setColorEffect(index));
 
         } else if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                 Manifest.permission.CAMERA)) {
@@ -291,7 +292,7 @@ public class CameraFragment extends Fragment {
     @Override
     public void onDestroy() {
         // Remove callback
-        _cameraView.removeCallback(mCallback);
+        _cameraView.removeCallback(cameraCallback);
 
         if (mBackgroundHandler != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {

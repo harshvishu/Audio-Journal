@@ -1,8 +1,5 @@
 package com.brotherpowers.waveformview;
 
-import android.animation.Animator;
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -21,7 +18,6 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import java.util.LinkedList;
-import java.util.Locale;
 
 import static com.brotherpowers.waveformview.Utils.getExtremes;
 
@@ -50,27 +46,28 @@ public class WaveformView extends View {
         init(context, attrs, defStyle);
     }
 
-    private Paint mTextPaint;
-    private Paint mWaveFillPaint;
-    private Paint mMarkerPaint;
-    protected Paint mProgressPaint;
+    private Paint textPaint;
+    private Paint waveFillPaint;
+    private Paint markerPaint;
+    protected Paint progressPaint;
 
-    private int mMode;
-    private int mAudioLength;
+    private int mode;
+    private int audioLength;
     private float markerPosition;
-    private int mSampleRate;
-    private int mChannels;
-    private short[] mSamples;
-    private boolean showTextAxis = true;
+    private int sampleRate;
+    private int channels;
+    private short[] samples;
+
+//    private boolean showTextAxis = true;
 
     private Path waveformPath;
     @SuppressWarnings("FieldCanBeLocal")
-    private Bitmap mCachedWaveformBitmap;
+    private Bitmap cachedWaveformBitmap;
+    private Picture cachedWaveform;
     private Bitmap playbackBitmap;
     private Canvas playbackCanvas;
     private Rect drawRect;
-    private Picture mCachedWaveform;
-    private LinkedList<float[]> mHistoricalData;
+    private LinkedList<float[]> historicalData;
 
 
     private int width;
@@ -78,7 +75,6 @@ public class WaveformView extends View {
     private float xStep;
     private float centerY;
 
-    private ObjectAnimator animator;
 
     private void init(Context context, AttributeSet attrs, int defStyle) {
         final TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.WaveformView, defStyle, 0);
@@ -87,29 +83,29 @@ public class WaveformView extends View {
         final int markerColor = array.getColor(R.styleable.WaveformView_markerColor, ContextCompat.getColor(context, R.color.marker));
         final int textColor = array.getColor(R.styleable.WaveformView_timeCodeColor, ContextCompat.getColor(context, R.color.text));
 
-        mMode = array.getInt(R.styleable.WaveformView_mode, MODE_PLAYBACK);
+        mode = array.getInt(R.styleable.WaveformView_mode, MODE_PLAYBACK);
         array.recycle();
 
-        mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mTextPaint.setTextAlign(Paint.Align.CENTER);
-        mTextPaint.setColor(textColor);
-        mTextPaint.setTextSize(Utils.getFontSize(context, android.R.attr.textAppearance));
+        textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        textPaint.setTextAlign(Paint.Align.CENTER);
+        textPaint.setColor(textColor);
+        textPaint.setTextSize(Utils.getFontSize(context, android.R.attr.textAppearance));
 
-        mWaveFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mWaveFillPaint.setStyle(Paint.Style.FILL);
-        mWaveFillPaint.setColor(waveFillColor);
+        waveFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        waveFillPaint.setStyle(Paint.Style.FILL);
+        waveFillPaint.setColor(waveFillColor);
 
-        mProgressPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mProgressPaint.setStyle(Paint.Style.FILL);
-        mProgressPaint.setColor(markerColor);
-        mProgressPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        progressPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        progressPaint.setStyle(Paint.Style.FILL);
+        progressPaint.setColor(markerColor);
+        progressPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
 
-        mMarkerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mMarkerPaint.setStyle(Paint.Style.FILL);
-        mMarkerPaint.setColor(markerColor);
+        markerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        markerPaint.setStyle(Paint.Style.FILL);
+        markerPaint.setColor(markerColor);
 
         waveformPath = new Path();
-        mHistoricalData = new LinkedList<>();
+        historicalData = new LinkedList<>();
 
     }
 
@@ -120,14 +116,14 @@ public class WaveformView extends View {
 
         width = getMeasuredWidth();
         height = getMeasuredHeight();
-        xStep = width / (mAudioLength * 1.0f);
+        xStep = width / (audioLength * 1.0f);
         centerY = height / 2f;
         drawRect = new Rect(0, 0, width, height);
 
-        if (mHistoricalData != null) {
-            mHistoricalData.clear();
+        if (historicalData != null) {
+            historicalData.clear();
         }
-        if (mMode == MODE_PLAYBACK) {
+        if (mode == MODE_PLAYBACK) {
             createPlaybackWaveform();
         }
     }
@@ -136,39 +132,39 @@ public class WaveformView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        LinkedList<float[]> temp = mHistoricalData;
-        if (mMode == MODE_RECORDING && temp != null) {
+        LinkedList<float[]> temp = historicalData;
+        if (mode == MODE_RECORDING && temp != null) {
             for (float[] p : temp) {
-                canvas.drawLines(p, mWaveFillPaint);
+                canvas.drawLines(p, waveFillPaint);
             }
-        } else if (mMode == MODE_PLAYBACK) {
-            canvas.drawLine(0, centerY, width, centerY, mWaveFillPaint);
-            canvas.drawPath(waveformPath, mWaveFillPaint);
+        } else if (mode == MODE_PLAYBACK) {
+            canvas.drawLine(0, centerY, width, centerY, waveFillPaint);
+            canvas.drawPath(waveformPath, waveFillPaint);
             // Marker
             if (markerPosition > -1 && markerPosition <= width && playbackCanvas != null) {
-                playbackCanvas.drawLine(0, centerY, /*xStep **/ markerPosition, centerY, mWaveFillPaint);
-                playbackCanvas.drawPath(waveformPath, mWaveFillPaint);
-                playbackCanvas.drawRect(drawRect.left, 0, /*xStep **/ markerPosition, height, mProgressPaint);
-                canvas.drawBitmap(playbackBitmap, 0, 0, mMarkerPaint);
+                playbackCanvas.drawLine(0, centerY, /*xStep **/ markerPosition, centerY, waveFillPaint);
+                playbackCanvas.drawPath(waveformPath, waveFillPaint);
+                playbackCanvas.drawRect(drawRect.left, 0, /*xStep **/ markerPosition, height, progressPaint);
+                canvas.drawBitmap(playbackBitmap, 0, 0, markerPaint);
             }
         }
     }
 
     public int getMode() {
-        return mMode;
+        return mode;
     }
 
     public WaveformView setMode(int mMode) {
-        this.mMode = mMode;
+        this.mode = mMode;
         return this;
     }
 
     public short[] getSamples() {
-        return mSamples;
+        return samples;
     }
 
     public WaveformView setSamples(short[] samples) {
-        mSamples = samples;
+        this.samples = samples;
         calculateAudioSampleLength();
         onSamplesChanged();
         return this;
@@ -190,47 +186,6 @@ public class WaveformView extends View {
                 postInvalidate();
             }
         });
-
-
-       /* handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (animator != null && animator.isRunning()) {
-                    animator.cancel();
-                }
-
-                animator = ObjectAnimator.ofFloat(this, "markerPosition", markerPosition, position);
-                animator.setDuration(1000 / 3);
-                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        postInvalidate();
-                    }
-                });
-                animator.addListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        setMarkerPosition(position);
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {
-
-                    }
-                });
-                animator.start();
-            }
-        });*/
     }
 
 
@@ -239,42 +194,42 @@ public class WaveformView extends View {
     }
 
     public int getAudioLength() {
-        return mAudioLength;
+        return audioLength;
     }
 
     public int getSampleRate() {
-        return mSampleRate;
+        return sampleRate;
     }
 
     public WaveformView setSampleRate(int sampleRate) {
-        mSampleRate = sampleRate;
+        this.sampleRate = sampleRate;
         calculateAudioSampleLength();
         return this;
     }
 
     public int getChannels() {
-        return mChannels;
+        return channels;
     }
 
     public WaveformView setChannels(int channels) {
-        mChannels = channels;
+        this.channels = channels;
         calculateAudioSampleLength();
         return this;
     }
 
     private void calculateAudioSampleLength() {
-        if (mSamples == null || mSampleRate == 0 || mChannels == 0) {
+        if (samples == null || sampleRate == 0 || channels == 0) {
             return;
         }
-        mAudioLength = Utils.calculateAudioLength(mSamples.length, mSampleRate, mChannels);
+        audioLength = Utils.calculateAudioLength(samples.length, sampleRate, channels);
     }
 
     private void onSamplesChanged() {
-        if (mMode == MODE_RECORDING) {
-            if (mHistoricalData == null) {
-                mHistoricalData = new LinkedList<>();
+        if (mode == MODE_RECORDING) {
+            if (historicalData == null) {
+                historicalData = new LinkedList<>();
             }
-            LinkedList<float[]> temp = new LinkedList<>(mHistoricalData);
+            LinkedList<float[]> temp = new LinkedList<>(historicalData);
 
             // For efficiency, we are reusing the array of points.
             float[] waveformPoints;
@@ -284,13 +239,13 @@ public class WaveformView extends View {
                 waveformPoints = new float[width * 4];
             }
 
-            drawRecordingWaveform(mSamples, waveformPoints);
+            drawRecordingWaveform(samples, waveformPoints);
             temp.addLast(waveformPoints);
-            mHistoricalData = temp;
+            historicalData = temp;
             postInvalidate();
-        } else if (mMode == MODE_PLAYBACK) {
+        } else if (mode == MODE_PLAYBACK) {
             markerPosition = Long.MIN_VALUE;
-            xStep = width / (mAudioLength * 1.0f);
+            xStep = width / (audioLength * 1.0f);
             createPlaybackWaveform();
         }
     }
@@ -370,7 +325,7 @@ public class WaveformView extends View {
     }
 
     private void createPlaybackWaveform() {
-        if (width <= 0 || height <= 0 || mSamples == null) {
+        if (width <= 0 || height <= 0 || samples == null) {
             return;
         }
 
@@ -379,43 +334,41 @@ public class WaveformView extends View {
 
         Canvas cacheCanvas;
         if (Build.VERSION.SDK_INT >= 23 && isHardwareAccelerated()) {
-            mCachedWaveform = new Picture();
-            cacheCanvas = mCachedWaveform.beginRecording(width, height);
+            cachedWaveform = new Picture();
+            cacheCanvas = cachedWaveform.beginRecording(width, height);
         } else {
-            mCachedWaveformBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-            cacheCanvas = new Canvas(mCachedWaveformBitmap);
+            cachedWaveformBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            cacheCanvas = new Canvas(cachedWaveformBitmap);
         }
 
-        Path mWaveform = drawPlaybackWaveform(width, height, mSamples);
-        cacheCanvas.drawPath(mWaveform, mWaveFillPaint);
-        drawAxis(cacheCanvas, width);
+        Path mWaveform = drawPlaybackWaveform(width, height, samples);
+        cacheCanvas.drawPath(mWaveform, waveFillPaint);
 
-        if (mCachedWaveform != null) {
-            mCachedWaveform.endRecording();
+//        drawAxis(cacheCanvas, width);
+
+        if (cachedWaveform != null) {
+            cachedWaveform.endRecording();
         }
         postInvalidate();
     }
 
-    private void drawAxis(Canvas canvas, int width) {
+    /*private void drawAxis(Canvas canvas, int width) {
         if (!showTextAxis) {
             return;
         }
-        int seconds = mAudioLength / 1000;
-        float xStep = width / (mAudioLength / 1000f);
-        float textHeight = mTextPaint.getTextSize();
-        float textWidth = mTextPaint.measureText("10.00");
+        int seconds = audioLength / 1000;
+        float xStep = width / (audioLength / 1000f);
+        float textHeight = textPaint.getTextSize();
+        float textWidth = textPaint.measureText("10.00");
         int secondStep = (int) (textWidth * seconds * 2) / width;
         secondStep = Math.max(secondStep, 1);
         for (float i = 0; i <= seconds; i += secondStep) {
-            canvas.drawText(String.format(Locale.getDefault(), "%.2f", i), i * xStep, textHeight, mTextPaint);
+            canvas.drawText(String.format(Locale.getDefault(), "%.2f", i), i * xStep, textHeight, textPaint);
         }
-    }
+    }*/
 
     public void reset() {
-        if (animator != null && animator.isRunning()) {
-            animator.cancel();
-        }
-        markerPosition = -1f;
+        markerPosition = Long.MIN_VALUE;
         playbackBitmap = null;
         playbackCanvas = null;
         onSamplesChanged();

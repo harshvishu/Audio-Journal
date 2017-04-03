@@ -217,7 +217,7 @@ public class Camera2 extends CameraViewImpl {
                         mCaptureCallback, mBackgroundHandler);
             } catch (CameraAccessException e) {
                 e.printStackTrace();
-            }catch (IllegalStateException e){
+            } catch (IllegalStateException e) {
                 Log.e(TAG, "onConfigured: capture session closed", e);
                 // TODO: 3/17/17 hit & trial
                 openCamera();
@@ -517,6 +517,7 @@ public class Camera2 extends CameraViewImpl {
             mCameraOpenCloseLock.release();
             mCamera = cameraDevice;
             createCameraPreviewSession();
+            mCallback.supportedCameraModes(getSupportedColorEffects());
         }
 
         @Override
@@ -798,7 +799,7 @@ public class Camera2 extends CameraViewImpl {
     }
 
     @Override
-    SparseArray<String> getSupportedColorEffects() {
+    protected SparseArray<String> getSupportedColorEffects() {
         SparseArray<String> effects = new SparseArray<>();
         if (isCameraOpened()) {
             //CONTROL_AVAILABLE_EFFECTS

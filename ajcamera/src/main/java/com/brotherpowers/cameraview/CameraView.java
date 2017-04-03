@@ -412,9 +412,9 @@ public class CameraView extends FrameLayout {
         mImpl.setColorEffect(position);
     }
 
-    public SparseArray<String> getSupportedColorEffects(){
+   /* private SparseArray<String> getSupportedColorEffects(){
         return mImpl.getSupportedColorEffects();
-    }
+    }*/
 
     /**
      * Take a picture. The result will be returned to
@@ -467,6 +467,13 @@ public class CameraView extends FrameLayout {
         public void onPictureTaken(byte[] data) {
             for (Callback callback : mCallbacks) {
                 callback.onPictureTaken(CameraView.this, data, mDisplayOrientationDetector.getLastSensorOrientation(), mDisplayOrientationDetector.getLastKnownDisplayOrientation());
+            }
+        }
+
+        @Override
+        public void supportedCameraModes(SparseArray<String> modes) {
+            for (Callback callback : mCallbacks) {
+                callback.supportedCameraModes(CameraView.this, modes);
             }
         }
 
@@ -541,6 +548,10 @@ public class CameraView extends FrameLayout {
          * @param data       JPEG data.
          */
         public void onPictureTaken(CameraView cameraView, byte[] data, int sensorOrientation, int displayOrientation) {
+        }
+
+        public void supportedCameraModes(CameraView cameraView, SparseArray<String> modes){
+
         }
     }
 

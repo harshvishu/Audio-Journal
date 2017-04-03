@@ -84,9 +84,7 @@ public class AudioPlayer {
                     .subscribeWith(new DisposableObserver<Long>() {
                         @Override
                         public void onNext(Long value) {
-                            if (mediaPlayer != null && playbackListener != null) {
-
-                                System.out.println(" Duration : " + mediaPlayer.getDuration() + " total : " + mediaPlayer.getCurrentPosition() + " result : " + (float) mediaPlayer.getCurrentPosition() / (float) mediaPlayer.getDuration());
+                            if (mediaPlayer != null && mediaPlayer.isPlaying() && playbackListener != null) {
 
                                 playbackListener.playbackProgress((float) mediaPlayer.getCurrentPosition() / (float) mediaPlayer.getDuration(), id, position);
                             }

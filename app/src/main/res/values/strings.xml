@@ -37,5 +37,6 @@
     <string name="max_recording_length">Max Recording Length</string>
     <string name="_12_01_sup_am_sup">12:01</string>
     <string name="Remove">Remove</string>
+    <string name="swap_camera">swap camera</string>
 
 </resources>

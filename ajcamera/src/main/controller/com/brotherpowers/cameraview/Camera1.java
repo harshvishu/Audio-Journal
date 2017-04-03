@@ -73,6 +73,7 @@ public class Camera1 extends CameraViewImpl {
                 if (mCamera != null) {
                     setUpPreview();
                     adjustCameraParameters();
+                    mCallback.supportedCameraModes(getSupportedColorEffects());
                 }
             }
         });
@@ -278,7 +279,7 @@ public class Camera1 extends CameraViewImpl {
     }
 
     @Override
-    SparseArray<String> getSupportedColorEffects() {
+    protected SparseArray<String> getSupportedColorEffects() {
         final SparseArray<String> effects = new SparseArray<>();
         if (isCameraOpened()) {
             final List<String> supportedEffectsList = mCamera.getParameters().getSupportedColorEffects();

@@ -21,9 +21,9 @@ import android.view.View;
 
 abstract class CameraViewImpl {
 
-    protected final Callback mCallback;
+    final Callback mCallback;
 
-    protected final PreviewImpl mPreview;
+    final PreviewImpl mPreview;
 
     CameraViewImpl(Callback callback, PreviewImpl preview) {
         mCallback = callback;
@@ -76,7 +76,7 @@ abstract class CameraViewImpl {
     /**
      * Get the supported color effects
      */
-    abstract SparseArray<String> getSupportedColorEffects();
+    protected abstract SparseArray<String> getSupportedColorEffects();
 
     interface Callback {
 
@@ -85,6 +85,8 @@ abstract class CameraViewImpl {
         void onCameraClosed();
 
         void onPictureTaken(byte[] data);
+
+        void supportedCameraModes(SparseArray<String> modes);
 
     }
 
