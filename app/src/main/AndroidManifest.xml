@@ -80,6 +80,17 @@
                 <action android:name="android.intent.action.ACTION_TIME_TICK"/>
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name=".Camera.CameraActivity"
+            android:parentActivityName=".Main.MainActivity"
+            android:screenOrientation="sensorPortrait"
+            android:theme="@style/AppTheme.FullScreen"
+            android:windowSoftInputMode="stateAlwaysHidden">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.brotherpowers.audiojournal.Main.MainActivity"/>
+        </activity>
     </application>
 
 </manifest>

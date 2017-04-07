@@ -21,5 +21,6 @@ public final class Constants {
         public static final String task_id = "task_id";
         public static final String id = "id";
         public static final String data = "data";
+        public static final String attachment_id = "attachment_id";
     }
 }

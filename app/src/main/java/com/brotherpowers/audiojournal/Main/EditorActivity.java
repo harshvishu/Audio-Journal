@@ -47,6 +47,7 @@ public class EditorActivity extends AppCompatActivity
     public static void start(Activity parentActivity, long entry_id, long attachment_id, int task_id) {
         Intent intent = new Intent(parentActivity, EditorActivity.class);
         intent.putExtra(Constants.KEYS.entry_id, entry_id);
+        intent.putExtra(Constants.KEYS.attachment_id, attachment_id);
         intent.putExtra(Constants.KEYS.task_id, task_id);
         parentActivity.startActivity(intent);
     }
@@ -128,17 +129,6 @@ public class EditorActivity extends AppCompatActivity
                 .commit();
     }
 
-    @Override
-    public void hideActionBar(boolean hide) {
-
-        System.out.println(">>>>>>>>> hide : " + hide);
-
-        if (hide) {
-            hide();
-        } else {
-            show();
-        }
-    }
 
     @SuppressLint("InlinedApi")
     private void show() {

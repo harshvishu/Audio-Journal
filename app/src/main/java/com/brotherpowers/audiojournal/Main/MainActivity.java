@@ -18,6 +18,7 @@ import android.view.MenuItem;
 
 import com.brotherpowers.audiojournal.AudioRecorder.AudioRecorder;
 import com.brotherpowers.audiojournal.AudioRecorder.AudioRecordingFragment;
+import com.brotherpowers.audiojournal.Camera.CameraActivity;
 import com.brotherpowers.audiojournal.Camera.PhotosFragment;
 import com.brotherpowers.audiojournal.Model.Attachment;
 import com.brotherpowers.audiojournal.Model.DataEntry;
@@ -149,7 +150,7 @@ public class MainActivity extends AppCompatActivity
             return false;
         }
         // Start Text Editor
-        EditorActivity.start(this, entry.getId(), EditorActivity.TaskCamera);
+        CameraActivity.start(this, entry.getId());
         return true;
     }
 

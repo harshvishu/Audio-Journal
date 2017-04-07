@@ -31,4 +31,6 @@
 
     <color name="viewpager_active">#8cf4fafa</color>
     <color name="viewpager_inactive">#5af4fafa</color>
+
+    <color name="black_overlay">#66000000</color>
 </resources>

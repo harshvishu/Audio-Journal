@@ -250,9 +250,6 @@ public class CameraFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        if (mListener != null) {
-            mListener.hideActionBar(false);
-        }
 
         // Change camera color mode
         _colorModePicker.setOnItemSelectedListener(index -> _cameraView.setColorEffect(index));
@@ -282,9 +279,6 @@ public class CameraFragment extends Fragment {
     public void onPause() {
         if (_cameraView.isCameraOpened()) {
             _cameraView.stop();
-        }
-        if (mListener != null) {
-            mListener.hideActionBar(false);
         }
         super.onPause();
     }
@@ -380,7 +374,6 @@ public class CameraFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         void openGalleryForDataEntry(long entry_id);
 
-        void hideActionBar(boolean hide);
     }
 
     private static String[] toArray(SparseArray<String> sparseArray) {
