@@ -2,13 +2,9 @@
 <RelativeLayout
     android:id="@+id/activity_recording"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginBottom="@dimen/activity_vertical_margin"
-    android:layout_marginLeft="@dimen/activity_horizontal_margin"
-    android:layout_marginRight="@dimen/activity_horizontal_margin"
-    android:layout_marginTop="@dimen/activity_vertical_margin">
+    android:paddingBottom="@dimen/spacing.16"
+    android:layout_height="match_parent">
 
     <RelativeLayout
         android:id="@+id/toolbar_actions"
@@ -42,5 +38,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:baselineAligned="false"/>
 </RelativeLayout>

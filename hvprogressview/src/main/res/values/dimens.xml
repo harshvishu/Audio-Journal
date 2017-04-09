@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="defaultProgressWidth">8dp</dimen>
-    <dimen name="defaultTextSize">22sp</dimen>
+    <dimen name="defaultCounterTextSize">22sp</dimen>
+    <dimen name="defaultHeaderTextSize">14sp</dimen>
 </resources>

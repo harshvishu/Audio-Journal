@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.brotherpowers.audiojournal.Reminder.ReminderBroadcastReceiver;
 import com.brotherpowers.audiojournal.Utils.Constants;
+import com.brotherpowers.audiojournal.Utils.Extensions;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -95,8 +96,14 @@ public class DataEntry extends RealmObject implements RealmDelegate {
     /**
      * set reminder time & Activate
      */
-    public void remindAt(Long remind_at) {
+    public void remindAt(Long remind_at, Context context) {
         this.reminder.setRemindAt(remind_at);
+        // Enable disable reminder
+        if (remind_at == null) {
+            disableReminder(context);
+        } else {
+            enableReminder(context);
+        }
     }
 
     @Override
@@ -122,7 +129,7 @@ public class DataEntry extends RealmObject implements RealmDelegate {
      * Set a pending alarm
      */
     // TODO: 3/25/17 FIXME : IMPROVE,  Merge reminder into one function
-    public void enableReminder(Context context) {
+    private void enableReminder(Context context) {
         final String TAG = "REMINDER";
 
         Reminder reminder = getRemindAt();
@@ -130,13 +137,6 @@ public class DataEntry extends RealmObject implements RealmDelegate {
         if (remind_at == null) {
             return;
         }
-
-
-        /* if (System.currentTimeMillis() > remind_at) {
-            Realm realm = Realm.getDefaultInstance();
-            realm.executeTransaction(r -> dataEntry.remindAt(null));
-            return;
-        }*/
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, ReminderBroadcastReceiver.class);
@@ -177,7 +177,7 @@ public class DataEntry extends RealmObject implements RealmDelegate {
      * Cancel the existing alarm
      */
     // TODO: 3/25/17 FIXME : IMPROVE, Merge reminder into one function
-    public void disableReminder(Context context) {
+    private void disableReminder(Context context) {
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, ReminderBroadcastReceiver.class);
@@ -185,6 +185,29 @@ public class DataEntry extends RealmObject implements RealmDelegate {
 
         // Cancel this alarm
         alarmManager.cancel(pendingIntent);
+    }
+
+    /**
+     * This method deletes all the files related to this DataEntry & it's attachments
+     * <p>
+     * CareFul
+     * <p>
+     * Put this inside a realm transaction
+     */
+    public void empty(Context context) {
+
+        // Delete all the attachments
+        for (Attachment attachment :
+                attachments) {
+            Extensions.delete(attachment.file(context));
+            attachment.deleteFromRealm();
+        }
+        // Delete the audio file
+        Extensions.delete(audioFile.file(context));
+        audioFile.deleteFromRealm();
+
+        // Delete this object itself
+        deleteFromRealm();
     }
 
 }

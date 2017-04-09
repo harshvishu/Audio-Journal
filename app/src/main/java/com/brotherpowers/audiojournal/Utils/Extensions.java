@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.hardware.Camera;
 import android.os.Build;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -116,5 +117,13 @@ public final class Extensions {
             return String.format(Locale.getDefault(), "%2d Min", min);
         }
         return String.format(Locale.getDefault(), "%2d Sec", sec);
+    }
+
+    /**
+     * Delete the file from disk
+     */
+    public static boolean delete(File file) {
+        //noinspection ResultOfMethodCallIgnored
+        return file != null && file.delete();
     }
 }

@@ -22,6 +22,7 @@ final class Utils {
     interface Defaults {
         int START_ANGLE = -90;
         int TEXT_OFFSET = 64;
-        String TEXT = "00:00:00";
+        String TEXT_START_TIME = "00:00:00";
+        String TEXT_HEADER = "HH:MM:SS";
     }
 }

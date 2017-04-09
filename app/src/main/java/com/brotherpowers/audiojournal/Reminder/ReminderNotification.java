@@ -110,7 +110,7 @@ public class ReminderNotification extends Service {
 
                 // Remove the reminder time
                 Realm realm = Realm.getDefaultInstance();
-                realm.executeTransaction(r -> dataEntry.remindAt(null));
+                realm.executeTransaction(r -> dataEntry.remindAt(null, context));
 
                 Attachment attachment = dataEntry.audioFile();
                 File file = attachment.file(context);

@@ -36,14 +36,12 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
     final LongSparseArray<short[]> cachedSamples;
     private final int VIEW_PLACEHOLDER = 0;
     private final int VIEW_ITEM = 1;
-    private final LongSparseArray<PhotosAdapter> attachmentAdapter;
     private Callback callback;
 
 
     RecordsAdapter(@NonNull Context context, Callback callback, @Nullable OrderedRealmCollection<DataEntry> data) {
         super(context, data, true);
         this.callback = callback;
-        attachmentAdapter = new LongSparseArray<>();
         cachedSamples = new LongSparseArray<>();
     }
 

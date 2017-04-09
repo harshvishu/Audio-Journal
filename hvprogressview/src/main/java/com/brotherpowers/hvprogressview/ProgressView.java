@@ -26,13 +26,16 @@ import java.lang.ref.WeakReference;
 
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.HONEYCOMB;
-import static com.brotherpowers.hvprogressview.Utils.Defaults.TEXT;
+import static com.brotherpowers.hvprogressview.Utils.Defaults.TEXT_HEADER;
+import static com.brotherpowers.hvprogressview.Utils.Defaults.TEXT_START_TIME;
 
 /**
  * Created by harsh_v on 11/22/16.
  */
 
 public class ProgressView extends View {
+
+
 
 
     public ProgressView(Context context) {
@@ -50,7 +53,8 @@ public class ProgressView extends View {
         init(context, attrs, defStyleAttr);
     }
 
-    private TextPaint mTextPaint;
+    private TextPaint counterTextPaint;
+    private TextPaint headerTextPaint;
     private Paint mProgressPaint;
     private Paint mBackgroundPaint;
     private Paint mMeterPaint;
@@ -64,24 +68,38 @@ public class ProgressView extends View {
     private int knobRadius;
     private int max = 100;
 
-    private String text = TEXT;
+    private int counterTextSize;
+    private int headerTextSize;
+
+
     private Drawable drawableKnob;
 
     private float initialSweepAngle = 0f;
     private UIListener uiListener;
 
-    private BoringLayout textLayout;
+    private BoringLayout textLayoutCounter;
+    private BoringLayout textLayoutHeader;
     private BoringLayout.Metrics boringMetrics;
 
+    private Defaults defaults;
+
     private void init(Context context, AttributeSet attrs, int defStyle) {
+        defaults = new Defaults(context);
+
         TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.ProgressView, defStyle, 0);
         final int progressColor = array.getColor(R.styleable.ProgressView_progressColor, ContextCompat.getColor(context, R.color.progressColor));
         final int backgroundColor = array.getColor(R.styleable.ProgressView_backgroundColor, ContextCompat.getColor(context, R.color.backgroundColor));
 
-        ColorStateList textColor = array.getColorStateList(R.styleable.ProgressView_android_textColor);
-        if (textColor == null) {
-            textColor = ColorStateList.valueOf(0xFF000000);
+        ColorStateList counterTextColor = array.getColorStateList(R.styleable.ProgressView_android_textColor);
+        if (counterTextColor == null) {
+            counterTextColor = ColorStateList.valueOf(0xFF000000);
         }
+
+        ColorStateList headerTextColor = array.getColorStateList(R.styleable.ProgressView_headerTextColor);
+        if (headerTextColor == null) {
+            headerTextColor = ColorStateList.valueOf(0xFF000000);
+        }
+
 
         final float progressWidthMultiplier = array.getFloat(R.styleable.ProgressView_progressWidthMultiplier, 1.0f);
 
@@ -93,16 +111,19 @@ public class ProgressView extends View {
         knobOffset = array.getFloat(R.styleable.ProgressView_knobOffset, 0.0f);     // knob Offset
         knobRadius = array.getInt(R.styleable.ProgressView_knobRadius, 24);         // knob Radius
 
-        int defaultTextSize = context.getResources().getDimensionPixelSize(R.dimen.defaultTextSize);
-        int textSize = array.getDimensionPixelSize(R.styleable.ProgressView_android_textSize, defaultTextSize);
+        // Text size for Counter
+        counterTextSize = array.getDimensionPixelSize(R.styleable.ProgressView_android_textSize, defaults.counterTextSize);
 
-        int defaultWidth = context.getResources().getDimensionPixelSize(R.dimen.defaultProgressWidth);
-        progressWith = array.getDimensionPixelSize(R.styleable.ProgressView_progressWidth, defaultWidth);
+        // Text size for Header
+        headerTextSize = array.getDimensionPixelSize(R.styleable.ProgressView_headerTextSize, defaults.headerTextSize);
 
-//        float startOffset = context.getResources().getInteger(R.integer.startAngle);
+        // Progress bar width
+        progressWith = array.getDimensionPixelSize(R.styleable.ProgressView_progressWidth, defaults.progressWidth);
+
+        // Start Angle
         startAngle = array.getFloat(R.styleable.ProgressView_startAngle, startAngle);
 
-//        float endOffset = context.getResources().getInteger(R.integer.endAngle);
+        // End Angle
         endAngle = array.getFloat(R.styleable.ProgressView_endAngle, endAngle);
 
         initialSweepAngle = array.getFloat(R.styleable.ProgressView_sweepAngle, initialSweepAngle);
@@ -110,12 +131,17 @@ public class ProgressView extends View {
         array.recycle();
 
 
-        mTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-        mTextPaint.setTextSize(textSize);
-        mTextPaint.setColor(textColor.getColorForState(new int[]{android.R.attr.state_active}, textColor.getDefaultColor()));
-        mTextPaint.setTextAlign(Paint.Align.CENTER);
+        counterTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        counterTextPaint.setColor(counterTextColor.getColorForState(new int[]{android.R.attr.state_active}, counterTextColor.getDefaultColor()));
+        counterTextPaint.setTextAlign(Paint.Align.CENTER);
+        counterTextPaint.setTextSize(counterTextSize);
 
-        Paint.FontMetricsInt fontMetricsInt = mTextPaint.getFontMetricsInt();
+        headerTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        headerTextPaint.setColor(headerTextColor.getColorForState(new int[]{android.R.attr.state_active}, counterTextColor.getDefaultColor()));
+        headerTextPaint.setTextAlign(Paint.Align.CENTER);
+        headerTextPaint.setTextSize(headerTextSize);
+
+        Paint.FontMetricsInt fontMetricsInt = counterTextPaint.getFontMetricsInt();
         boringMetrics = new BoringLayout.Metrics();
         boringMetrics.ascent = fontMetricsInt.ascent;
         boringMetrics.bottom = fontMetricsInt.bottom;
@@ -123,8 +149,12 @@ public class ProgressView extends View {
         boringMetrics.leading = fontMetricsInt.leading;
         boringMetrics.top = fontMetricsInt.top;
 
-        float textWidth = mTextPaint.measureText(TEXT, 0, TEXT.length());
-        textLayout = new BoringLayout(TEXT, mTextPaint, (int) textWidth, Layout.Alignment.ALIGN_CENTER,
+        float textWidth = counterTextPaint.measureText(TEXT_START_TIME, 0, TEXT_START_TIME.length());
+        textLayoutCounter = new BoringLayout(TEXT_START_TIME, counterTextPaint, (int) textWidth, Layout.Alignment.ALIGN_CENTER,
+                1f, 1f, boringMetrics, false, TextUtils.TruncateAt.MIDDLE, (int) textWidth);
+
+        textWidth = headerTextPaint.measureText(TEXT_HEADER, 0, TEXT_HEADER.length());
+        textLayoutHeader = new BoringLayout(TEXT_HEADER, headerTextPaint, (int) textWidth, Layout.Alignment.ALIGN_CENTER,
                 1f, 1f, boringMetrics, false, TextUtils.TruncateAt.MIDDLE, (int) textWidth);
 
         mProgressPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -176,7 +206,7 @@ public class ProgressView extends View {
                 case SET_PROGRESS:
                     Bundle bundle = msg.getData();
                     final float progress = bundle.getFloat("progress");
-                    final String text = bundle.getString("text");
+                    final String text = bundle.getString("text_start_time");
                     _progressView.get().setProgress(progress, text);
                     break;
             }
@@ -190,7 +220,7 @@ public class ProgressView extends View {
             Message message = new Message();
             Bundle bundle = new Bundle();
             bundle.putFloat("progress", progress);
-            bundle.putString("text", text);
+            bundle.putString("text_start_time", text);
             message.setData(bundle);
             message.what = SET_PROGRESS;
 
@@ -235,6 +265,10 @@ public class ProgressView extends View {
         matrix.postRotate(startAngle - endAngle);
         sweepGradient.setLocalMatrix(matrix);
         mProgressPaint.setShader(sweepGradient);
+
+        float textWidth = headerTextPaint.measureText(TEXT_HEADER, 0, TEXT_HEADER.length());
+        textLayoutHeader.replaceOrMake(TEXT_HEADER, headerTextPaint, (int) textWidth, Layout.Alignment.ALIGN_CENTER,
+                1f, 1f, boringMetrics, false, TextUtils.TruncateAt.MIDDLE, (int) textWidth);
     }
 
 
@@ -254,8 +288,8 @@ public class ProgressView extends View {
         drawKnob(canvas, angle, radius);
 
 
-        drawRect(bounds, mTextPaint, canvas, startAngle, 20, 4);
-        drawRect(bounds, mTextPaint, canvas, startAngle + endAngle, 20, 4);
+        drawRect(bounds, counterTextPaint, canvas, startAngle, 20, 4);
+        drawRect(bounds, counterTextPaint, canvas, startAngle + endAngle, 20, 4);
     }
 
     private void drawMeteredLines(Canvas canvas, float radius) {
@@ -315,37 +349,28 @@ public class ProgressView extends View {
     }
 
     /**
-     * Draw text
+     * Draw text_start_time
      */
     private void drawText(Canvas canvas, double angle, float radius) {
+        // Save canvas state
         int saveCount = canvas.getSaveCount();
         canvas.save();
 
-        float textWidth = mTextPaint.measureText(text, 0, text.length());
-        textLayout.replaceOrMake(text, mTextPaint, (int) textWidth, Layout.Alignment.ALIGN_CENTER,
-                1f, 1f, boringMetrics, false, TextUtils.TruncateAt.MIDDLE, (int) textWidth);
-
-        // translate to center
+        // translate to X center
         float x = (canvas.getWidth()) / 2;
-        float y = (canvas.getHeight() - textLayout.getHeight()) / 2;
 
+        // translate Y for textLayoutCounter
+        float y = (canvas.getHeight() - textLayoutCounter.getHeight()) / 2;
         canvas.translate(x, y);
+        textLayoutCounter.draw(canvas);
 
-        textLayout.draw(canvas);
+        // Translate for textLayoutHeader
+        canvas.translate(0, -textLayoutHeader.getHeight());
+        textLayoutHeader.draw(canvas);
 
+        // Restore canvas
         canvas.restoreToCount(saveCount);
-
-//        float offset = radius - knobRadius - Utils.Defaults.TEXT_OFFSET - mTextPaint.getTextSize();
-//        int x = (int) (offset * Math.cos(angle) + bounds.centerX());
-//        int y = (int) (offset * Math.sin(angle) + bounds.centerY());
-//        canvas.drawText(text, x, y, mTextPaint);
     }
-
-    public void setText(String text) {
-        this.text = text;
-        requestLayout();
-    }
-
 
     public void setMax(int max) {
         this.max = max;
@@ -353,8 +378,12 @@ public class ProgressView extends View {
 
     void setProgress(final float progress, @Nullable String text) {
         if (!TextUtils.isEmpty(text)) {
-            this.text = text;
+            counterTextPaint.setTextSize(counterTextSize);
+            float textWidth = counterTextPaint.measureText(text, 0, text.length());
+            textLayoutCounter.replaceOrMake(text, counterTextPaint, (int) textWidth, Layout.Alignment.ALIGN_CENTER,
+                    1f, 1f, boringMetrics, false, TextUtils.TruncateAt.MIDDLE, (int) textWidth);
         }
+
         this.sweepAngle = calculateAngle(progress);
         uiListener.update();
     }
@@ -372,8 +401,7 @@ public class ProgressView extends View {
     }
 
     public void reset() {
-        set(0f, TEXT);
-//        setProgress(0f, TEXT);
+        set(0f, TEXT_START_TIME);
     }
 
     public void set(final float progress, @Nullable String text) {
@@ -382,5 +410,17 @@ public class ProgressView extends View {
 
     private double angleInRad(float angleInDegrees) {
         return ((angleInDegrees) * (Math.PI / 180));
+    }
+
+    private static class Defaults {
+        final int progressWidth;
+        final int counterTextSize;
+        final int headerTextSize;
+
+        private Defaults(Context context) {
+            this.progressWidth = context.getResources().getDimensionPixelSize(R.dimen.defaultProgressWidth);
+            counterTextSize = context.getResources().getDimensionPixelSize(R.dimen.defaultCounterTextSize);
+            headerTextSize = context.getResources().getDimensionPixelSize(R.dimen.defaultHeaderTextSize);
+        }
     }
 }

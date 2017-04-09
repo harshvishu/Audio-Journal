@@ -21,4 +21,5 @@
     <dimen name="nav_header_height">160dp</dimen>
 
     <dimen name="recording_progress_size">420dp</dimen>
+    <dimen name="card_view_std_corner_radius">4dp</dimen>
 </resources>

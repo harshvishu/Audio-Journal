@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardBackgroundColor="@color/cardBackgroundDark"
-        app:cardCornerRadius="5dp"
+        app:cardCornerRadius="@dimen/card_view_std_corner_radius"
         app:cardUseCompatPadding="true">
 
         <LinearLayout
@@ -29,14 +29,14 @@
                     style="@style/Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Total Duration"/>
+                    android:text="@string/duration"/>
 
                 <TextView
                     android:id="@+id/label_total_recording_duration"
                     style="@style/Heading3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="12:23:35"/>
+                    android:text="00:00:00"/>
             </LinearLayout>
 
             <View
@@ -57,14 +57,14 @@
                     style="@style/Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Total Records"/>
+                    android:text="@string/recordings"/>
 
                 <TextView
                     android:id="@+id/label_total_records"
                     style="@style/Heading3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="14"/>
+                    android:text="0"/>
 
             </LinearLayout>
 

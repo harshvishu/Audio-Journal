@@ -10,6 +10,8 @@
     <color name="colorAccent">#FF696A</color>
     <color name="colorAccentSecondary">#F5EBE2</color>
 
+    <color name="accentTextColor">#868789</color>
+
     <!--<color name="hashGreen">#8BC34A</color>-->
     <!--<color name="limeGreen">#CDDC39</color>-->
     <color name="cardBackgroundDark">#252A2F</color>

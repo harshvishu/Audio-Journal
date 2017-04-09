@@ -17,6 +17,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
@@ -44,18 +45,24 @@ import static com.brotherpowers.audiojournal.Utils.Constants.REQ_REC_PERMISSION;
  */
 public class AudioRecordingFragment extends Fragment implements AudioRecorder.Listener {
 
-
+    // Static instance for audio recorder
     private static AudioRecorder audioRecorder;
+
     @BindView(R.id.progress_view)
     ProgressView progressView;
+
     @BindView(R.id.action_capture)
     FloatingActionButton buttonRecord;
+
     @BindView(R.id.label_max_recording_duration)
     TextView labelMaxDuration;
+
     @BindView(R.id.label_total_recording_duration)
     TextView labelTotalRecordingDuration;
+
     @BindView(R.id.label_total_records)
     TextView labelTotalRecords;
+
     private AudioRecorder.STATE recordingState;
     private OnFragmentInteractionListener interactionListener;
     private AudioJournalPreferences preferences;
@@ -217,9 +224,25 @@ public class AudioRecordingFragment extends Fragment implements AudioRecorder.Li
     }
 
     private void changeButtonDrawableWithAnim(int drawable) {
-        // TODO: 2/18/17 Use proper animation
-        buttonRecord.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.fab_open));
-        buttonRecord.setImageResource(drawable);
+        // FIXME: 2/18/17 Use proper animation
+        Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.record_button_animations_set);
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                buttonRecord.setImageResource(drawable);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        buttonRecord.startAnimation(animation);
     }
 
     @Override

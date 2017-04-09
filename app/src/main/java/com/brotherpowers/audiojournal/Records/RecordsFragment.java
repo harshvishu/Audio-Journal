@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -97,7 +98,7 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
 
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(llm);
-        recyclerView.addItemDecoration(new RecyclerViewDecorator());
+//        recyclerView.addItemDecoration(new ItemDecoration(getContext()));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         recordsAdapter = new RecordsAdapter(getContext(), this, realm.where(DataEntry.class)
@@ -285,10 +286,8 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
                             //
                             System.out.println(">>>> DATE PICKER DATA: " + DateUtils.formatDateTime(getContext(), dateTimePicker.getTime().getTime(), DateUtils.FORMAT_NUMERIC_DATE));
 
-                            // Enable reminder
-                            entry.enableReminder(getContext());
                             // Persist
-                            realm.executeTransaction(r -> entry.remindAt(dateTimePicker.getTime().getTime()));
+                            realm.executeTransaction(r -> entry.remindAt(dateTimePicker.getTime().getTime(), getContext()));
 
                             dialog.dismiss();
                             break;
@@ -303,10 +302,8 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
                             .equalTo(Constants.KEYS.id, getArguments().getLong(Constants.KEYS.entry_id))
                             .findFirst();
 
-                    // Cancel the existing reminder
-                    entry.disableReminder(getContext());
                     // Remove the existing reminder
-                    realm.executeTransaction(r -> entry.remindAt(null));
+                    realm.executeTransaction(r -> entry.remindAt(null,getContext()));
 
                     dialog.dismiss();
                 });
@@ -328,6 +325,29 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
                 e.printStackTrace();
             }
             super.onStart();
+        }
+    }
+
+    private static class ItemDecoration extends RecyclerView.ItemDecoration {
+        final Context context;
+
+        private ItemDecoration(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            int childCount = parent.getChildCount();
+            int childPosition = parent.getChildAdapterPosition(view);
+            int itemCount = parent.getAdapter().getItemCount();
+
+            if (childPosition == itemCount - 1) {
+
+                outRect.bottom = context.getResources().getDimensionPixelSize(R.dimen.spacing_16);
+
+            } else {
+                super.getItemOffsets(outRect, view, parent, state);
+            }
         }
     }
 }

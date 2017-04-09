@@ -57,7 +57,7 @@
     </style>
 
     <style name="Caption" parent="TextAppearance.AppCompat.Caption">
-        <item name="android:textColor">#868789</item>
+        <item name="android:textColor">@color/accentTextColor</item>
     </style>
     <style name="Caption.Large">
         <item name="android:textSize">16sp</item>
