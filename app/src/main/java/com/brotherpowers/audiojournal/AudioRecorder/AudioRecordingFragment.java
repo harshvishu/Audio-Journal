@@ -67,6 +67,7 @@ public class AudioRecordingFragment extends Fragment implements AudioRecorder.Li
     private OnFragmentInteractionListener interactionListener;
     private AudioJournalPreferences preferences;
     private Realm realm;
+
     public AudioRecordingFragment() {
         // Required empty public constructor
     }
@@ -181,11 +182,14 @@ public class AudioRecordingFragment extends Fragment implements AudioRecorder.Li
 
 
     @Override
-    public void onRecordingStop(File file) {
+    public void onRecordingStop(@Nullable File file) {
         this.recordingState = AudioRecorder.STATE.FINISHED;
-
         // Interface
         interactionListener.onRecordingStateChange(recordingState);
+
+        if (file == null) {
+            return;
+        }
 
         Realm realm = Realm.getDefaultInstance();
 

@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="action_play" type="id"/>
-    <item name="action.delete" type="id"/>
+    <item name="action_delete" type="id"/>
+    <item name="action_sync" type="id"/>
     <item name="label_text" type="id"/>
-    <item name="action.capture" type="id"/>
-    <item name="label.message" type="id"/>
+    <item name="action_capture" type="id"/>
+    <item name="label_message" type="id"/>
     <item name="wave_view" type="id"/>
     <item name="action_camera" type="id"/>
     <item name="action_reminder" type="id"/>
     <item name="action_textEditor" type="id"/>
-    <item name="action.flash" type="id"/>
+    <item name="action_flash" type="id"/>
     <item name="action_more" type="id"/>
     <item name="label_title" type="id"/>
-    <item name="action.switch_camera" type="id"/>
+    <item name="action_switch_camera" type="id"/>
 </resources>

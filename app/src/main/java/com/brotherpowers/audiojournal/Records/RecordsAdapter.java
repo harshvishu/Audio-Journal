@@ -7,7 +7,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.support.v4.util.LongSparseArray;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.PopupMenuCompat;
+import android.support.v7.widget.PopupMenu;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -21,10 +26,12 @@ import com.brotherpowers.audiojournal.Utils.Extensions;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
 import com.brotherpowers.audiojournal.View.ALViewHolder;
 import com.brotherpowers.waveformview.WaveformView;
+import com.crashlytics.android.Crashlytics;
 
 import java.io.File;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import io.realm.OrderedRealmCollection;
 import io.realm.RealmRecyclerViewAdapter;
 
@@ -55,10 +62,10 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
             ALViewHolder = new VHPlaceHolder(view, null);
         } else {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_data_entry_item, parent, false);
-            ALViewHolder = new VHAudioRecord(view, (holder_view, position) -> {
+            ALViewHolder = new VHAudioRecord(view, (item_view, position) -> {
 
 
-                switch (holder_view.getId()) {
+                switch (item_view.getId()) {
                     case R.id.action_textEditor:
                         callback.actionTextEditor(position);
                         break;
@@ -70,6 +77,26 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
                         break;
                     case R.id.action_reminder:
                         callback.addReminder(position);
+                        break;
+                    case R.id.action_more:
+                        PopupMenu popupMenu = new PopupMenu(context, item_view, Gravity.BOTTOM | Gravity.START);
+                        popupMenu.inflate(R.menu.menu_records_more);
+                        popupMenu.setOnMenuItemClickListener(item -> {
+                            switch (item.getItemId()) {
+                                case R.id.action_delete:
+                                    // Call for delete
+                                    callback.actionDelete(position);
+                                    break;
+                                case R.id.action_sync:
+                                    break;
+                            }
+                            return false;
+                        });
+                        popupMenu.show();
+
+                        System.out.println(">>> GRAVITY :" + (80 | 20));
+
+//                        callback.actionMore(position);
                         break;
                 }
             });
@@ -101,35 +128,43 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
                 ((VHAudioRecord) holder).buttonPlay.setImageResource(R.drawable.ic_play);
             }
 
-            File audioFile = entry.audioFile().file(context);
-            if (audioFile != null && audioFile.exists()) {
+            try {
+                File audioFile = entry.audioFile().file(context);
+                if (audioFile != null && audioFile.exists()) {
 
-                try {
-                    final short[] samples;
-                    if (cachedSamples.get(id) != null) {
-                        samples = cachedSamples.get(id);
-                    } else {
-                        samples = FileUtils.getAudioSamples(audioFile);
-                        cachedSamples.append(id, samples);
+                    try {
+                        final short[] samples;
+                        if (cachedSamples.get(id) != null) {
+                            samples = cachedSamples.get(id);
+                        } else {
+                            samples = FileUtils.getAudioSamples(audioFile);
+                            cachedSamples.append(id, samples);
+                        }
+
+                        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+                        Uri uri = FileProvider.getUriForFile(context, context.getString(R.string.file_provider_authority), audioFile);
+
+                        mmr.setDataSource(context, uri);
+//                        int duration = Integer.valueOf(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+                        ((VHAudioRecord) holder).waveformView.setSampleRate(AudioRecorder.SAMPLING_RATE);
+                        ((VHAudioRecord) holder).waveformView.setChannels(1);
+                        ((VHAudioRecord) holder).waveformView.setSamples(samples);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-
-                    MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-                    Uri uri = FileProvider.getUriForFile(context, context.getString(R.string.file_provider_authority), audioFile);
-
-                    mmr.setDataSource(context, uri);
-                    int duration = Integer.valueOf(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-                    ((VHAudioRecord) holder).waveformView.setSampleRate(AudioRecorder.SAMPLING_RATE);
-                    ((VHAudioRecord) holder).waveformView.setChannels(1);
-                    ((VHAudioRecord) holder).waveformView.setSamples(samples);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
+            } catch (NullPointerException ignored) {
             }
         }
 
     }
 
+    @SuppressWarnings("ConstantConditions")
+    @Override
+    public long getItemId(int index) {
+        return getItem(index).getId();
+    }
 
     /**
      * @param position of the view
@@ -169,23 +204,25 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
         void actionPlay(int position);
 
         void actionTextEditor(int position);
+
+        void actionMore(int position);
     }
 
-    static class VHAudioRecord extends ALViewHolder implements View.OnClickListener {
+    static class VHAudioRecord extends ALViewHolder {
         @BindView(R.id.label_title)
         TextView labelTitle;
 
         @BindView(R.id.action_play)
         ImageButton buttonPlay;
 
-        @BindView(R.id.action_textEditor)
+       /* @BindView(R.id.action_textEditor)
         ImageButton buttonTextEditor;
 
         @BindView(R.id.action_camera)
         ImageButton buttonCamera;
 
         @BindView(R.id.action_reminder)
-        ImageButton buttonReminder;
+        ImageButton buttonReminder;*/
 
         @BindView(R.id.wave_view)
         WaveformView waveformView;
@@ -194,17 +231,21 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
         VHAudioRecord(View itemView, VhClick vhClick) {
             super(itemView, vhClick);
 
-            buttonTextEditor.setOnClickListener(this);
-            buttonPlay.setOnClickListener(this);
-            buttonCamera.setOnClickListener(this);
-            buttonReminder.setOnClickListener(this);
+//            buttonTextEditor.setOnClickListener(this);
+//            buttonPlay.setOnClickListener(this);
+//            buttonCamera.setOnClickListener(this);
+//            buttonReminder.setOnClickListener(this);
         }
 
-
-        @Override
-        public void onClick(View view) {
+        @OnClick({R.id.action_camera, R.id.action_textEditor, R.id.action_play, R.id.action_reminder, R.id.action_more})
+        void cliclEvent(View view) {
             vhClick.onItemClick(view, getAdapterPosition());
         }
+
+       /* @Override
+        public void onClick(View view) {
+            vhClick.onItemClick(view, getAdapterPosition());
+        }*/
     }
 
     static class VHPlaceHolder extends ALViewHolder {

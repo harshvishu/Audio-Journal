@@ -106,20 +106,20 @@ public class TextEditorFragment extends Fragment {
         inflater.inflate(R.menu.menu_text_editor, menu);
     }
 
-    @Override
+    /*@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save_text_note:
-//                saveChanges();
                 // Finish the activity
                 getActivity().finish();
                 break;
         }
         return true;
-    }
+    }*/
 
     @Override
     public void onStop() {
+        // TODO: 4/9/17 Use a subscription to save this periodically
         // Save the changes when the fragment stops
         saveChanges();
         super.onStop();

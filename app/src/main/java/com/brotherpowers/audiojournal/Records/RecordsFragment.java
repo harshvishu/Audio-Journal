@@ -25,10 +25,12 @@ import android.view.WindowManager;
 
 import com.brotherpowers.audiojournal.AudioRecorder.AudioPlayer;
 import com.brotherpowers.audiojournal.AudioRecorder.AudioRecorder;
+import com.brotherpowers.audiojournal.Model.Attachment;
 import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.brotherpowers.audiojournal.Model.Reminder;
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Utils.Constants;
+import com.brotherpowers.audiojournal.Utils.FileUtils;
 import com.brotherpowers.audiojournal.View.DateTimePicker;
 import com.brotherpowers.audiojournal.View.RecyclerViewDecorator;
 
@@ -98,7 +100,6 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
 
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(llm);
-//        recyclerView.addItemDecoration(new ItemDecoration(getContext()));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
         recordsAdapter = new RecordsAdapter(getContext(), this, realm.where(DataEntry.class)
@@ -118,17 +119,9 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
         DataEntry entry = recordsAdapter.getItem(position);
         assert entry != null;
 
-        realm.executeTransaction(r -> {
-            RealmResults<DataEntry> dataEntries = r.where(DataEntry.class).equalTo("id", entry.getId()).findAll();
-            if (!dataEntries.isEmpty()) {
-                for (DataEntry dataEntry : dataEntries) {
-                    dataEntry.deleteFromRealm();
-                }
-            }
-        });
+        // Delete Entry
+        realm.executeTransaction(r -> entry.empty(getContext()).deleteFromRealm());
 
-        // Remove Cached Samples
-        recordsAdapter.cachedSamples.remove(entry.getId());
     }
 
     @Override
@@ -140,6 +133,15 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
         if (!success) {
             // TODO: 2/12/17 show alert
         }
+    }
+
+    @Override
+    public void actionMore(int position) {
+        DataEntry entry = recordsAdapter.getItem(position);
+        assert entry != null;
+
+        // TODO: 4/9/17 REMOVE this
+
     }
 
     @Override
@@ -178,6 +180,8 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
                     .subscribe(aLong -> {
                         AudioPlayer.sharedInstance.play(file, id, position, this);
                     });
+        } else {
+            System.out.println(">>>> AUDIO FILE IS NULL <<<<");
         }
     }
 
@@ -303,7 +307,7 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
                             .findFirst();
 
                     // Remove the existing reminder
-                    realm.executeTransaction(r -> entry.remindAt(null,getContext()));
+                    realm.executeTransaction(r -> entry.remindAt(null, getContext()));
 
                     dialog.dismiss();
                 });
@@ -325,6 +329,13 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
                 e.printStackTrace();
             }
             super.onStart();
+        }
+
+        @Override
+        public void onPause() {
+            // Stop any playback
+            AudioPlayer.sharedInstance.cancel();
+            super.onPause();
         }
     }
 

@@ -20,7 +20,7 @@ public class AudioRecorder {
     public static final int DEFAULT_MAX_AUDIO_LENGTH = (int) (60_000 * 0.25); // 1 Minute
     public static final int SAMPLING_RATE = 44100; // Audio sampling rate 441.Khz
     private static final int BIT_RATE = 128000; // Audio encoding bit rate in bits per second.
-    private final File file;
+    private File file;
     private final int maxDuration;
     private STATE recordingState;
     private MediaRecorder mediaRecorder;
@@ -36,7 +36,6 @@ public class AudioRecorder {
      * @param duration Maximum duration for recording
      */
     AudioRecorder(Context context, int duration) {
-        file = FileUtils.sharedInstance.getFile(FileUtils.Type.AUDIO, String.valueOf(System.currentTimeMillis()), context);
         maxDuration = duration;
         recordingState = STATE.PENDING;
     }
@@ -56,6 +55,8 @@ public class AudioRecorder {
      * @param context {@link Context}
      */
     void start(Context context) {
+        file = FileUtils.sharedInstance.getFile(FileUtils.Type.AUDIO, String.valueOf(System.currentTimeMillis()), context);
+
         recordingState = STATE.RECORDING;
 
         mediaRecorder = null;
@@ -180,7 +181,7 @@ public class AudioRecorder {
     interface Listener {
         void onRecordingStart();
 
-        void onRecordingStop(File file);
+        void onRecordingStop(@Nullable File file);
 
         void onProgress(float progress, String text);
 

@@ -194,20 +194,26 @@ public class DataEntry extends RealmObject implements RealmDelegate {
      * <p>
      * Put this inside a realm transaction
      */
-    public void empty(Context context) {
-
+    public DataEntry empty(Context context) {
         // Delete all the attachments
-        for (Attachment attachment :
-                attachments) {
-            Extensions.delete(attachment.file(context));
-            attachment.deleteFromRealm();
+        if (!this.attachments.isEmpty()) {
+            for (Attachment attachment : attachments) {
+                Extensions.delete(attachment.file(context));
+            }
+            attachments.deleteAllFromRealm();
         }
-        // Delete the audio file
-        Extensions.delete(audioFile.file(context));
-        audioFile.deleteFromRealm();
 
-        // Delete this object itself
-        deleteFromRealm();
+        // Delete the audio file
+        try {
+            Extensions.delete(audioFile.file(context));
+            audioFile.deleteFromRealm();
+        } catch (Exception ignored) {
+        }
+
+        remindAt(null, context);
+        reminder.deleteFromRealm();
+
+        return this;
     }
 
 }

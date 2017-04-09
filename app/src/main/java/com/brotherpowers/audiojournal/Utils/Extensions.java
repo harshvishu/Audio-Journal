@@ -11,6 +11,8 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by harsh_v on 10/27/16.
@@ -122,7 +124,11 @@ public final class Extensions {
     /**
      * Delete the file from disk
      */
+    public static AtomicInteger deleteCount = new AtomicInteger(0);
+
     public static boolean delete(File file) {
+        deleteCount.incrementAndGet();
+        System.out.println(">>> DELETE COUNT " + deleteCount);
         //noinspection ResultOfMethodCallIgnored
         return file != null && file.delete();
     }

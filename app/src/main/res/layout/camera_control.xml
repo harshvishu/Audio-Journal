@@ -70,7 +70,7 @@
         </FrameLayout>-->
 
         <ImageButton
-            android:id="@id/action.flash"
+            android:id="@id/action_flash"
             style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="72dp"
             android:layout_height="72dp"
@@ -97,7 +97,7 @@
             app:srcCompat="@drawable/camera_s2l_anim"/>
 
         <ImageButton
-            android:id="@id/action.switch_camera"
+            android:id="@id/action_switch_camera"
             style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="72dp"
             android:layout_height="72dp"
