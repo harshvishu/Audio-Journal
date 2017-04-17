@@ -88,6 +88,9 @@ public class RecordsFragment extends Fragment implements RecordsSectionedAdapter
         results = realm.where(DataEntry.class)
                 .findAllAsync()
                 .sort("created_at", Sort.DESCENDING);
+
+        /// Initialize adapter
+        recordsAdapter = new RecordsSectionedAdapter(getContext(), results, this);
     }
 
     @Override
@@ -99,30 +102,23 @@ public class RecordsFragment extends Fragment implements RecordsSectionedAdapter
         /// Show placeholder if list is empty
         results.addChangeListener(changeSet -> showPlaceholder(changeSet.isEmpty()));
 
+        /// Set adapter
+        recyclerView.setAdapter(recordsAdapter);
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        /// Initially show/hide placeholder
+        showPlaceholder(results.isEmpty());
+
+        super.onResume();
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         this.interactionListener = (OnFragmentInteractionListener) context;
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        LinearLayoutManager llm = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(llm);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-
-
-        /// Show placeholder if list is empty
-        results.addChangeListener(changeSet -> showPlaceholder(changeSet.isEmpty()));
-
-        recordsAdapter = new RecordsSectionedAdapter(getContext(), results, this);
-        recyclerView.setAdapter(recordsAdapter);
-
     }
 
     @Override
@@ -139,8 +135,6 @@ public class RecordsFragment extends Fragment implements RecordsSectionedAdapter
 
     @Override
     public void actionTextEditor(DataEntry entry, int adapterPosition) {
-
-
         boolean success = interactionListener.startTextEditor(entry);
         if (!success) {
             // TODO: 2/12/17 show alert
@@ -157,7 +151,10 @@ public class RecordsFragment extends Fragment implements RecordsSectionedAdapter
      * Show hide placeholder
      */
     public void showPlaceholder(boolean visible) {
-        ButterKnife.findById(getView(), R.id.placeholder_container).setVisibility(visible ? View.VISIBLE : View.GONE);
+        final View view = getView();
+        if (view != null) {
+            ButterKnife.findById(view, R.id.placeholder_container).setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
     }
 
     @Override
@@ -173,10 +170,6 @@ public class RecordsFragment extends Fragment implements RecordsSectionedAdapter
         DialogFragment fragment = ReminderDatePickerFragment.newInstance(entry.getId());
         fragment.show(getChildFragmentManager(), "DialogFragment");
 
-        /*realm.executeTransaction(r -> {
-            entry.remindAt(System.currentTimeMillis() + 2000);
-        });
-        Alarm.set(getContext(), entry);*/
     }
 
     @Override

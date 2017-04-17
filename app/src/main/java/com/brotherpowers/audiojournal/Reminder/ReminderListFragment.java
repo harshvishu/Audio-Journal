@@ -92,14 +92,23 @@ public class ReminderListFragment extends Fragment {
         setCurrentTime();
         // Set Receiver
         getContext().registerReceiver(timeChangeReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
+    }
 
+    @Override
+    public void onResume() {
+        /// Initially show/hide placeholder
+        showPlaceholder(results.isEmpty());
+        super.onResume();
     }
 
     /**
      * Show hide placeholder
      */
     public void showPlaceholder(boolean visible) {
-        ButterKnife.findById(getView(), R.id.placeholder_container).setVisibility(visible ? View.VISIBLE : View.GONE);
+        final View view = getView();
+        if (view != null) {
+            ButterKnife.findById(view, R.id.placeholder_container).setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
     }
 
     private final TimeChangeReceiver timeChangeReceiver = new TimeChangeReceiver(_labelCurrentTime) {

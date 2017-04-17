@@ -2,6 +2,7 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
              android:animateLayoutChanges="true"
              tools:context="com.brotherpowers.audiojournal.Records.RecordsFragment">
 
@@ -11,6 +12,7 @@
         android:layout_height="match_parent"
         android:clipToPadding="false"
         android:paddingBottom="@dimen/spacing.16"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
         tools:listitem="@layout/recyclerview_data_entry_item"/>
 
     <FrameLayout

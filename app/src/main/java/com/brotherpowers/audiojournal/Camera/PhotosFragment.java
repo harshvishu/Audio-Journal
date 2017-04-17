@@ -85,13 +85,19 @@ public class PhotosFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_photos, container, false);
         ButterKnife.bind(this, view);
 
-
         /// Show placeholder if list is empty
         results.addChangeListener(changeSet -> showPlaceholder(changeSet.isEmpty()));
 
         // Set the  adapter to photos
         recyclerView.setAdapter(photosAdapter);
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        /// Initially show/hide placeholder
+        showPlaceholder(results.isEmpty());
+        super.onResume();
     }
 
     /**
