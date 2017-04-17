@@ -88,6 +88,7 @@ abstract class CameraViewImpl {
 
         void supportedCameraModes(SparseArray<String> modes);
 
+        void onCameraNotAvailable();
     }
 
 }

@@ -5,11 +5,22 @@
              android:layout_height="match_parent"
              tools:context="com.brotherpowers.audiojournal.Camera.PhotosFragment">
 
-    <android.support.v7.widget.RecyclerView
+    <com.brotherpowers.audiojournal.View.ContextRecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutManager="android.support.v7.widget.GridLayoutManager"
-        app:spanCount="3"/>
+        app:spanCount="4"
+        tools:listitem="@layout/recycler_view_internal_image"/>
+
+
+    <FrameLayout
+        android:id="@+id/placeholder_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/windowBackgroundDark">
+
+        <include layout="@layout/placeholder_no_photos"/>
+    </FrameLayout>
 
 </FrameLayout>

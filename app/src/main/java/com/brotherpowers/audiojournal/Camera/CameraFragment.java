@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.brotherpowers.audiojournal.Model.Attachment;
 import com.brotherpowers.audiojournal.Model.DataEntry;
@@ -161,6 +162,11 @@ public class CameraFragment extends Fragment {
         @Override
         public void supportedCameraModes(CameraView cameraView, SparseArray<String> modes) {
             uiHandler.post(() -> _colorModePicker.setValues(toArray(modes)));
+        }
+
+        @Override
+        public void onCameraNotAvailable(CameraView cameraView) {
+            Toast.makeText(getContext(), "There are no cameras available.", Toast.LENGTH_SHORT).show();
         }
     };
 

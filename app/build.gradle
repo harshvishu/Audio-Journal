@@ -85,6 +85,7 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    testCompile 'junit:junit:4.12'
     compile project(':hvwaveformview')
     compile project(':hvprogressview')
     compile project(':ajcamera')
@@ -97,19 +98,18 @@ dependencies {
         transitive = true;
     }
     compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile 'com.jakewharton:butterknife:8.4.0'
-    compile 'com.squareup.retrofit2:retrofit:2.1.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
-    compile 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
-    compile 'io.reactivex.rxjava2:rxjava:2.0.1'
+    compile 'com.squareup.retrofit2:retrofit:2.2.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.2.0'
+    compile 'com.squareup.retrofit2:adapter-rxjava2:2.2.0'
+    compile 'io.reactivex.rxjava2:rxjava:2.0.8'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
-    compile 'io.realm:android-adapters:1.4.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
+    compile 'io.realm:android-adapters:2.0.0'
     compile 'commons-io:commons-io:2.5'
     compile 'com.github.mthli:Knife:v1.1'
     compile 'com.wefika:horizontal-picker:1.1.1'
     compile 'com.github.JakeWharton:ViewPagerIndicator:2.4.1'
-    compile 'com.android.support:support-v4:25.2.0'
-    testCompile 'junit:junit:4.12'
+    compile 'com.jakewharton:butterknife:8.5.1'
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
+    apt 'com.jakewharton:butterknife-compiler:8.5.1'
 }

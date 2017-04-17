@@ -7,8 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,10 +15,12 @@ import android.widget.TextView;
 
 import com.brotherpowers.audiojournal.Model.Reminder;
 import com.brotherpowers.audiojournal.R;
+import com.brotherpowers.audiojournal.View.ContextRecyclerView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -49,47 +49,58 @@ public class ReminderListFragment extends Fragment {
     TextView _labelCurrentTime;
 
     @BindView(R.id.recycler_view)
-    RecyclerView _recyclerViewReminders;
+    ContextRecyclerView _recyclerViewReminders;
 
     private ReminderAdapter reminderAdapter;
+    private RealmResults<Reminder> results;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
+        /// Instantiate realm
         final Realm realm = Realm.getDefaultInstance();
 
-        System.out.println(" Reminder count :> " + realm.where(Reminder.class).count());
-        System.out.println(" Reminder count NO NULL :> " + realm.where(Reminder.class).isNotNull("remind_at").count());
+        /// fetch results
+        results = realm.where(Reminder.class).isNotNull("remind_at").findAllAsync();
 
-        reminderAdapter = new ReminderAdapter(getContext(), realm.where(Reminder.class).isNotNull("remind_at").findAllAsync());
+        /// Initialize adapter
+        reminderAdapter = new ReminderAdapter(getContext(), results);
+
+        /// Close realm
+        realm.close();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_reminder_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_list_reminders, container, false);
         ButterKnife.bind(this, view);
 
+        /// Show placeholder if list is empty
+        results.addChangeListener(changeSet -> showPlaceholder(changeSet.isEmpty()));
 
+        //Set Adapter
+        _recyclerViewReminders.setAdapter(reminderAdapter);
         return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-
-        System.out.println(">>>>>>> VIEW CREATED ");
         setCurrentTime();
-
-
         // Set Receiver
         getContext().registerReceiver(timeChangeReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
-        //Set Adapter
-        _recyclerViewReminders.setAdapter(reminderAdapter);
+
     }
 
+    /**
+     * Show hide placeholder
+     */
+    public void showPlaceholder(boolean visible) {
+        ButterKnife.findById(getView(), R.id.placeholder_container).setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
 
     private final TimeChangeReceiver timeChangeReceiver = new TimeChangeReceiver(_labelCurrentTime) {
         @Override

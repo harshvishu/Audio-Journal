@@ -101,10 +101,10 @@ public class TextEditorFragment extends Fragment {
         }
     }
 
-    @Override
+   /* @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_text_editor, menu);
-    }
+    }*/
 
     /*@Override
     public boolean onOptionsItemSelected(MenuItem item) {

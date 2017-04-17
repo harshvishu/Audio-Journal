@@ -4,7 +4,6 @@ package com.brotherpowers.audiojournal.Records;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,24 +23,28 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import com.brotherpowers.audiojournal.AudioRecorder.AudioPlayer;
-import com.brotherpowers.audiojournal.AudioRecorder.AudioRecorder;
-import com.brotherpowers.audiojournal.Model.Attachment;
+import com.brotherpowers.audiojournal.Main.SectionedRealmAdapter;
 import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.brotherpowers.audiojournal.Model.Reminder;
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Utils.Constants;
-import com.brotherpowers.audiojournal.Utils.FileUtils;
+import com.brotherpowers.audiojournal.View.ContextRecyclerView;
 import com.brotherpowers.audiojournal.View.DateTimePicker;
-import com.brotherpowers.audiojournal.View.RecyclerViewDecorator;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
+import io.reactivex.observables.GroupedObservable;
+import io.reactivex.observers.DisposableObserver;
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -49,14 +52,8 @@ import io.realm.Sort;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RecordsFragment extends Fragment implements RecordsAdapter.Callback, AudioPlayer.PlaybackListener {
+public class RecordsFragment extends Fragment implements RecordsSectionedAdapter.Callback, AudioPlayer.PlaybackListener {
 
-
-    @BindView(R.id.recycler_view)
-    RecyclerView recyclerView;
-    private RecordsAdapter recordsAdapter;
-    private Realm realm;
-    private OnFragmentInteractionListener interactionListener;
 
     public RecordsFragment() {
         // Required empty public constructor
@@ -71,12 +68,26 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
         return fragment;
     }
 
+    @BindView(R.id.recycler_view)
+    ContextRecyclerView recyclerView;
+    private Realm realm;
+    private RecordsSectionedAdapter recordsAdapter;
+    private OnFragmentInteractionListener interactionListener;
+    private RealmResults<DataEntry> results;
+
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
+        /// Initialize realm
         realm = Realm.getDefaultInstance();
+
+        /// Fetch results
+        results = realm.where(DataEntry.class)
+                .findAllAsync()
+                .sort("created_at", Sort.DESCENDING);
     }
 
     @Override
@@ -84,6 +95,9 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_list_recordings, container, false);
         ButterKnife.bind(this, view);
+
+        /// Show placeholder if list is empty
+        results.addChangeListener(changeSet -> showPlaceholder(changeSet.isEmpty()));
 
         return view;
     }
@@ -102,32 +116,30 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
         recyclerView.setLayoutManager(llm);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        recordsAdapter = new RecordsAdapter(getContext(), this, realm.where(DataEntry.class)
-                .findAllAsync()
-                .sort("created_at", Sort.DESCENDING)
-        );
+
+        /// Show placeholder if list is empty
+        results.addChangeListener(changeSet -> showPlaceholder(changeSet.isEmpty()));
+
+        recordsAdapter = new RecordsSectionedAdapter(getContext(), results, this);
         recyclerView.setAdapter(recordsAdapter);
 
-        Paint paintForSwipeView = new Paint();
-        paintForSwipeView.setStyle(Paint.Style.FILL_AND_STROKE);
-        paintForSwipeView.setStrokeCap(Paint.Cap.ROUND);
-
     }
 
     @Override
-    public void actionDelete(int position) {
-        DataEntry entry = recordsAdapter.getItem(position);
-        assert entry != null;
+    public void onDestroy() {
+        realm.close();
+        super.onDestroy();
+    }
 
-        // Delete Entry
+    @Override
+    public void actionDelete(DataEntry entry, int adapterPosition) {
+        /// Delete Entry
         realm.executeTransaction(r -> entry.empty(getContext()).deleteFromRealm());
-
     }
 
     @Override
-    public void actionTextEditor(int position) {
-        DataEntry entry = recordsAdapter.getItem(position);
-        assert entry != null;
+    public void actionTextEditor(DataEntry entry, int adapterPosition) {
+
 
         boolean success = interactionListener.startTextEditor(entry);
         if (!success) {
@@ -136,27 +148,27 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
     }
 
     @Override
-    public void actionMore(int position) {
-        DataEntry entry = recordsAdapter.getItem(position);
-        assert entry != null;
+    public void actionMore(DataEntry entry, int adapterPosition) {
 
-        // TODO: 4/9/17 REMOVE this
 
     }
 
+    /**
+     * Show hide placeholder
+     */
+    public void showPlaceholder(boolean visible) {
+        ButterKnife.findById(getView(), R.id.placeholder_container).setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
     @Override
-    public void actionCamera(int position) {
-        DataEntry entry = recordsAdapter.getItem(position);
-        assert entry != null;
+    public void actionCamera(DataEntry entry, int adapterPosition) {
 
         interactionListener.startCamera(entry);
     }
 
     @Override
-    public void addReminder(int position) {
-        // TODO: 2/11/17 pending
-        DataEntry entry = recordsAdapter.getItem(position);
-        assert entry != null;
+    public void addReminder(DataEntry entry, int adapterPosition) {
+
 
         DialogFragment fragment = ReminderDatePickerFragment.newInstance(entry.getId());
         fragment.show(getChildFragmentManager(), "DialogFragment");
@@ -168,9 +180,8 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
     }
 
     @Override
-    public void actionPlay(int position) {
-        DataEntry entry = recordsAdapter.getItem(position);
-        assert entry != null;
+    public void actionPlay(DataEntry entry, int adapterPosition) {
+        System.out.println(">>>>> INSERT ADAPTER POSITION PLAY " + adapterPosition);
 
         long id = entry.getId();
 
@@ -178,7 +189,7 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
         if (file != null && file.exists()) {
             Observable.timer(100, TimeUnit.MILLISECONDS)
                     .subscribe(aLong -> {
-                        AudioPlayer.sharedInstance.play(file, id, position, this);
+                        AudioPlayer.sharedInstance.play(file, id, adapterPosition, this);
                     });
         } else {
             System.out.println(">>>> AUDIO FILE IS NULL <<<<");
@@ -190,9 +201,12 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
      */
     @Override
     public void onPlaybackStart(long id, int position) {
+
+        System.out.println(">>>>> onPlaybackStart ADAPTER POSITION PLAY " + position);
+
         RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(position);
-        if (holder instanceof RecordsAdapter.VHAudioRecord) {
-            ((RecordsAdapter.VHAudioRecord) holder).buttonPlay.setImageResource(R.drawable.ic_stop);
+        if (holder instanceof RecordsSectionedAdapter.VHAudioRecord) {
+            ((RecordsSectionedAdapter.VHAudioRecord) holder).buttonPlay.setImageResource(R.drawable.ic_stop);
         }
     }
 
@@ -200,20 +214,20 @@ public class RecordsFragment extends Fragment implements RecordsAdapter.Callback
     public void onPlaybackStop(long id, int position) {
         RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(position);
         new Handler(Looper.getMainLooper()).post(() -> {
-            if (holder instanceof RecordsAdapter.VHAudioRecord) {
-                ((RecordsAdapter.VHAudioRecord) holder).buttonPlay.setImageResource(R.drawable.ic_play);
-                ((RecordsAdapter.VHAudioRecord) holder).waveformView.reset();
+            if (holder instanceof RecordsSectionedAdapter.VHAudioRecord) {
+                ((RecordsSectionedAdapter.VHAudioRecord) holder).buttonPlay.setImageResource(R.drawable.ic_play);
+                ((RecordsSectionedAdapter.VHAudioRecord) holder).waveformView.reset();
             }
         });
     }
 
     @Override
     public void playbackProgress(float progress, long id, int position) {
-        RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(position);
-        System.out.println(">>>>> progress " + progress);
 
-        if (holder instanceof RecordsAdapter.VHAudioRecord) {
-            ((RecordsAdapter.VHAudioRecord) holder).waveformView.setProgress(progress);
+        RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(position);
+
+        if (holder instanceof RecordsSectionedAdapter.VHAudioRecord) {
+            ((RecordsSectionedAdapter.VHAudioRecord) holder).waveformView.setProgress(progress);
         }
     }
 

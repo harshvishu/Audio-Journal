@@ -16,12 +16,12 @@ import android.view.ViewGroup;
  */
 
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-public class TextureViewPreview extends PreviewImpl {
+class TextureViewPreview extends PreviewImpl {
 
     private final TextureView _textureView;
     private int mDisplayOrientation;
 
-    public TextureViewPreview(Context context, ViewGroup parent) {
+    TextureViewPreview(Context context, ViewGroup parent) {
         final View view = LayoutInflater.from(context).inflate(R.layout.texture_view, parent);
         _textureView = (TextureView) view.findViewById(R.id.texture_view);
         _textureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {

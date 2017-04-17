@@ -42,14 +42,15 @@ public enum FragmentSections {
 
     public final int position;
 
+
     @DrawableRes
-    public final int drawable;
+    public final int icon;
     public final Fragment fragment;
     public final Class fragmentClass;
 
-    FragmentSections(int position, @DrawableRes int drawable, Fragment fragment, Class fragmentClass) {
+    FragmentSections(int position, @DrawableRes int icon, Fragment fragment, Class fragmentClass) {
         this.position = position;
-        this.drawable = drawable;
+        this.icon = icon;
         this.fragment = fragment;
         this.fragmentClass = fragmentClass;
     }
@@ -77,7 +78,7 @@ public enum FragmentSections {
                 break;
             }
             case reminders: {
-                long totalNumberOfReminders = realm.where(DataEntry.class).isNotNull("remind_at").count();
+                long totalNumberOfReminders = realm.where(DataEntry.class).isNotNull("reminder.remind_at").count();
                 s = String.format(Locale.getDefault(), "%2d", totalNumberOfReminders);
                 break;
             }
@@ -85,7 +86,26 @@ public enum FragmentSections {
         return s;
     }
 
-    public Drawable drawable(Context context) {
-        return ContextCompat.getDrawable(context, drawable);
+    public boolean isVisible(Realm realm) {
+        boolean visibile = true;
+        switch (this) {
+            case recorder: {
+                visibile = realm.where(DataEntry.class).count() > 0;
+                break;
+            }
+            case records: {
+                visibile = realm.where(DataEntry.class).count() > 0;
+                break;
+            }
+            case pictures: {
+                visibile = realm.where(Attachment.class).equalTo("fileType", FileUtils.Type.IMAGE.value).count() > 0;
+                break;
+            }
+            case reminders: {
+                visibile = realm.where(DataEntry.class).isNotNull("reminder.remind_at").count() > 0;
+                break;
+            }
+        }
+        return visibile;
     }
 }

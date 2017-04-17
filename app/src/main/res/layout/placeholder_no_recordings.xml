@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_gravity="center"
+    android:orientation="vertical"
+    android:padding="48dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        style="@style/Heading1.Bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/spacing.16"
+        android:text="It's pretty quiet in here."
+        android:textColor="@color/colorAccentSecondary"/>
+
+    <TextView
+        style="@style/Subhead"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="@dimen/spacing.16"
+        android:ellipsize="middle"
+        android:text="You don't have any recordings yet. Record some form app's recorder."
+        android:textColor="@color/colorAccentSecondary"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="@dimen/spacing.16"
+        android:layout_marginTop="@dimen/spacing.16"
+        android:contentDescription="@string/recordings"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/ic_easter_island"/>
+
+
+</LinearLayout>

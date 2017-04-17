@@ -3,7 +3,7 @@ package com.brotherpowers.audiojournal.Reminder;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.format.DateUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Switch;
@@ -11,10 +11,8 @@ import android.widget.TextView;
 
 import com.brotherpowers.audiojournal.Model.Reminder;
 import com.brotherpowers.audiojournal.R;
-import com.brotherpowers.audiojournal.Utils.Constants;
 import com.brotherpowers.audiojournal.Utils.Extensions;
-import com.brotherpowers.audiojournal.View.ALViewHolder;
-import com.brotherpowers.waveformview.Utils;
+import com.brotherpowers.audiojournal.View.VH;
 
 import butterknife.BindView;
 import io.realm.OrderedRealmCollection;
@@ -28,14 +26,16 @@ import io.realm.RealmRecyclerViewAdapter;
 
 public class ReminderAdapter extends RealmRecyclerViewAdapter<Reminder, ReminderAdapter.ViewHolderReminder> {
 
+    private final Context context;
 
     public ReminderAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<Reminder> data) {
-        super(context, data, true);
+        super(data, true);
+        this.context = context;
     }
 
     @Override
     public ViewHolderReminder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View holderView = inflater.inflate(R.layout.recyclerview_reminder, parent, false);
+        View holderView = LayoutInflater.from(context).inflate(R.layout.recyclerview_reminder, parent, false);
 
         return new ViewHolderReminder(holderView, (clickedView, position) -> {
             switch (clickedView.getId()) {
@@ -77,12 +77,12 @@ public class ReminderAdapter extends RealmRecyclerViewAdapter<Reminder, Reminder
         holder._labelReminderTime.setText(formattedTime);
 
         // If Reminder Set
-        holder._switchReminder.setChecked(reminder.isSet());
+        holder._switchReminder.setChecked(reminder.isEnable());
 
 
     }
 
-    static class ViewHolderReminder extends ALViewHolder implements View.OnClickListener {
+    static class ViewHolderReminder extends VH implements View.OnClickListener {
 
         @BindView(R.id.label_reminder_time)
         TextView _labelReminderTime;

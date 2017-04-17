@@ -7,12 +7,9 @@
              android:clipChildren="true"
              android:clipToPadding="true">
 
-
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/spacing.8"
-        android:layout_marginRight="@dimen/spacing.8"
         app:cardBackgroundColor="@color/cardBackgroundDark"
         app:cardCornerRadius="4dp"
         app:cardUseCompatPadding="true">
@@ -29,10 +26,10 @@
             <TextView
                 android:id="@+id/label_reminder_time"
                 style="@style/Caption.Large"
-                android:textColor="@color/primaryTextDark"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"/>
+                android:layout_centerVertical="true"
+                android:textColor="@color/primaryTextDark"/>
 
             <Switch
                 android:id="@+id/switch_reminder"

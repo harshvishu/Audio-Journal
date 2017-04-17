@@ -19,6 +19,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
@@ -28,6 +29,7 @@ import android.view.Surface;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -40,6 +42,8 @@ public class Camera2 extends CameraViewImpl {
     private static final String TAG = "Camera2";
 
     private static final SparseIntArray INTERNAL_FACINGS = new SparseIntArray();
+    private static final int MAX_PREVIEW_WIDTH = 1920;
+    private static final int MAX_PREVIEW_HEIGHT = 1080;
 
     static {
         INTERNAL_FACINGS.put(Constants.FACING_BACK, CameraCharacteristics.LENS_FACING_BACK);
@@ -394,6 +398,7 @@ public class Camera2 extends CameraViewImpl {
      * finished.
      */
     private void unlockFocus() {
+        if (!isCameraOpened()) return;
         // Reset the auto-focus trigger
         mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
                 CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
@@ -412,7 +417,6 @@ public class Camera2 extends CameraViewImpl {
     }
 
     private void lockFocus() {
-        System.out.println(">>>>>>> LOCK FOCUS");
 
         // This is how to tell the camera to lock focus.
         mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
@@ -472,7 +476,7 @@ public class Camera2 extends CameraViewImpl {
             // We treat it as facing back.
             mFacing = Constants.FACING_BACK;
             return true;
-        } catch (CameraAccessException e) {
+        } catch (SecurityException | CameraAccessException e) {
             throw new RuntimeException("Failed to get a list of camera devices", e);
         }
     }
@@ -557,15 +561,24 @@ public class Camera2 extends CameraViewImpl {
             surfaceLonger = surfaceWidth;
             surfaceShorter = surfaceHeight;
         }
-        SortedSet<Size> candidates = mPreviewSizes.sizes(mAspectRatio);
+        SortedSet<Size> allCandidates = mPreviewSizes.sizes(mAspectRatio);
+
+        // Eliminate candidates that are bigger than Camera2 PREVIEW guarantees
+        SortedSet<Size> guaranteedCandidates = new TreeSet<>();
+        for (Size size : allCandidates) {
+            if (size.getWidth() <= MAX_PREVIEW_WIDTH && size.getHeight() <= MAX_PREVIEW_HEIGHT) {
+                guaranteedCandidates.add(size);
+            }
+        }
+
         // Pick the smallest of those big enough.
-        for (Size size : candidates) {
+        for (Size size : guaranteedCandidates) {
             if (size.getWidth() >= surfaceLonger && size.getHeight() >= surfaceShorter) {
                 return size;
             }
         }
         // If no size is big enough, pick the largest one.
-        return candidates.last();
+        return guaranteedCandidates.last();
     }
 
     /**
@@ -644,7 +657,6 @@ public class Camera2 extends CameraViewImpl {
                 }
             }
         }
-
     };
 
 

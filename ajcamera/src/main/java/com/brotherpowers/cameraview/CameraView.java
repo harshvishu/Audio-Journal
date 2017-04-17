@@ -105,6 +105,12 @@ public class CameraView extends FrameLayout {
     @SuppressWarnings("WrongConstant")
     public CameraView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        if (isInEditMode()) {
+            mCallbacks = null;
+            mDisplayOrientationDetector = null;
+            return;
+        }
+
         // Internal setup
         final PreviewImpl preview = createPreviewImpl(context);
         mCallbacks = new CallbackBridge();
@@ -160,17 +166,25 @@ public class CameraView extends FrameLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        mDisplayOrientationDetector.enable(ViewCompat2.getDisplay(this));
+        if (!isInEditMode()) {
+            mDisplayOrientationDetector.enable(ViewCompat2.getDisplay(this));
+        }
     }
 
     @Override
     protected void onDetachedFromWindow() {
-        mDisplayOrientationDetector.disable();
+        if (!isInEditMode()) {
+            mDisplayOrientationDetector.disable();
+        }
         super.onDetachedFromWindow();
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (isInEditMode()) {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            return;
+        }
         // Handle android:adjustViewBounds
         if (mAdjustViewBounds) {
             if (!isCameraOpened()) {
@@ -477,12 +491,19 @@ public class CameraView extends FrameLayout {
             }
         }
 
-        public void reserveRequestLayoutOnOpen() {
+        @Override
+        public void onCameraNotAvailable() {
+            for (Callback callback : mCallbacks) {
+                callback.onCameraNotAvailable(CameraView.this);
+            }
+        }
+
+        void reserveRequestLayoutOnOpen() {
             mRequestLayoutOnOpen = true;
         }
     }
 
-    protected static class SavedState extends BaseSavedState {
+    private static class SavedState extends BaseSavedState {
 
         @Facing
         int facing;
@@ -550,7 +571,12 @@ public class CameraView extends FrameLayout {
         public void onPictureTaken(CameraView cameraView, byte[] data, int sensorOrientation, int displayOrientation) {
         }
 
-        public void supportedCameraModes(CameraView cameraView, SparseArray<String> modes){
+
+        public void supportedCameraModes(CameraView cameraView, SparseArray<String> modes) {
+
+        }
+
+        public void onCameraNotAvailable(CameraView cameraView) {
 
         }
     }

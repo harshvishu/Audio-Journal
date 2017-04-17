@@ -4,8 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +15,7 @@ import com.brotherpowers.audiojournal.Records.PhotosAdapter;
 import com.brotherpowers.audiojournal.Utils.Constants;
 import com.brotherpowers.audiojournal.Utils.DBHelper;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
+import com.brotherpowers.audiojournal.View.ContextRecyclerView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,7 +33,8 @@ import io.realm.Sort;
 public class PhotosFragment extends Fragment {
 
     @BindView(R.id.recycler_view)
-    RecyclerView recyclerView;
+    ContextRecyclerView recyclerView;
+
     private OnFragmentInteractionListener mListener;
     private PhotosAdapter photosAdapter;
 
@@ -53,25 +53,30 @@ public class PhotosFragment extends Fragment {
         return fragment;
     }
 
+    private RealmResults<Attachment> results;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        /// Initialize realm
+        Realm realm = Realm.getDefaultInstance();
+
         final long entry_id = getArguments().getLong(Constants.KEYS.entry_id, -1);
-        final Realm realm = Realm.getDefaultInstance();
-        final RealmResults<Attachment> attachments;
+
 
         if (entry_id > 0) {
             final DataEntry entry = DBHelper.findEntryForId(entry_id, realm).findFirst();        // Sync
-            attachments = DBHelper.images(entry).findAllSortedAsync("created_at", Sort.DESCENDING);       // Async
+            results = DBHelper.images(entry).findAllSortedAsync("created_at", Sort.DESCENDING);       // Async
         } else {
-
-            attachments = DBHelper.filterFilesForType(FileUtils.Type.IMAGE,
+            results = DBHelper.filterFilesForType(FileUtils.Type.IMAGE,
                     RealmQuery.createQuery(realm, Attachment.class))
                     .findAllSortedAsync("created_at", Sort.DESCENDING);
         }
+        photosAdapter = new PhotosAdapter(getContext(), results);
 
-        photosAdapter = new PhotosAdapter(getContext(), attachments);
+        /// Close realm
+        realm.close();
     }
 
     @Override
@@ -80,9 +85,23 @@ public class PhotosFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_photos, container, false);
         ButterKnife.bind(this, view);
 
+
+        /// Show placeholder if list is empty
+        results.addChangeListener(changeSet -> showPlaceholder(changeSet.isEmpty()));
+
         // Set the  adapter to photos
         recyclerView.setAdapter(photosAdapter);
         return view;
+    }
+
+    /**
+     * Show hide placeholder
+     */
+    public void showPlaceholder(boolean visible) {
+        View view = getView();
+        if (view != null) {
+            ButterKnife.findById(view, R.id.placeholder_container).setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
     }
 
 

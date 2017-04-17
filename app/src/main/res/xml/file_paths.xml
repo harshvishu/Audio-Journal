@@ -3,8 +3,12 @@
     <external-files-path
         name="images"
         path="image/"/>
+
     <external-files-path
         name="audios"
         path="audio/"/>
 
+    <external-files-path
+        name="root"
+        path="."/>
 </paths>

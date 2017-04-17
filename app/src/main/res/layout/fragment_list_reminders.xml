@@ -1,0 +1,38 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.brotherpowers.audiojournal.Reminder.ReminderListFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/reminder_header"
+        android:orientation="vertical">
+
+        <com.brotherpowers.audiojournal.View.ContextRecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            tools:listitem="@layout/recyclerview_reminder"/>
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/placeholder_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/windowBackgroundDark">
+
+        <include layout="@layout/placeholder_no_reminders"/>
+    </FrameLayout>
+
+    <include
+        android:id="@+id/reminder_header"
+        layout="@layout/current_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</RelativeLayout>

@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="56dp"
-    android:layout_marginLeft="@dimen/spacing.8"
-    android:layout_marginRight="@dimen/spacing.8"
-    app:cardBackgroundColor="@color/cardBackgroundDark"
-    app:cardCornerRadius="4dp"
-    app:cardUseCompatPadding="true">
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:minHeight="@dimen/min_recycler_view_placeholder_height"
+    android:orientation="vertical">
 
     <TextView
         style="@style/Caption"
@@ -21,4 +18,4 @@
         android:gravity="center"
         android:text="@string/you_have_no_entry_in_your_journal"
         android:textSize="17sp"/>
-</android.support.v7.widget.CardView>
+</LinearLayout>

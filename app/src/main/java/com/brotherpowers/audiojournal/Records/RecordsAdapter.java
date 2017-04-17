@@ -7,12 +7,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.support.v4.util.LongSparseArray;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.PopupMenuCompat;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -24,9 +21,8 @@ import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Utils.Extensions;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
-import com.brotherpowers.audiojournal.View.ALViewHolder;
+import com.brotherpowers.audiojournal.View.VH;
 import com.brotherpowers.waveformview.WaveformView;
-import com.crashlytics.android.Crashlytics;
 
 import java.io.File;
 
@@ -39,73 +35,70 @@ import io.realm.RealmRecyclerViewAdapter;
  * Created by harsh_v on 11/4/16.
  */
 
-class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
-    final LongSparseArray<short[]> cachedSamples;
-    private final int VIEW_PLACEHOLDER = 0;
-    private final int VIEW_ITEM = 1;
-    private Callback callback;
+class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, VH> {
+    private static final int VIEW_ITEM = 1;
 
+    private final Context context;
+    private final LongSparseArray<short[]> cachedSamples;
+    private final Callback callback;
 
-    RecordsAdapter(@NonNull Context context, Callback callback, @Nullable OrderedRealmCollection<DataEntry> data) {
-        super(context, data, true);
+    private RecordsAdapter(@NonNull Context context, Callback callback, @Nullable OrderedRealmCollection<DataEntry> data) {
+        super(data, true);
+        this.context = context;
         this.callback = callback;
         cachedSamples = new LongSparseArray<>();
     }
 
     @Override
-    public ALViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ALViewHolder ALViewHolder;
+    public VH onCreateViewHolder(ViewGroup parent, int viewType) {
+        VH VH;
         Context context = parent.getContext();
 
-        if (viewType == VIEW_PLACEHOLDER) {
-            View view = LayoutInflater.from(context).inflate(R.layout.recyclerview_data_entry_placeholder, parent, false);
-            ALViewHolder = new VHPlaceHolder(view, null);
-        } else {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_data_entry_item, parent, false);
-            ALViewHolder = new VHAudioRecord(view, (item_view, position) -> {
 
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_data_entry_item, parent, false);
+        VH = new VHAudioRecord(view, (item_view, position) -> {
 
-                switch (item_view.getId()) {
-                    case R.id.action_textEditor:
-                        callback.actionTextEditor(position);
-                        break;
-                    case R.id.action_play:
-                        callback.actionPlay(position);
-                        break;
-                    case R.id.action_camera:
-                        callback.actionCamera(position);
-                        break;
-                    case R.id.action_reminder:
-                        callback.addReminder(position);
-                        break;
-                    case R.id.action_more:
-                        PopupMenu popupMenu = new PopupMenu(context, item_view, Gravity.BOTTOM | Gravity.START);
-                        popupMenu.inflate(R.menu.menu_records_more);
-                        popupMenu.setOnMenuItemClickListener(item -> {
-                            switch (item.getItemId()) {
-                                case R.id.action_delete:
-                                    // Call for delete
-                                    callback.actionDelete(position);
-                                    break;
-                                case R.id.action_sync:
-                                    break;
-                            }
-                            return false;
-                        });
-                        popupMenu.show();
+            switch (item_view.getId()) {
+                case R.id.action_textEditor:
+                    callback.actionTextEditor(position);
+                    break;
+                case R.id.action_play:
+                    callback.actionPlay(position);
+                    break;
+                case R.id.action_camera:
+                    callback.actionCamera(position);
+                    break;
+                case R.id.action_reminder:
+                    callback.addReminder(position);
+                    break;
+                case R.id.action_more:
+                    PopupMenu popupMenu = new PopupMenu(context, item_view, Gravity.BOTTOM | Gravity.START);
+                    popupMenu.inflate(R.menu.menu_records_more);
+                    popupMenu.setOnMenuItemClickListener(item -> {
+                        switch (item.getItemId()) {
+                            case R.id.action_delete:
+                                // Call for delete
+                                callback.actionDelete(position);
+                                break;
+                            case R.id.action_sync:
+                                break;
+                        }
+                        return false;
+                    });
+                    popupMenu.show();
 
-                        System.out.println(">>> GRAVITY :" + (80 | 20));
+                    System.out.println(">>> GRAVITY :" + (80 | 20));
 
 //                        callback.actionMore(position);
-                        break;
-                }
-            });
-        }
-        return ALViewHolder;
+                    break;
+            }
+        });
+
+        return VH;
     }
 
     @Override
-    public void onBindViewHolder(ALViewHolder holder, int position) {
+    public void onBindViewHolder(VH holder, int position) {
 
         //While binding an audio record
         if (holder instanceof VHAudioRecord) {
@@ -175,22 +168,7 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
      */
     @Override
     public int getItemViewType(int position) {
-        return getActualSizeOfData() == 0 ? VIEW_PLACEHOLDER : VIEW_ITEM;
-    }
-
-    @Override
-    public int getItemCount() {
-        int count = getActualSizeOfData();
-        return count == 0 ? 1 : count;
-    }
-
-    /**
-     * Untitled.png
-     *
-     * @return size of the actual data we are using for this adapter
-     */
-    public int getActualSizeOfData() {
-        return super.getItemCount();
+        return VIEW_ITEM;
     }
 
 
@@ -208,21 +186,12 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
         void actionMore(int position);
     }
 
-    static class VHAudioRecord extends ALViewHolder {
+    static class VHAudioRecord extends VH {
         @BindView(R.id.label_title)
         TextView labelTitle;
 
         @BindView(R.id.action_play)
         ImageButton buttonPlay;
-
-       /* @BindView(R.id.action_textEditor)
-        ImageButton buttonTextEditor;
-
-        @BindView(R.id.action_camera)
-        ImageButton buttonCamera;
-
-        @BindView(R.id.action_reminder)
-        ImageButton buttonReminder;*/
 
         @BindView(R.id.wave_view)
         WaveformView waveformView;
@@ -231,27 +200,12 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, ALViewHolder> {
         VHAudioRecord(View itemView, VhClick vhClick) {
             super(itemView, vhClick);
 
-//            buttonTextEditor.setOnClickListener(this);
-//            buttonPlay.setOnClickListener(this);
-//            buttonCamera.setOnClickListener(this);
-//            buttonReminder.setOnClickListener(this);
         }
 
         @OnClick({R.id.action_camera, R.id.action_textEditor, R.id.action_play, R.id.action_reminder, R.id.action_more})
-        void cliclEvent(View view) {
+        void clickEvent(View view) {
             vhClick.onItemClick(view, getAdapterPosition());
         }
-
-       /* @Override
-        public void onClick(View view) {
-            vhClick.onItemClick(view, getAdapterPosition());
-        }*/
     }
 
-    static class VHPlaceHolder extends ALViewHolder {
-
-        VHPlaceHolder(View itemView, VhClick vhClick) {
-            super(itemView, vhClick);
-        }
-    }
 }

@@ -2,15 +2,25 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
+             android:animateLayoutChanges="true"
              tools:context="com.brotherpowers.audiojournal.Records.RecordsFragment">
 
-    <android.support.v7.widget.RecyclerView
+    <com.brotherpowers.audiojournal.View.ContextRecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
         android:paddingBottom="@dimen/spacing.16"
-        android:paddingLeft="@dimen/spacing.8"
-        android:paddingRight="@dimen/spacing.8"/>
+        tools:listitem="@layout/recyclerview_data_entry_item"/>
+
+    <FrameLayout
+        android:id="@+id/placeholder_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/windowBackgroundDark">
+
+        <include layout="@layout/placeholder_no_recordings"/>
+    </FrameLayout>
+
 
 </FrameLayout>
