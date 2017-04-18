@@ -11,6 +11,7 @@ import android.util.Log;
 import com.brotherpowers.audiojournal.Reminder.ReminderBroadcastReceiver;
 import com.brotherpowers.audiojournal.Utils.Constants;
 import com.brotherpowers.audiojournal.Utils.Extensions;
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -208,6 +209,7 @@ public class DataEntry extends RealmObject implements RealmDelegate {
             Extensions.delete(audioFile.file(context));
             audioFile.deleteFromRealm();
         } catch (Exception ignored) {
+            Crashlytics.logException(ignored);
         }
 
         remindAt(null, context);

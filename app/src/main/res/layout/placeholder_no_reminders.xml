@@ -9,13 +9,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <TextView
-        style="@style/Heading1.Bold"
+        style="@style/Heading1"
+        android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/spacing.16"
         android:text="Never forget your recordings."
-        android:textColor="@color/colorAccentSecondary"/>
+        android:textColor="@color/controlNormal"/>
 
     <TextView
         style="@style/Subhead"
@@ -25,7 +26,7 @@
         android:layout_marginBottom="@dimen/spacing.16"
         android:ellipsize="middle"
         android:text="You haven't set any reminders. Set reminders to listen recordings any time."
-        android:textColor="@color/colorAccentSecondary"/>
+        android:textColor="@color/controlNormal"/>
 
     <ImageView
         android:layout_width="wrap_content"

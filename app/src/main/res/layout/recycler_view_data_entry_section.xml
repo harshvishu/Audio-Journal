@@ -14,6 +14,6 @@
         android:layout_gravity="start"
         android:ellipsize="middle"
         android:text="Section"
-        android:textColor="@color/accentTextColor"
+        android:textColor="@color/textSecondary"
         android:gravity="center_vertical"/>
 </LinearLayout>

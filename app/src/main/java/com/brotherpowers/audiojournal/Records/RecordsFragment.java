@@ -181,9 +181,7 @@ public class RecordsFragment extends Fragment implements RecordsSectionedAdapter
         File file = entry.audioFile().file(getContext());
         if (file != null && file.exists()) {
             Observable.timer(100, TimeUnit.MILLISECONDS)
-                    .subscribe(aLong -> {
-                        AudioPlayer.sharedInstance.play(file, id, adapterPosition, this);
-                    });
+                    .subscribe(aLong -> AudioPlayer.sharedInstance.play(file, id, adapterPosition, this));
         } else {
             System.out.println(">>>> AUDIO FILE IS NULL <<<<");
         }
@@ -193,19 +191,17 @@ public class RecordsFragment extends Fragment implements RecordsSectionedAdapter
      * Configure the view when audio starts
      */
     @Override
-    public void onPlaybackStart(long id, int position) {
+    public void onPlaybackStart(long id, int adapterPosition) {
 
-        System.out.println(">>>>> onPlaybackStart ADAPTER POSITION PLAY " + position);
-
-        RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(position);
+        RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(adapterPosition);
         if (holder instanceof RecordsSectionedAdapter.VHAudioRecord) {
             ((RecordsSectionedAdapter.VHAudioRecord) holder).buttonPlay.setImageResource(R.drawable.ic_stop);
         }
     }
 
     @Override
-    public void onPlaybackStop(long id, int position) {
-        RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(position);
+    public void onPlaybackStop(long id, int positiadapterPositionn) {
+        RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(positiadapterPositionn);
         new Handler(Looper.getMainLooper()).post(() -> {
             if (holder instanceof RecordsSectionedAdapter.VHAudioRecord) {
                 ((RecordsSectionedAdapter.VHAudioRecord) holder).buttonPlay.setImageResource(R.drawable.ic_play);
@@ -215,9 +211,9 @@ public class RecordsFragment extends Fragment implements RecordsSectionedAdapter
     }
 
     @Override
-    public void playbackProgress(float progress, long id, int position) {
+    public void playbackProgress(float progress, long id, int adapterPosition) {
 
-        RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(position);
+        RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(adapterPosition);
 
         if (holder instanceof RecordsSectionedAdapter.VHAudioRecord) {
             ((RecordsSectionedAdapter.VHAudioRecord) holder).waveformView.setProgress(progress);

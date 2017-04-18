@@ -18,4 +18,12 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="@dimen/spacing.16"
         android:layout_marginTop="?attr/actionBarSize"/>
+
+    <ImageView
+        android:id="@+id/image_view"
+        android:scaleType="fitXY"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/picture"
+        android:visibility="gone"/>
 </RelativeLayout>

@@ -28,8 +28,7 @@
                 style="@style/Caption.Large"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:textColor="@color/primaryTextDark"/>
+                android:layout_centerVertical="true"/>
 
             <Switch
                 android:id="@+id/switch_reminder"

@@ -8,12 +8,9 @@
     <color name="colorPrimary">#2C3239</color>
     <color name="colorPrimaryDark">#22262B</color>
     <color name="colorAccent">#FF696A</color>
-    <color name="colorAccentSecondary">#F5EBE2</color>
 
-    <color name="accentTextColor">#868789</color>
+    <color name="controlNormal">#F5EBE2</color>
 
-    <!--<color name="hashGreen">#8BC34A</color>-->
-    <!--<color name="limeGreen">#CDDC39</color>-->
     <color name="cardBackgroundDark">#252A2F</color>
     <color name="cardBackgroundLight">#F4FAFA</color>
 
@@ -22,12 +19,6 @@
     <color name="windowBackgroundDark">#1E2327</color>
     <color name="windowBackgroundLight">#F4FAFA</color>
 
-    <color name="primaryTextDark">#F4FAFA</color>
-    <color name="primaryTextLight">#2C3239</color>
-
-    <color name="secondaryTextDark">#F4FAFA</color>
-    <color name="secondaryTextLight">#2C3239</color>
-
     <color name="buttonDark">#F4FAFA</color>
     <color name="buttonLight">#404346</color>
 
@@ -35,4 +26,8 @@
     <color name="viewpager_inactive">#5af4fafa</color>
 
     <color name="black_overlay">#66000000</color>
+
+    <color name="textPrimary">#F5EBE2</color>
+    <color name="textSecondary">#5C6466</color>
+    <color name="textTertiary">#5C6466</color>
 </resources>

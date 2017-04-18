@@ -4,6 +4,7 @@ package com.brotherpowers.audiojournal.Camera;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.os.Build;
@@ -22,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -29,26 +31,27 @@ import android.widget.Toast;
 import com.brotherpowers.audiojournal.Model.Attachment;
 import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.brotherpowers.audiojournal.R;
-import com.brotherpowers.audiojournal.Records.PhotosAdapter;
-import com.brotherpowers.audiojournal.Utils.CircleTransform;
 import com.brotherpowers.audiojournal.Utils.Constants;
 import com.brotherpowers.audiojournal.Utils.DBHelper;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
 import com.brotherpowers.audiojournal.View.PermissionRequestFragment;
 import com.brotherpowers.cameraview.CameraView;
-import com.bumptech.glide.Glide;
 import com.wefika.horizontalpicker.HorizontalPicker;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableObserver;
 import io.realm.Realm;
 
 /**
@@ -72,15 +75,16 @@ public class CameraFragment extends Fragment {
     @BindView(R.id.cameraView)
     CameraView _cameraView;
 
-    @BindView(R.id.imageView)
-    ImageView _imageView;
-
     @BindView(R.id.take_picture)
     ImageButton _imageButton;
 
     @BindView(R.id.color_mode_picker)
     HorizontalPicker _colorModePicker;
 
+    @BindView(R.id.image_view)
+    ImageView _CaptureImageView;
+
+    private CompositeDisposable disposable = new CompositeDisposable();
     private Handler mBackgroundHandler;
     private int mCurrentFlash;
     private long entry_id;
@@ -146,7 +150,7 @@ public class CameraFragment extends Fragment {
 
                     // Load the image
                     // Set the Image View
-                    uiHandler.post(() -> loadImage(attachment));
+//                    uiHandler.post(() -> loadImage(attachment));
 
                     os.close();
 
@@ -157,6 +161,46 @@ public class CameraFragment extends Fragment {
                     pictureTaken.set(false);
                 }
             });
+
+            disposable.add(Observable.just(data)
+                    .map(bytes -> BitmapFactory.decodeByteArray(bytes, 0, data.length))
+                    .subscribeOn(AndroidSchedulers.from(getBackgroundHandler().getLooper()))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .map(bitmap -> {
+                        _CaptureImageView.setTranslationX(0.0f);
+                        _CaptureImageView.setImageBitmap(bitmap);
+                        _CaptureImageView.setVisibility(View.VISIBLE);
+                        return _CaptureImageView;
+                    })
+                    .map(imageView -> {
+                        imageView.animate()
+                                .setDuration(1000)
+                                .translationXBy(1000)
+//                                .translationYBy(100)
+                                .setInterpolator(new OvershootInterpolator())
+                                .start();
+                        return imageView;
+                    })
+                    .delay(1200, TimeUnit.MILLISECONDS)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(new DisposableObserver<ImageView>() {
+                        @Override
+                        public void onNext(ImageView imageView) {
+                            imageView.setVisibility(View.GONE);
+                            imageView.setImageBitmap(null);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
+                        }
+
+                        @Override
+                        public void onComplete() {
+
+                        }
+                    }));
+
         }
 
         @Override
@@ -196,9 +240,9 @@ public class CameraFragment extends Fragment {
         final Realm realm = Realm.getDefaultInstance();
         final DataEntry entry = DBHelper.findEntryForId(entry_id, realm).findFirst();        // Sync
         Attachment attachment = DBHelper.images(entry).findFirst();       // Async
-        if (attachment != null) {
+        /*if (attachment != null) {
             loadImage(attachment);
-        }
+        }*/
 
         _imageButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -302,6 +346,8 @@ public class CameraFragment extends Fragment {
             }
             mBackgroundHandler = null;
         }
+        // Dispose all
+        disposable.dispose();
         super.onDestroy();
     }
 
@@ -343,7 +389,7 @@ public class CameraFragment extends Fragment {
     /**
      * Load image from attachment into imageView
      */
-    private void loadImage(Attachment attachment) {
+    /*private void loadImage(Attachment attachment) {
         final int thumbnailSize = getResources().getDimensionPixelSize(R.dimen.camera_control_size);
         Glide.with(getContext())
                 .load(attachment.file(getContext()))
@@ -353,9 +399,8 @@ public class CameraFragment extends Fragment {
                 .bitmapTransform(new CircleTransform(getContext()))
                 .override(thumbnailSize, thumbnailSize)
                 .into(_imageView);
-    }
-
-    @OnClick(R.id.imageView)
+    }*/
+    /*@OnClick(R.id.imageView)
     void onImageClick() {
         final Realm realm = Realm.getDefaultInstance();
         final DataEntry entry = DBHelper.findEntryForId(entry_id, realm).findFirst();        // Sync
@@ -363,9 +408,7 @@ public class CameraFragment extends Fragment {
         if (DBHelper.images(entry).count() > 0 && mListener != null) {
             mListener.openGalleryForDataEntry(entry_id);
         }
-    }
-
-
+    }*/
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

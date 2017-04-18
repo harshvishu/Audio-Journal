@@ -150,10 +150,10 @@ public class AudioPlayer {
     }
 
     public interface PlaybackListener {
-        void onPlaybackStart(long id, int position);
+        void onPlaybackStart(long id, int adapterPosition);
 
-        void onPlaybackStop(long id, int position);
+        void onPlaybackStop(long id, int adapterPosition);
 
-        void playbackProgress(float progress, long id, int position);
+        void playbackProgress(float progress, long id, int adapterPosition);
     }
 }
