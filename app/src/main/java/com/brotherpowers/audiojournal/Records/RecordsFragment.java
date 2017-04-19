@@ -13,8 +13,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -23,7 +21,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import com.brotherpowers.audiojournal.AudioRecorder.AudioPlayer;
-import com.brotherpowers.audiojournal.Main.SectionedRealmAdapter;
 import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.brotherpowers.audiojournal.Model.Reminder;
 import com.brotherpowers.audiojournal.R;
@@ -32,19 +29,13 @@ import com.brotherpowers.audiojournal.View.ContextRecyclerView;
 import com.brotherpowers.audiojournal.View.DateTimePicker;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
-import io.reactivex.observables.GroupedObservable;
-import io.reactivex.observers.DisposableObserver;
 import io.realm.Realm;
-import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -265,7 +256,7 @@ public class RecordsFragment extends Fragment implements RecordsSectionedAdapter
                 dateTimePicker.setDate(date);
 
                 // If we have a valid reminder then we can also cancel it
-                builder.setNeutralButton(R.string.Remove, null);
+                builder.setNeutralButton(R.string.remove, null);
             }
 
             return builder.create();

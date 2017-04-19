@@ -27,7 +27,7 @@
 
     <color name="black_overlay">#66000000</color>
 
-    <color name="textPrimary">#F5EBE2</color>
+    <!--<color name="textAccent">#F5EBE2</color>-->
     <color name="textSecondary">#5C6466</color>
     <color name="textTertiary">#5C6466</color>
 </resources>

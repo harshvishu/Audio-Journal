@@ -26,17 +26,18 @@
                 android:orientation="vertical">
 
                 <TextView
-                    style="@style/Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/duration"/>
+                    android:text="@string/duration"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    />
 
                 <TextView
                     android:id="@+id/label_total_recording_duration"
-                    style="@style/Heading3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="00:00:00"/>
+                    android:text="00:00:00"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
             </LinearLayout>
 
             <View
@@ -54,17 +55,17 @@
                 android:orientation="vertical">
 
                 <TextView
-                    style="@style/Caption"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/recordings"/>
+                    android:text="@string/recordings"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
                 <TextView
                     android:id="@+id/label_total_records"
-                    style="@style/Heading3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0"/>
+                    android:text="0"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
 
             </LinearLayout>
 

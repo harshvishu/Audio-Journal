@@ -27,8 +27,7 @@
                 android:layout_margin="8dp"
                 android:lines="1"
                 android:text="Mon, 21 Nov 2016 12:44 AM"
-                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                android:textColor="@color/textPrimary"/>
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
 
             <RelativeLayout
@@ -61,7 +60,6 @@
                     android:layout_toRightOf="@id/action_play"
                     android:textAppearance="@style/TextAppearance.AppCompat.Widget.DropDownItem"
                     app:markerColor="@color/colorAccent"
-                    app:timeCodeColor="@color/textPrimary"
                     app:waveFillColor="@color/controlNormal"/>
 
             </RelativeLayout>

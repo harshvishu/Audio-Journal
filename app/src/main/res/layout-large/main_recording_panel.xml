@@ -25,7 +25,7 @@
         android:layout_centerInParent="true"
         android:layout_gravity="center"
         android:padding="@dimen/spacing.16"
-        android:textColor="@color/textPrimary"
+        android:textColor="@android:color/primary_text_dark"
         app:backgroundColor="@color/textTertiary"
         app:drawable="@drawable/ic_alarm_white"
         app:endAngle="275"

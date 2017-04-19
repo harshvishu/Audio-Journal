@@ -1,12 +1,12 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.DayNight.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">@color/windowBackgroundLight</item>
+        <!--<item name="android:windowBackground">@color/windowBackgroundLight</item>-->
         <item name="android:alertDialogStyle">@style/AlertDialog</item>
     </style>
 
@@ -22,7 +22,7 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="android:textColorSecondary">@color/controlNormal</item>
+        <!--<item name="android:textColorSecondary">@color/controlNormal</item>-->
         <!--<item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>-->
         <!--<item name="metaButtonBarButtonStyle">?android:attr/buttonBarButtonStyle</item>-->
     </style>
@@ -32,48 +32,45 @@
     </style>-->
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="colorControlNormal">@color/controlNormal</item>
-        <item name="android:textColorSecondary">@color/controlNormal</item>
+        <!--<item name="colorControlNormal">@color/controlNormal</item>-->
+        <!--<item name="android:textColorSecondary">@color/controlNormal</item>-->
     </style>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
-
-    <style name="TextView" parent="android:Widget.TextView">
-        <item name="android:textColor">@drawable/text_color_primary</item>
-    </style>
 
     <style name="AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorPrimary">@color/colorPrimary</item>
     </style>
 
-    <style name="Heading3" parent="TextView">
-        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Headline</item>
+   <!-- <style name="TextViewAccent" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/textAccent</item>
     </style>
 
-    <style name="Heading3.Large">
-        <item name="android:textSize">32sp</item>
+    <style name="TextViewAccent.Heading">
+        <item name="android:textSize">18sp</item>
     </style>
 
-    <style name="Caption" parent="TextView">
-        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Caption</item>
+    <style name="TextViewAccent.Heading.Large">
+        <item name="android:textSize">22sp</item>
     </style>
 
-    <style name="Caption.Large">
-        <item name="android:textSize">16sp</item>
+    <style name="TextViewLight" parent="android:Widget.TextView">
+        <item name="android:textColor">@android:color/primary_text_dark</item>
     </style>
 
-    <style name="Heading1" parent="TextView">
-        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Headline</item>
-        <item name="android:textSize">16sp</item>
-        <item name="android:gravity">center_horizontal</item>
+    <style name="TextViewLight.Heading">
+        <item name="android:textSize">18sp</item>
     </style>
 
-    <style name="Subhead" parent="TextView">
-        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Subhead</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:gravity">center_horizontal</item>
+    <style name="TextViewLight.Heading.Large">
+        <item name="android:textSize">22sp</item>
     </style>
+
+    <style name="TextViewLight.Heading.Display">
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Display1</item>
+        <item name="android:textSize">22sp</item>
+    </style>-->
 
 </resources>

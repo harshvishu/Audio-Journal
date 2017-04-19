@@ -11,11 +11,13 @@
         android:id="@+id/toolbar_actions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_alignParentTop="true"
-        android:orientation="horizontal">
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
         <include
-            layout="@layout/max_duration_label"
+            layout="@layout/time_limit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -35,7 +37,7 @@
 
     <include
         android:id="@+id/info_labels"
-        layout="@layout/recording_info_labels"
+        layout="@layout/storage_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
