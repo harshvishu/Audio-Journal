@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="ProgressView">
-        <attr name="progressColor" format="color"/>
+        <attr name="progressColorStart" format="color"/>
+        <attr name="progressColorEnd" format="color"/>
         <attr name="backgroundColor" format="color"/>
         <attr name="android:textColor"/>
         <attr name="android:textSize"/>

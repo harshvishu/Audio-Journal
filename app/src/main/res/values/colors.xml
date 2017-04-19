@@ -7,7 +7,7 @@
 
     <color name="colorPrimary">#2C3239</color>
     <color name="colorPrimaryDark">#22262B</color>
-    <color name="colorAccent">#FF696A</color>
+    <color name="colorAccent">#4CAF50</color>
 
     <color name="controlNormal">#F5EBE2</color>
 
@@ -30,4 +30,7 @@
     <!--<color name="textAccent">#F5EBE2</color>-->
     <color name="textSecondary">#5C6466</color>
     <color name="textTertiary">#5C6466</color>
+
+    <color name="progressStart">#388E3C</color>
+    <color name="progressEnd">#4CAF50</color>
 </resources>

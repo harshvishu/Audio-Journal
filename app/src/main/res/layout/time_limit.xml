@@ -22,14 +22,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/time_limit"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
         <TextView
             android:id="@+id/label_max_recording_duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="60 Sec"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
     </LinearLayout>
 
 </android.support.v7.widget.CardView>

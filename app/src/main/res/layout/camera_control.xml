@@ -20,6 +20,7 @@
         android:paddingBottom="16dp"
         android:paddingTop="16dp"
         android:textSize="16sp"
+        android:textColor="@android:color/primary_text_dark"
         app:sideItems="1"/>
 
     <RelativeLayout

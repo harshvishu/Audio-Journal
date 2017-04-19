@@ -36,8 +36,6 @@ import static com.brotherpowers.hvprogressview.Utils.Defaults.TEXT_START_TIME;
 public class ProgressView extends View {
 
 
-
-
     public ProgressView(Context context) {
         super(context);
         init(context, null, 0);
@@ -65,18 +63,17 @@ public class ProgressView extends View {
     private float endAngle = 360;
     private float sweepAngle;           // Current angle from progress
     private float knobOffset;           // Offset for Knob
+    private float initialSweepAngle = 0f;
     private int knobRadius;
     private int max = 100;
-
     private int counterTextSize;
     private int headerTextSize;
 
+    private int progressColorStart;
+    private int progressColorEnd;
 
     private Drawable drawableKnob;
-
-    private float initialSweepAngle = 0f;
     private UIListener uiListener;
-
     private BoringLayout textLayoutCounter;
     private BoringLayout textLayoutHeader;
     private BoringLayout.Metrics boringMetrics;
@@ -87,7 +84,9 @@ public class ProgressView extends View {
         defaults = new Defaults(context);
 
         TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.ProgressView, defStyle, 0);
-        final int progressColor = array.getColor(R.styleable.ProgressView_progressColor, ContextCompat.getColor(context, R.color.progressColor));
+        progressColorStart = array.getColor(R.styleable.ProgressView_progressColorStart, ContextCompat.getColor(context, R.color.progressColor));
+        progressColorEnd = array.getColor(R.styleable.ProgressView_progressColorEnd, ContextCompat.getColor(context, R.color.progressColor));
+
         final int backgroundColor = array.getColor(R.styleable.ProgressView_backgroundColor, ContextCompat.getColor(context, R.color.backgroundColor));
 
         ColorStateList counterTextColor = array.getColorStateList(R.styleable.ProgressView_android_textColor);
@@ -260,7 +259,7 @@ public class ProgressView extends View {
         super.onSizeChanged(w, h, oldw, oldh);
         bounds.set(getPaddingLeft(), getPaddingTop(), w - getPaddingRight(), h - getPaddingBottom());
 
-        SweepGradient sweepGradient = new SweepGradient(bounds.centerX(), bounds.centerY(), Color.parseColor("#DC592F"), Color.parseColor("#D74265"));
+        SweepGradient sweepGradient = new SweepGradient(bounds.centerX(), bounds.centerY(), progressColorStart, progressColorEnd);
         Matrix matrix = new Matrix();
         matrix.postRotate(startAngle - endAngle);
         sweepGradient.setLocalMatrix(matrix);
