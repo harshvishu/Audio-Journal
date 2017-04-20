@@ -11,7 +11,7 @@
 
     <string name="picture">Picture</string>
     <string name="title_activity_camera">Camera </string>
-    <string name="title_activity_text_editor">Text Editor</string>
+    <string name="title_text_editor">Notes</string>
 
     <string name="camera_permission_confirmation">App needs camera permission in order to take pictures.</string>
     <string name="camera_permission_not_granted">Cannot take pictures without camera permission.</string>

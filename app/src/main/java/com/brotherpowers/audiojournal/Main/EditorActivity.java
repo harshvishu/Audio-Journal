@@ -71,6 +71,7 @@ public class EditorActivity extends AppCompatActivity {
             Fragment fragment = null;
             switch (task_id) {
                 case TaskNote:
+                    setTitle(R.string.title_text_editor);
                     fragment = TextEditorFragment.newInstance(entry_id);
                     break;
             }
