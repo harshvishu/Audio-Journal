@@ -32,8 +32,8 @@
         <ImageButton
             android:id="@id/action_flash"
             style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="@dimen/camera_control_button"
+            android:layout_height="@dimen/camera_control_button"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
@@ -46,8 +46,8 @@
         <ImageButton
             android:id="@+id/take_picture"
             style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="@dimen/camera_control_button"
+            android:layout_height="@dimen/camera_control_button"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_gravity="center"
@@ -58,8 +58,8 @@
         <ImageButton
             android:id="@id/action_switch_camera"
             style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="@dimen/camera_control_button"
+            android:layout_height="@dimen/camera_control_button"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"

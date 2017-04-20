@@ -1,27 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<FrameLayout
+    android:id="@+id/frame_container"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.brotherpowers.audiojournal.Main.MainActivity"
-    tools:showIn="@layout/app_bar_camera">
-
-    <com.brotherpowers.audiojournal.View.AJViewPager
-        android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-    <com.viewpagerindicator.CirclePageIndicator
-        android:id="@+id/viewpager_indicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:padding="@dimen/spacing.8"
-        app:fillColor="@color/viewpager_active"
-        app:pageColor="@color/viewpager_inactive"
-        app:strokeColor="@android:color/transparent"/>
-
-</RelativeLayout>
+    tools:showIn="@layout/app_bar_camera"/>

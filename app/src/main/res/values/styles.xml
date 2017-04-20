@@ -6,13 +6,18 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <!--<item name="android:windowBackground">@color/windowBackgroundDark</item>-->
-        <item name="android:alertDialogStyle">@style/AlertDialog</item>
+        <item name="android:windowBackground">@color/windowBackgroundDark</item>
+        <!--<item name="android:alertDialogStyle">@style/AlertDialog</item>-->
     </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <!--<item name="colorControlNormal">@color/controlNormal</item>-->
+        <!--<item name="android:textColorSecondary">@color/controlNormal</item>-->
     </style>
 
     <style name="AppTheme.FullScreen">
@@ -22,17 +27,8 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
-        <!--<item name="android:textColorSecondary">@color/controlNormal</item>-->
-        <!--<item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>-->
-        <!--<item name="metaButtonBarButtonStyle">?android:attr/buttonBarButtonStyle</item>-->
-    </style>
-
-    <!--<style name="FullscreenActionBarStyle" parent="Widget.AppCompat.ActionBar">
-        <item name="android:background">@color/black_overlay</item>
-    </style>-->
-
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-        <!--<item name="colorControlNormal">@color/controlNormal</item>-->
+        <item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>
+        <item name="metaButtonBarButtonStyle">?android:attr/buttonBarButtonStyle</item>
         <!--<item name="android:textColorSecondary">@color/controlNormal</item>-->
     </style>
 

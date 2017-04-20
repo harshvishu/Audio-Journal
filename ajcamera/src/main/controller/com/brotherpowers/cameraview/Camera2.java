@@ -104,7 +104,6 @@ public class Camera2 extends CameraViewImpl {
 
     private int mFlash;
 
-    private int mDisplayOrientation;
 
     private int mSensorOrientation;
 
@@ -405,6 +404,7 @@ public class Camera2 extends CameraViewImpl {
         try {
             updateAutoFocus();
             updateFlash();
+
             mCaptureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
                     mBackgroundHandler);
             // After this, the camera will go back to the normal state of preview.
@@ -795,8 +795,7 @@ public class Camera2 extends CameraViewImpl {
 
     @Override
     void setDisplayOrientation(int displayOrientation) {
-        mDisplayOrientation = displayOrientation;
-        mPreview.setDisplayOrientation(mDisplayOrientation);
+        mPreview.setDisplayOrientation(displayOrientation);
     }
 
     @Override

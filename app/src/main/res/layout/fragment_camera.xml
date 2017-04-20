@@ -1,15 +1,16 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                tools:context="com.brotherpowers.audiojournal.Camera.CameraFragment">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    tools:context="com.brotherpowers.audiojournal.Camera.CameraFragment">
 
     <com.brotherpowers.cameraview.CameraView
         android:id="@+id/cameraView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:adjustViewBounds="true"/>
+        android:layout_height="match_parent"/>
 
     <include
         layout="@layout/camera_control"
@@ -21,9 +22,9 @@
 
     <ImageView
         android:id="@+id/image_view"
-        android:scaleType="fitXY"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:contentDescription="@string/picture"
+        android:scaleType="fitXY"
         android:visibility="gone"/>
 </RelativeLayout>

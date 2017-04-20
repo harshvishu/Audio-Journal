@@ -35,7 +35,7 @@ import io.realm.RealmRecyclerViewAdapter;
  * Created by harsh_v on 11/4/16.
  */
 
-class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, VH> {
+class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, VH> implements VH.VhClick{
     private static final int VIEW_ITEM = 1;
 
     private final Context context;
@@ -52,47 +52,8 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, VH> {
     @Override
     public VH onCreateViewHolder(ViewGroup parent, int viewType) {
         VH VH;
-        Context context = parent.getContext();
-
-
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_data_entry_item, parent, false);
-        VH = new VHAudioRecord(view, (item_view, position) -> {
-
-            switch (item_view.getId()) {
-                case R.id.action_textEditor:
-                    callback.actionTextEditor(position);
-                    break;
-                case R.id.action_play:
-                    callback.actionPlay(position);
-                    break;
-                case R.id.action_camera:
-                    callback.actionCamera(position);
-                    break;
-                case R.id.action_reminder:
-                    callback.addReminder(position);
-                    break;
-                case R.id.action_more:
-                    PopupMenu popupMenu = new PopupMenu(context, item_view, Gravity.BOTTOM | Gravity.START);
-                    popupMenu.inflate(R.menu.menu_records_more);
-                    popupMenu.setOnMenuItemClickListener(item -> {
-                        switch (item.getItemId()) {
-                            case R.id.action_delete:
-                                // Call for delete
-                                callback.actionDelete(position);
-                                break;
-                            case R.id.action_sync:
-                                break;
-                        }
-                        return false;
-                    });
-                    popupMenu.show();
-
-                    System.out.println(">>> GRAVITY :" + (80 | 20));
-
-//                        callback.actionMore(position);
-                    break;
-            }
-        });
+        VH = new VHAudioRecord(view, this);
 
         return VH;
     }
@@ -169,6 +130,46 @@ class RecordsAdapter extends RealmRecyclerViewAdapter<DataEntry, VH> {
     @Override
     public int getItemViewType(int position) {
         return VIEW_ITEM;
+    }
+
+
+    /************
+     * VH CLICK
+     * ***********/
+
+    @Override
+    public void onItemClick(View clickedView, int adapterPosition) {
+        switch (clickedView.getId()) {
+            case R.id.action_textEditor:
+                callback.actionTextEditor(adapterPosition);
+                break;
+            case R.id.action_play:
+                callback.actionPlay(adapterPosition);
+                break;
+            case R.id.action_camera:
+                callback.actionCamera(adapterPosition);
+                break;
+            case R.id.action_reminder:
+                callback.addReminder(adapterPosition);
+                break;
+            case R.id.action_more:
+                PopupMenu popupMenu = new PopupMenu(context, clickedView, Gravity.BOTTOM | Gravity.START);
+                popupMenu.inflate(R.menu.menu_records_more);
+                popupMenu.setOnMenuItemClickListener(item -> {
+                    switch (item.getItemId()) {
+                        case R.id.action_delete:
+                            // Call for delete
+                            callback.actionDelete(adapterPosition);
+                            break;
+                        case R.id.action_sync:
+                            break;
+                    }
+                    return false;
+                });
+                popupMenu.show();
+
+                break;
+        }
     }
 
 
