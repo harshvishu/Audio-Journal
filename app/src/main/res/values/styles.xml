@@ -15,21 +15,16 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-        <!--<item name="colorControlNormal">@color/controlNormal</item>-->
-        <!--<item name="android:textColorSecondary">@color/controlNormal</item>-->
-    </style>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
     <style name="AppTheme.FullScreen">
-        <!--<item name="android:actionBarStyle">@style/FullscreenActionBarStyle</item>-->
-        <!--<item name="android:windowActionBarOverlay">true</item>-->
+        
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>
         <item name="metaButtonBarButtonStyle">?android:attr/buttonBarButtonStyle</item>
-        <!--<item name="android:textColorSecondary">@color/controlNormal</item>-->
     </style>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
@@ -40,33 +35,33 @@
         <item name="colorPrimary">@color/colorPrimary</item>
     </style>
 
-   <!-- <style name="TextViewAccent" parent="android:Widget.TextView">
-        <item name="android:textColor">@color/textAccent</item>
-    </style>
+    <!-- <style name="TextViewAccent" parent="android:Widget.TextView">
+         <item name="android:textColor">@color/textAccent</item>
+     </style>
 
-    <style name="TextViewAccent.Heading">
-        <item name="android:textSize">18sp</item>
-    </style>
+     <style name="TextViewAccent.Heading">
+         <item name="android:textSize">18sp</item>
+     </style>
 
-    <style name="TextViewAccent.Heading.Large">
-        <item name="android:textSize">22sp</item>
-    </style>
+     <style name="TextViewAccent.Heading.Large">
+         <item name="android:textSize">22sp</item>
+     </style>
 
-    <style name="TextViewLight" parent="android:Widget.TextView">
-        <item name="android:textColor">@android:color/primary_text_dark</item>
-    </style>
+     <style name="TextViewLight" parent="android:Widget.TextView">
+         <item name="android:textColor">@android:color/primary_text_dark</item>
+     </style>
 
-    <style name="TextViewLight.Heading">
-        <item name="android:textSize">18sp</item>
-    </style>
+     <style name="TextViewLight.Heading">
+         <item name="android:textSize">18sp</item>
+     </style>
 
-    <style name="TextViewLight.Heading.Large">
-        <item name="android:textSize">22sp</item>
-    </style>
+     <style name="TextViewLight.Heading.Large">
+         <item name="android:textSize">22sp</item>
+     </style>
 
-    <style name="TextViewLight.Heading.Display">
-        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Display1</item>
-        <item name="android:textSize">22sp</item>
-    </style>-->
+     <style name="TextViewLight.Heading.Display">
+         <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Display1</item>
+         <item name="android:textSize">22sp</item>
+     </style>-->
 
 </resources>

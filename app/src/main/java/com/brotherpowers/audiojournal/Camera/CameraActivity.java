@@ -10,7 +10,9 @@ import android.view.MenuItem;
 
 import com.brotherpowers.audiojournal.R;
 import com.brotherpowers.audiojournal.Utils.Constants;
+import com.brotherpowers.audiojournal.View.SwipeBackLayout;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**

@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/windowBackgroundDark"
     android:fitsSystemWindows="true"
     tools:context=".Camera.CameraActivity">
 
@@ -16,8 +15,8 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@null"
-        app:navigationIcon="@android:drawable/ic_menu_close_clear_cancel"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:navigationIcon="@drawable/ic_arrow_back"
         app:popupTheme="@style/AppTheme.PopupOverlay">
 
         <android.support.v4.widget.Space
