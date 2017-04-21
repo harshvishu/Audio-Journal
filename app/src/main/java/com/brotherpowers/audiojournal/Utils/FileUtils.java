@@ -10,13 +10,14 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
-import org.apache.commons.io.IOUtils;
-
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -32,21 +33,41 @@ public class FileUtils {
     public static FileUtils sharedInstance = new FileUtils();
 
     public static short[] getAudioSamples(File file) throws IOException {
-        InputStream is = new FileInputStream(file);
-        byte[] data;
-        try {
-            data = IOUtils.toByteArray(is);
-        } finally {
-            is.close();
-        }
+        byte[] data = new byte[(int) file.length()];
+        DataInputStream dis = new DataInputStream(new FileInputStream(file));
+        dis.readFully(data);
+        dis.close();
 
         ShortBuffer sb = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
         short[] samples = new short[sb.limit()];
         sb.get(samples);
         return samples;
+
+
+        /*InputStream is = new FileInputStream(file);
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        int nRead;
+        byte[] data = new byte[(int) file.length()];
+        while ((nRead = is.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+
+        ShortBuffer sb = ByteBuffer.wrap(buffer.toByteArray()).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
+        short[] samples = new short[sb.limit()];
+        sb.get(samples);
+        return samples;*/
+
+       /* RandomAccessFile raf = new RandomAccessFile(file, "r");
+        byte[] data = new byte[(int) raf.length()];
+        raf.readFully(data);
+
+        ShortBuffer sb = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
+        short[] samples = new short[sb.limit()];
+        sb.get(samples);
+        return samples;*/
     }
 
-    public static byte[] getAudioSampleBytes(File file) throws IOException {
+   /* public static byte[] getAudioSampleBytes(File file) throws IOException {
         InputStream is = new FileInputStream(file);
         byte[] data;
         try {
@@ -56,7 +77,7 @@ public class FileUtils {
         }
 
         return data;
-    }
+    }*/
 
     public File getFile(@NonNull Type fileType, @Nullable String name, Context context) {
         if (TextUtils.isEmpty(name)) {

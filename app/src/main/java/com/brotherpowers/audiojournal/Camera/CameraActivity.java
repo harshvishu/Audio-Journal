@@ -17,8 +17,7 @@ import butterknife.ButterKnife;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class CameraActivity extends AppCompatActivity
-        implements CameraFragment.OnFragmentInteractionListener {
+public class CameraActivity extends AppCompatActivity {
 
     /**
      * Call this to capture a new photo with {@link com.brotherpowers.audiojournal.Model.DataEntry}
@@ -75,8 +74,4 @@ public class CameraActivity extends AppCompatActivity
      * {@link CameraFragment}
      ************************************************/
 
-    @Override
-    public void openGalleryForDataEntry(long entry_id) {
-
-    }
 }

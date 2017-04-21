@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.brotherpowers.audiojournal.View.SquareLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="2dp">
@@ -11,6 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:contentDescription="@string/picture"
-        app:srcCompat="@drawable/ic_photo"/>
+        tools:src="@drawable/ic_photo"/>
 </com.brotherpowers.audiojournal.View.SquareLayout>
 

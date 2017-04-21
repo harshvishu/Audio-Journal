@@ -17,6 +17,8 @@ import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -31,9 +33,11 @@ import android.widget.Toast;
 import com.brotherpowers.audiojournal.Model.Attachment;
 import com.brotherpowers.audiojournal.Model.DataEntry;
 import com.brotherpowers.audiojournal.R;
+import com.brotherpowers.audiojournal.Records.PhotosAdapter;
 import com.brotherpowers.audiojournal.Utils.Constants;
 import com.brotherpowers.audiojournal.Utils.DBHelper;
 import com.brotherpowers.audiojournal.Utils.FileUtils;
+import com.brotherpowers.audiojournal.View.ContextRecyclerView;
 import com.brotherpowers.audiojournal.View.PermissionRequestFragment;
 import com.brotherpowers.cameraview.CameraView;
 import com.wefika.horizontalpicker.HorizontalPicker;
@@ -48,6 +52,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnTouch;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -59,6 +64,18 @@ import io.realm.Realm;
  */
 public class CameraFragment extends Fragment {
     private static final String TAG = "CameraFragment";
+
+    public CameraFragment() {
+        // Required empty public constructor
+    }
+
+    public static CameraFragment newInstance(long entry_id) {
+        Bundle args = new Bundle();
+        args.putLong(Constants.KEYS.entry_id, entry_id);
+        CameraFragment fragment = new CameraFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     private static final int[] FLASH_OPTIONS = {
             CameraView.FLASH_AUTO,
@@ -72,25 +89,10 @@ public class CameraFragment extends Fragment {
             R.drawable.ic_flash_on,
     };
 
-    @BindView(R.id.cameraView)
-    CameraView _cameraView;
-
-    @BindView(R.id.take_picture)
-    ImageButton _imageButton;
-
-    @BindView(R.id.color_mode_picker)
-    HorizontalPicker _colorModePicker;
-
-    @BindView(R.id.image_view)
-    ImageView _CaptureImageView;
-
-    private CompositeDisposable disposable = new CompositeDisposable();
     private Handler mBackgroundHandler;
-    private int mCurrentFlash;
-    private long entry_id;
+    private Handler uiHandler = new Handler(Looper.getMainLooper());
 
     // Interaction with the parent activity
-    private OnFragmentInteractionListener mListener;
     private CameraView.Callback cameraCallback
             = new CameraView.Callback() {
 
@@ -145,13 +147,7 @@ public class CameraFragment extends Fragment {
                         assert entry != null; // TODO: 2/22/17 remove
 
                         entry.getAttachments().add(attachment);
-//                        r.copyToRealmOrUpdate(attachment);
                     });
-
-                    // Load the image
-                    // Set the Image View
-//                    uiHandler.post(() -> loadImage(attachment));
-
                     os.close();
 
                 } catch (IOException e) {
@@ -214,19 +210,45 @@ public class CameraFragment extends Fragment {
         }
     };
 
-    private Handler uiHandler = new Handler(Looper.getMainLooper());
 
-    public CameraFragment() {
-        // Required empty public constructor
+    @BindView(R.id.cameraView)
+    CameraView _cameraView;
+
+    @BindView(R.id.take_picture)
+    ImageButton _imageButton;
+
+    @BindView(R.id.color_mode_picker)
+    HorizontalPicker _colorModePicker;
+
+    @BindView(R.id.image_view)
+    ImageView _CaptureImageView;
+
+    @BindView(R.id.recycler_view_camera_images)
+    ContextRecyclerView _RecyclerViewImages;
+
+    private CompositeDisposable disposable = new CompositeDisposable();
+    private int mCurrentFlash;
+    private long entry_id;
+
+    private PhotosAdapter photosAdapter;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+//        setRetainInstance(true);
+
+        entry_id = getArguments().getLong(Constants.KEYS.entry_id, -1);
+
+        Realm realm = Realm.getDefaultInstance();
+        DataEntry entry = DBHelper.findEntryForId(entry_id, realm).findFirst();        // Sync
+        if (entry != null) {
+            photosAdapter = new PhotosAdapter(getContext(), DBHelper.images(entry).findAllAsync());
+        }
+        realm.close();
+
     }
 
-    public static CameraFragment newInstance(long entry_id) {
-        Bundle args = new Bundle();
-        args.putLong(Constants.KEYS.entry_id, entry_id);
-        CameraFragment fragment = new CameraFragment();
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -235,65 +257,55 @@ public class CameraFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_camera, container, false);
         ButterKnife.bind(this, view);
 
+        /// Add callback to _cameraView
         _cameraView.addCallback(cameraCallback);
 
-        final Realm realm = Realm.getDefaultInstance();
-        final DataEntry entry = DBHelper.findEntryForId(entry_id, realm).findFirst();        // Sync
-        Attachment attachment = DBHelper.images(entry).findFirst();       // Async
-        /*if (attachment != null) {
-            loadImage(attachment);
-        }*/
-
-        _imageButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN: {
-                        final Animatable animatable;
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                            final AnimatedVectorDrawable animatedDrawable = (AnimatedVectorDrawable) getContext().getDrawable(R.drawable.camera_s2l_anim);
-                            animatable = animatedDrawable;
-                            animatable.start();
-                            _imageButton.setImageDrawable(animatedDrawable);
-                        } else {
-                            final AnimatedVectorDrawableCompat drawableCompat = AnimatedVectorDrawableCompat.create(getContext(), R.drawable.camera_s2l_anim);
-                            animatable = drawableCompat;
-                            animatable.start();
-                            _imageButton.setImageDrawable(drawableCompat);
-                        }
-
-                    }
-                    break;
-                    case MotionEvent.ACTION_UP: {
-                        final Animatable animatable;
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                            final AnimatedVectorDrawable animatedDrawable = (AnimatedVectorDrawable) getContext().getDrawable(R.drawable.camera_l2s_anim);
-                            animatable = animatedDrawable;
-                            animatable.start();
-                            _imageButton.setImageDrawable(animatedDrawable);
-                        } else {
-                            final AnimatedVectorDrawableCompat drawableCompat = AnimatedVectorDrawableCompat.create(getContext(), R.drawable.camera_l2s_anim);
-                            animatable = drawableCompat;
-                            animatable.start();
-                            _imageButton.setImageDrawable(drawableCompat);
-                        }
-//                        animatable.start();
-                    }
-                    break;
-                }
-                return false;
-            }
-        });
+        /// Layout manger HORIZONTAL
+        LinearLayoutManager llm = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, true);
+        _RecyclerViewImages.setLayoutManager(llm);
+        /// Bind the photosAdapter with recycler_view_camera_images
+        _RecyclerViewImages.setAdapter(photosAdapter);
 
         return view;
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-        setRetainInstance(true);
-        entry_id = getArguments().getLong(Constants.KEYS.entry_id, -1);
+    @OnTouch(R.id.take_picture)
+    boolean handleTouch(View view, MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN: {
+                final Animatable animatable;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    final AnimatedVectorDrawable animatedDrawable = (AnimatedVectorDrawable) getContext().getDrawable(R.drawable.camera_s2l_anim);
+                    animatable = animatedDrawable;
+                    _imageButton.setImageDrawable(animatedDrawable);
+                } else {
+                    final AnimatedVectorDrawableCompat drawableCompat = AnimatedVectorDrawableCompat.create(getContext(), R.drawable.camera_s2l_anim);
+                    animatable = drawableCompat;
+                    _imageButton.setImageDrawable(drawableCompat);
+                }
+                if (animatable != null) {
+                    animatable.start();
+                }
+            }
+            break;
+            case MotionEvent.ACTION_UP: {
+                final Animatable animatable;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    final AnimatedVectorDrawable animatedDrawable = (AnimatedVectorDrawable) getContext().getDrawable(R.drawable.camera_l2s_anim);
+                    animatable = animatedDrawable;
+                    _imageButton.setImageDrawable(animatedDrawable);
+                } else {
+                    final AnimatedVectorDrawableCompat drawableCompat = AnimatedVectorDrawableCompat.create(getContext(), R.drawable.camera_l2s_anim);
+                    animatable = drawableCompat;
+                    _imageButton.setImageDrawable(drawableCompat);
+                }
+                if (animatable != null) {
+                    animatable.start();
+                }
+            }
+            break;
+        }
+        return false;
     }
 
     @Override
@@ -409,22 +421,6 @@ public class CameraFragment extends Fragment {
             mListener.openGalleryForDataEntry(entry_id);
         }
     }*/
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    public interface OnFragmentInteractionListener {
-        void openGalleryForDataEntry(long entry_id);
-
-    }
-
     private static String[] toArray(SparseArray<String> sparseArray) {
         if (sparseArray == null) {
             return new String[]{};

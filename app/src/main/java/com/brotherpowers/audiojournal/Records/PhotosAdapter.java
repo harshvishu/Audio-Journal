@@ -22,7 +22,7 @@ import io.realm.RealmRecyclerViewAdapter;
  * Created by harsh_v on 2/18/17.
  */
 
-public class PhotosAdapter extends RealmRecyclerViewAdapter<Attachment, PhotosAdapter.ViewHolderImage> {
+public class PhotosAdapter extends RealmRecyclerViewAdapter<Attachment, PhotosAdapter.ViewHolderImage> implements VH.VhClick{
     private final Context context;
 
     public PhotosAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<Attachment> data) {
@@ -34,23 +34,26 @@ public class PhotosAdapter extends RealmRecyclerViewAdapter<Attachment, PhotosAd
     @Override
     public ViewHolderImage onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.recycler_view_internal_image, parent, false);
-        return new ViewHolderImage(view, (clickedView, adapterPosition) -> {
-            Toast.makeText(context, "click image: " + adapterPosition, Toast.LENGTH_SHORT).show();
-        });
+        return new ViewHolderImage(view, this);
     }
 
     @Override
     public void onBindViewHolder(ViewHolderImage holder, int position) {
-        Attachment attachment = getData().get(position);
+        Attachment attachment = getItem(position);
+
         if (attachment != null) {
             Glide.with(context)
                     .load(attachment.file(context))
                     .centerCrop()
-//                .fitCenter()
                     .into(holder.imageView);
         } else {
             holder.imageView.setImageResource(R.drawable.ic_photo);
         }
+    }
+
+    @Override
+    public void onItemClick(View clickedView, int adapterPosition) {
+        Toast.makeText(context, "click image: " + adapterPosition, Toast.LENGTH_SHORT).show();
     }
 
 
