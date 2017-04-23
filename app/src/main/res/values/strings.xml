@@ -44,5 +44,8 @@
     <string name="s2l_inner_circle_initial_path">M 36 16.02 A 19.979507446289062,19.979507446289062,0,1,0,36,55.97950744628906 A 19.979507446289062,19.979507446289062,0,1,0,36,16.020492553710938 Z</string>
     <string name="s2l_inner_circle_destination_path">M 36 8.828 A 27.172130584716797,27.172130584716797,0,1,0,36,63.1721305847168 A 27.172130584716797,27.172130584716797,0,1,0,36,8.827869415283203 Z</string>
     <string name="take_picture">Take Picture</string>
+    <string name="title_activity_image_viewer">ImageViewerActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="profile_image">Profile Image</string>
 
 </resources>

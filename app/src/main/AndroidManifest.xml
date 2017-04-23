@@ -91,6 +91,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.brotherpowers.audiojournal.Main.MainActivity"/>
         </activity>
+        <activity
+            android:theme="@style/AppTheme.NoActionBar"
+            android:name=".Camera.ImageViewerActivity"
+            android:label="@string/title_activity_image_viewer"
+            android:screenOrientation="sensorPortrait">
+        </activity>
     </application>
 
 </manifest>

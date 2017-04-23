@@ -22,12 +22,14 @@ import io.realm.RealmRecyclerViewAdapter;
  * Created by harsh_v on 2/18/17.
  */
 
-public class PhotosAdapter extends RealmRecyclerViewAdapter<Attachment, PhotosAdapter.ViewHolderImage> implements VH.VhClick{
+public class PhotosAdapter extends RealmRecyclerViewAdapter<Attachment, PhotosAdapter.ViewHolderImage> implements VH.VhClick {
     private final Context context;
+    private final PhotosAdapterDelegate delegate;
 
-    public PhotosAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<Attachment> data) {
+    public PhotosAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<Attachment> data, PhotosAdapterDelegate delegate) {
         super(data, true);
         this.context = context;
+        this.delegate = delegate;
     }
 
 
@@ -53,7 +55,9 @@ public class PhotosAdapter extends RealmRecyclerViewAdapter<Attachment, PhotosAd
 
     @Override
     public void onItemClick(View clickedView, int adapterPosition) {
-        Toast.makeText(context, "click image: " + adapterPosition, Toast.LENGTH_SHORT).show();
+        long attachment_id = getItem(adapterPosition).getId();
+
+        delegate.viewImage(attachment_id, adapterPosition);
     }
 
 
@@ -70,5 +74,9 @@ public class PhotosAdapter extends RealmRecyclerViewAdapter<Attachment, PhotosAd
         public void onClick(View view) {
             vhClick.onItemClick(view, getAdapterPosition());
         }
+    }
+
+    public interface PhotosAdapterDelegate {
+        void viewImage(Long attachment_id, int position);
     }
 }

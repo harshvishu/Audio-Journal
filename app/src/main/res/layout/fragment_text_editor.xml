@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/windowBackgroundLight"
     android:orientation="vertical"
+    android:theme="@style/Theme.AppCompat.Light"
     tools:context="com.brotherpowers.audiojournal.TextEditor.TextEditorFragment">
 
     <HorizontalScrollView
@@ -132,7 +133,7 @@
         android:paddingRight="16dp"
         android:paddingStart="16dp"
         android:paddingTop="16dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large.Inverse"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textColor="@android:color/secondary_text_light"
         android:textStyle="bold"/>
 
@@ -151,8 +152,7 @@
         android:paddingRight="16dp"
         android:paddingStart="16dp"
         android:paddingTop="16dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium.Inverse"
-        android:textColor="@android:color/primary_text_light"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:linkUnderline="true"
         app:quoteColor="@color/colorAccent"/>
 

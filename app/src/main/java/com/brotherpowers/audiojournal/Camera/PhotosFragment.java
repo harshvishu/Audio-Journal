@@ -1,6 +1,5 @@
 package com.brotherpowers.audiojournal.Camera;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -25,17 +24,13 @@ import io.realm.RealmResults;
 import io.realm.Sort;
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link PhotosFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
+ * Class to view images
  */
-public class PhotosFragment extends Fragment {
+public class PhotosFragment extends Fragment implements PhotosAdapter.PhotosAdapterDelegate {
 
     @BindView(R.id.recycler_view)
     ContextRecyclerView recyclerView;
 
-    private OnFragmentInteractionListener mListener;
     private PhotosAdapter photosAdapter;
 
     public PhotosFragment() {
@@ -73,7 +68,7 @@ public class PhotosFragment extends Fragment {
                     RealmQuery.createQuery(realm, Attachment.class))
                     .findAllSortedAsync("created_at", Sort.DESCENDING);
         }
-        photosAdapter = new PhotosAdapter(getContext(), results);
+        photosAdapter = new PhotosAdapter(getContext(), results, this);
 
         /// Close realm
         realm.close();
@@ -111,32 +106,11 @@ public class PhotosFragment extends Fragment {
     }
 
 
+    /*******************
+     * Open Image Viewer
+     *****************/
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * // TODO: 2/22/17 Change thi stub code
-     */
-    public interface OnFragmentInteractionListener {
-        void openDetailedImageGallery(long entry_id, long attachment_id);
+    public void viewImage(Long attachment_id, int position) {
+        ImageViewerActivity.start(getActivity(), null, attachment_id);
     }
 }

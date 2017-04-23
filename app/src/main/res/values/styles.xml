@@ -7,6 +7,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/windowBackgroundDark</item>
+        <item name="android:homeAsUpIndicator">@drawable/ic_arrow_back</item>
         <!--<item nacme="android:alertDialogStyle">@style/AlertDialog</item>-->
     </style>
 
@@ -15,10 +16,13 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="navigationIcon">@drawable/ic_arrow_back</item>
+    </style>
 
     <style name="AppTheme.FullScreen">
-        
+        <!--<item name="android:windowIsTranslucent">true</item>-->
+        <!--<item name="android:windowBackground">@android:color/transparent</item>-->
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>

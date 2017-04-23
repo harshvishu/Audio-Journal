@@ -35,9 +35,7 @@ import io.realm.Realm;
 public class MainActivity extends AppCompatActivity
         implements AudioRecordingFragment.OnFragmentInteractionListener,
         RecordsFragment.OnFragmentInteractionListener,
-        NavigationView.OnNavigationItemSelectedListener,
-        PhotosFragment.OnFragmentInteractionListener,
-        ReminderListFragment.OnFragmentInteractionListener {
+        NavigationView.OnNavigationItemSelectedListener {
 
 
     /**
@@ -176,24 +174,6 @@ public class MainActivity extends AppCompatActivity
         // Start Text Editor
         CameraActivity.start(this, entry.getId());
         return true;
-    }
-
-    /************************************************
-     * {@link PhotosFragment}
-     ************************************************/
-
-
-    @Override
-    public void openDetailedImageGallery(long entry_id, long attachment_id) {
-        // TODO: 4/9/17 Open Image in a horizontal view pager
-    }
-
-    /************************************************
-     * {@link ReminderListFragment}
-     ************************************************/
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
     }
 
 

@@ -23,14 +23,9 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ReminderListFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
+ * Display set reminders
  */
 public class ReminderListFragment extends Fragment {
-
-    private OnFragmentInteractionListener mListener;
 
     public ReminderListFragment() {
         // Required empty public constructor
@@ -126,38 +121,10 @@ public class ReminderListFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    @Override
     public void onDestroyView() {
         // Unregister Time Change Receiver
         getContext().unregisterReceiver(timeChangeReceiver);
         super.onDestroyView();
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
     }
 
 }

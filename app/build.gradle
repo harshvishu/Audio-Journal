@@ -85,7 +85,6 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    testCompile 'junit:junit:4.12'
     compile project(':hvwaveformview')
     compile project(':hvprogressview')
     compile project(':ajcamera')
@@ -109,5 +108,7 @@ dependencies {
     compile 'com.wefika:horizontal-picker:1.1.1'
     compile 'com.github.JakeWharton:ViewPagerIndicator:2.4.1'
     compile 'com.jakewharton:butterknife:8.5.1'
+    compile 'com.android.support:support-v13:25.3.1'
+    testCompile 'junit:junit:4.12'
     apt 'com.jakewharton:butterknife-compiler:8.5.1'
 }

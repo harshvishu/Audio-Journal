@@ -56,13 +56,15 @@ import butterknife.OnTouch;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
 import io.realm.Realm;
+import io.realm.Sort;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CameraFragment extends Fragment {
+public class CameraFragment extends Fragment implements PhotosAdapter.PhotosAdapterDelegate {
     private static final String TAG = "CameraFragment";
 
     public CameraFragment() {
@@ -112,8 +114,7 @@ public class CameraFragment extends Fragment {
         @Override
         public void onPictureTaken(CameraView cameraView, final byte[] data, final int sensorOrientation, final int displayOrientation) {
 
-            System.out.println("..... picture taken .....");
-            /**
+            /*
              * Picture already taken
              *
              * On Google Pixel onPictureTaken is called Twice
@@ -150,34 +151,54 @@ public class CameraFragment extends Fragment {
                     });
                     os.close();
 
+                    Observable.fromArray(1)
+                            .delay(100, TimeUnit.MILLISECONDS)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeWith(new DisposableObserver<Integer>() {
+                                @Override
+                                public void onNext(Integer integer) {
+                                    _RecyclerViewImages.smoothScrollToPosition(0);
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+
+                                }
+
+                                @Override
+                                public void onComplete() {
+
+                                }
+                            });
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
-
                     pictureTaken.set(false);
                 }
             });
 
-            disposable.add(Observable.just(data)
+
+            /*disposable.add(Observable.just(data)
                     .map(bytes -> BitmapFactory.decodeByteArray(bytes, 0, data.length))
                     .subscribeOn(AndroidSchedulers.from(getBackgroundHandler().getLooper()))
                     .observeOn(AndroidSchedulers.mainThread())
                     .map(bitmap -> {
-                        _CaptureImageView.setTranslationX(0.0f);
+                        _CaptureImageView.setTranslationY(0.0f);
                         _CaptureImageView.setImageBitmap(bitmap);
                         _CaptureImageView.setVisibility(View.VISIBLE);
                         return _CaptureImageView;
                     })
                     .map(imageView -> {
                         imageView.animate()
-                                .setDuration(1000)
-                                .translationXBy(1000)
+                                .setDuration(400)
+                                .translationYBy(imageView.getHeight())
 //                                .translationYBy(100)
                                 .setInterpolator(new OvershootInterpolator())
                                 .start();
                         return imageView;
                     })
-                    .delay(1200, TimeUnit.MILLISECONDS)
+                    .delay(300, TimeUnit.MILLISECONDS)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith(new DisposableObserver<ImageView>() {
                         @Override
@@ -195,7 +216,7 @@ public class CameraFragment extends Fragment {
                         public void onComplete() {
 
                         }
-                    }));
+                    }));*/
 
         }
 
@@ -243,7 +264,7 @@ public class CameraFragment extends Fragment {
         Realm realm = Realm.getDefaultInstance();
         DataEntry entry = DBHelper.findEntryForId(entry_id, realm).findFirst();        // Sync
         if (entry != null) {
-            photosAdapter = new PhotosAdapter(getContext(), DBHelper.images(entry).findAllAsync());
+            photosAdapter = new PhotosAdapter(getContext(), DBHelper.images(entry).findAllSortedAsync("created_at", Sort.DESCENDING), this);
         }
         realm.close();
 
@@ -261,7 +282,7 @@ public class CameraFragment extends Fragment {
         _cameraView.addCallback(cameraCallback);
 
         /// Layout manger HORIZONTAL
-        LinearLayoutManager llm = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, true);
+        LinearLayoutManager llm = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         _RecyclerViewImages.setLayoutManager(llm);
         /// Bind the photosAdapter with recycler_view_camera_images
         _RecyclerViewImages.setAdapter(photosAdapter);
@@ -430,5 +451,14 @@ public class CameraFragment extends Fragment {
         for (int i = 0; i < sparseArray.size(); i++)
             s[i] = sparseArray.valueAt(i);
         return s;
+    }
+
+
+    /*******************
+     * Open Image Viewer
+     *****************/
+    @Override
+    public void viewImage(Long attachment_id, int position) {
+        ImageViewerActivity.start(getActivity(), entry_id, attachment_id);
     }
 }
