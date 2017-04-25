@@ -41,6 +41,16 @@ android {
     versionProps['BUILD_VERSION_CODE'] = code.toString()
     versionProps.store(versionPropsFile.newWriter(), null)
 
+    def facebookPropsFile = file('version.properties')
+    if (!facebookPropsFile.canRead()){
+        throw  new GradleException("Could not read facebook.properties")
+    }
+
+    def Properties facebookProps = new Properties()
+    facebookProps.load(new FileInputStream(facebookPropsFile))
+    // READ Facebook App id
+    def facebook_app_id = facebookProps['facebook_app_id']
+
     defaultConfig {
         applicationId rootProject.ext.appId
         minSdkVersion rootProject.ext.minSdkVersion
@@ -51,6 +61,7 @@ android {
             enabled false
         }
         vectorDrawables.useSupportLibrary = true
+        resValue("string", "facebook_app_id", "${facebook_app_id}")
     }
 
     buildTypes {
@@ -85,6 +96,7 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    testCompile 'junit:junit:4.12'
     compile project(':hvwaveformview')
     compile project(':hvprogressview')
     compile project(':ajcamera')
@@ -93,9 +105,7 @@ dependencies {
     compile "com.android.support:cardview-v7:$rootProject.ext.supportLibraryVersion";
     compile "com.android.support:support-v4:$rootProject.ext.supportLibraryVersion";
     compile "com.android.support:percent:$rootProject.ext.supportLibraryVersion";
-    compile('com.crashlytics.sdk.android:crashlytics:2.6.7@aar') {
-        transitive = true;
-    }
+    compile "com.android.support:customtabs:$rootProject.ext.supportLibraryVersion"
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
     compile 'com.squareup.retrofit2:converter-gson:2.2.0'
@@ -108,7 +118,9 @@ dependencies {
     compile 'com.wefika:horizontal-picker:1.1.1'
     compile 'com.github.JakeWharton:ViewPagerIndicator:2.4.1'
     compile 'com.jakewharton:butterknife:8.5.1'
-    compile 'com.android.support:support-v13:25.3.1'
-    testCompile 'junit:junit:4.12'
     apt 'com.jakewharton:butterknife-compiler:8.5.1'
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.7@aar') {
+        transitive = true;
+    }
+    compile 'com.facebook.android:facebook-android-sdk:4.22.0'
 }

@@ -47,5 +47,7 @@
     <string name="title_activity_image_viewer">ImageViewerActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="profile_image">Profile Image</string>
+    <string name="off">Off</string>
+    <string name="on">On</string>
 
 </resources>

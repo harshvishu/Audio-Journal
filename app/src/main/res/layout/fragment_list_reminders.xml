@@ -18,7 +18,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-            tools:listitem="@layout/recyclerview_reminder"/>
+            tools:listitem="@layout/viewholder_reminder"/>
     </LinearLayout>
 
     <FrameLayout
@@ -31,8 +31,9 @@
     </FrameLayout>
 
     <include
+        android:layout_margin="@dimen/spacing.20"
         android:id="@+id/reminder_header"
-        layout="@layout/current_time"
+        layout="@layout/view_list_reminder_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 </RelativeLayout>

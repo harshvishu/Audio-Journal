@@ -45,7 +45,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginBottom="@dimen/spacing.16"
                 android:layout_marginTop="@dimen/spacing.16"
-                android:background="@color/viewpager_inactive"/>
+                android:background="@color/inactive"/>
 
             <LinearLayout
                 android:layout_width="0dp"

@@ -22,6 +22,10 @@ public final class Extensions {
 
     public static final SimpleDateFormat formatHumanReadable = new SimpleDateFormat("EEE, d MMM yyyy hh:mm aaa", Locale.ENGLISH);
 
+    public static final SimpleDateFormat SDF_HH_MM = new SimpleDateFormat("hh:mm", Locale.ENGLISH);
+    public static final SimpleDateFormat SDF_AM_PM = new SimpleDateFormat("aaa", Locale.ENGLISH);
+    public static final SimpleDateFormat SDF_EEE_D_MMM_YYYY = new SimpleDateFormat("EEE, d MMM yyyy", Locale.ENGLISH);
+
     public static boolean checkCameraHardware(Context context) {
         return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
     }

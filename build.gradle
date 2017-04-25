@@ -32,6 +32,6 @@ ext {
     compileSdkVersion = 25
     minSdkVersion = 15
     targetSdkVersion = 25
-    supportLibraryVersion = '25.3.1'
+    supportLibraryVersion = '26.0.0-alpha1'
     appId = 'com.brotherpowers.audiojournal'
 }

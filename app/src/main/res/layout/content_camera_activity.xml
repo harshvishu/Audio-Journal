@@ -19,8 +19,8 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:padding="@dimen/spacing.8"
-        app:fillColor="@color/viewpager_active"
-        app:pageColor="@color/viewpager_inactive"
+        app:fillColor="@color/active"
+        app:pageColor="@color/inactive"
         app:strokeColor="@android:color/transparent"/>
 
 </RelativeLayout>

@@ -97,6 +97,9 @@
             android:label="@string/title_activity_image_viewer"
             android:screenOrientation="sensorPortrait">
         </activity>
+
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+
     </application>
 
 </manifest>
