@@ -10,8 +10,8 @@
             android:title="Drive"/>
         <item
             android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery"/>
+            android:icon="@drawable/com_facebook_button_login_logo"
+            android:title="Login"/>
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"

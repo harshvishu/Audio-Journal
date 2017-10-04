@@ -92,13 +92,24 @@
                 android:value="com.brotherpowers.audiojournal.Main.MainActivity"/>
         </activity>
         <activity
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/AppTheme.FullScreen"
             android:name=".Camera.ImageViewerActivity"
             android:label="@string/title_activity_image_viewer"
             android:screenOrientation="sensorPortrait">
         </activity>
 
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+
+        <activity
+            android:theme="@style/AppTheme.NoActionBar"
+            android:name=".Main.DemoActivity"
+            android:label="@string/app_name">
+           <!-- <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>-->
+        </activity>
 
     </application>
 

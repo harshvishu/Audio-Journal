@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="128dp"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/space"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:backgroundTint="#ff0092f4"
+        app:fabSize="mini"
+        android:layout_margin="@dimen/fab_margin"
+        app:layout_anchor="@+id/layout"
+        app:layout_anchorGravity="top|end"
+        app:srcCompat="@drawable/ic_arrow_down"/>
+
+    <LinearLayout
+        android:padding="16dp"
+        android:id="@+id/layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/colorPrimary"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/Base.TextAppearance.AppCompat.Headline"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="123\nRECORDS"/>
+
+        <TextView
+            style="@style/Base.TextAppearance.AppCompat.Headline"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="123\nRECORDS"/>
+
+        <TextView
+            style="@style/Base.TextAppearance.AppCompat.Headline"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="123\nRECORDS"/>
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

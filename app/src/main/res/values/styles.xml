@@ -8,6 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/windowBackgroundDark</item>
         <item name="android:homeAsUpIndicator">@drawable/ic_arrow_back</item>
+        <item name="android:windowActionBarOverlay">true</item>
         <!--<item nacme="android:alertDialogStyle">@style/AlertDialog</item>-->
     </style>
 
@@ -21,8 +22,8 @@
     </style>
 
     <style name="AppTheme.FullScreen">
-        <!--<item name="android:windowIsTranslucent">true</item>-->
-        <!--<item name="android:windowBackground">@android:color/transparent</item>-->
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
@@ -67,5 +68,23 @@
          <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Display1</item>
          <item name="android:textSize">22sp</item>
      </style>-->
+
+    <style name="AppBaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#ffff9431</item>
+        <item name="colorPrimaryDark">#ffD56600</item>
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style>
+    <!-- Base application theme. -->
+    <style name="AppTheme1" parent="AppBaseTheme">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
 
 </resources>
